@@ -76,13 +76,8 @@ export class LoginUser {
     if (response && (response.success === true || response.message === 'Login successful')) {
       console.log("Real Backend ", response.user);
       
-      this.router.navigate(['/patient']).then(navigated => {
-        if (navigated) {
-          console.log("🚀 REDIRECT SUCCESSFUL!");
-        } else {
-          console.error(" REDIRECT FAILED! Guard or Router blocked it.");
-        }
-      });
+      this.router.navigate(['/patient']);
+
     } else {
       console.warn(" Response received but condition did not match:", response);
       this.loginError = 'Invalid response from server.';
@@ -90,7 +85,7 @@ export class LoginUser {
   },
   error: (err) => {
     this.isLoading = false;
-    console.error("💥 API ERROR:", err);
+    console.error("API ERROR:", err);
     this.loginError = err.error?.message || 'Something went wrong. Please try again.';
   }
 });

@@ -16,8 +16,9 @@ export const routes: Routes = [
     {path:'book',loadComponent: ()=>import('./components/bookappointment/bookappointment').then(r=>r.BookAppointment)},
     {path: 'modify/:appointmentId',loadComponent:()=>import('./components/modifyappointment/modifyappointment').then(r=>r.Modifyappointment)},
     
-    {path:"doctor",component:DoctorDashboard}
+    {path:"doctor",component:DoctorDashboard},
 
+    { path: '**', redirectTo: '/', pathMatch: 'full' }
 ];
 
 
