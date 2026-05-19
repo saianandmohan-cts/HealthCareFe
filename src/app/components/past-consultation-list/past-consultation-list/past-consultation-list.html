@@ -1,0 +1,141 @@
+<div class="container-fluid py-5 bg-light min-vh-100">
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-11">
+      
+      <div class="mb-4">
+        <h2 class="fw-bold text-dark display-6 mb-1">Past Consultations</h2>
+        <p class="text-muted fs-6">Review your medical history and prescriptions.</p>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        @if (allList$ | async; as consultations) {
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary px-4 py-3">Cons ID</th>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary px-4 py-3">Appt ID</th>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary py-3">Date</th>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary py-3">Doctor</th>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary text-center px-4 py-3">Prescription</th>
+                </tr>
+              </thead>
+              
+              <tbody class="border-top-0">
+                @for (record of consultations; track record.appointmentId) {
+                  <tr style="cursor: pointer;">
+                    
+                    <td class="px-4 py-3">
+                      @if (record.consultationId) {
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-2 py-1 fs-6">
+                          #{{ record.consultationId }}
+                        </span>
+                      } @else {
+                        <span class="text-muted fst-italic px-2">—</span>
+                      }
+                    </td>
+
+                    <td class="px-4 py-3">
+                      <span class="badge bg-light text-dark border px-2 py-1 fs-6">#{{ record.appointmentId }}</span>
+                    </td>
+                    
+                    <td class="py-3 text-secondary fw-medium">{{ record.date | date:'mediumDate' }}</td> 
+                    <td class="py-3 fw-bold text-secondary">{{ record.doctorName }}</td>
+                    
+                  <td class="px-4 py-3 text-center">
+                  @if (record.hasPrescription) {
+                  <div class="d-flex justify-content-center gap-2">
+                  <button (click)="viewPrescription(record.consultationId)" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all">
+                  <i class="bi bi-eye me-1"></i> View
+                  </button>
+                  <button (click)="downloadPrescription(record.consultationId)" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all hover-shadow">
+                  <i class="bi bi-download me-1"></i> Download
+                  </button>
+                  </div>
+                } @else {
+                  <span class="text-muted fst-italic">—</span>
+                }
+              </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                      <i class="bi bi-folder-x display-4 d-block mb-3 text-secondary opacity-50"></i>
+                      <p class="fs-5 mb-0">No consultations found.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="card-body text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted fw-medium fs-5 mb-0">Fetching your records...</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+</div> 
+
+@if (hiddenDownloadData) {
+  <div style="position: absolute; left: -9999px; top: 0; width: 800px;">
+    <div id="hidden-pdf-template" class="pdf-download-container">
+      
+      <h1 class="main-title">1C Hospital</h1>
+      <h2 class="sub-title">Prescription</h2>
+      
+      <div class="header-lines">
+        <div class="line-red"></div><div class="line-orange"></div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-group"><span class="label">Prescription No.</span><span class="value">#{{ hiddenDownloadData.consultationId }}</span></div>
+        <div class="info-group"><span class="label">Date</span><span class="value">{{ hiddenDownloadData.date }}</span></div>
+      </div>
+
+      <div class="divider-orange"></div>
+
+      <h2 class="section-title">Patient Info:</h2>
+      <div class="info-grid">
+        <div class="info-group"><span class="label">Name</span><span class="value">{{ hiddenDownloadData.patient.name }}</span></div>
+        <div class="info-group"><span class="label">Age</span><span class="value">{{ hiddenDownloadData.patient.age }}</span></div>
+        <div class="info-group"><span class="label">Phone Number</span><span class="value">{{ hiddenDownloadData.patient.phone }}</span></div>
+        <div class="info-group"><span class="label">Email</span><span class="value">{{ hiddenDownloadData.patient.email }}</span></div>
+        <div class="info-group"><span class="label">Gender</span><span class="value">{{ hiddenDownloadData.patient.gender }}</span></div>
+        <div class="info-group"><span class="label">Address</span><span class="value pre-line">{{ hiddenDownloadData.patient.address }}</span></div>
+        <div></div> 
+        <div class="info-group"><span class="label">Allergies</span><span class="value">{{ hiddenDownloadData.patient.allergies }}</span></div>
+        <div class="info-group"><span class="label">Notable Health Condition</span><span class="value">{{ hiddenDownloadData.patient.condition }}</span></div>
+      </div>
+
+      <div class="divider-orange"></div>
+
+      <h2 class="section-title">List of Prescribed Medications</h2>
+      <table class="med-table">
+        <thead>
+          <tr><th>Medication Name</th><th>Purpose</th><th>Dosage</th><th>Route</th><th>Frequency</th></tr>
+        </thead>
+        <tbody>
+          @for (med of hiddenDownloadData.medications; track med.name) {
+            <tr>
+              <td>{{ med.name }}</td>
+              <td>{{ med.purpose || 'N/A' }}</td>
+              <td>{{ med.dosage }}</td>
+              <td>{{ med.route || 'Oral' }}</td>
+              <td>{{ med.frequency || 'As directed' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="info-grid" style="margin-top: 40px;">
+        <div class="info-group"><span class="label">Doctor Name</span><span class="value">{{ hiddenDownloadData.physician?.name }}</span></div>
+      </div>
+    </div>
+  </div>
+}

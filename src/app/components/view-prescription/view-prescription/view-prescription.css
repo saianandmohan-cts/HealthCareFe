@@ -1,0 +1,182 @@
+/* ============================================
+   PRESCRIPTION PDF – 1C HOSPITAL THEME
+============================================ */
+
+/* Page wrapper (A4 size) */
+.document-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 20px auto;
+  padding: 40px 48px;
+  background: #ffffff;
+  color: #102133;
+  font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
+  box-shadow: 0 16px 40px rgba(15,35,65,0.12);
+}
+
+/* Headings */
+.main-title {
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #791b40;
+  margin: 0;
+}
+
+.sub-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #791b40;
+  margin: 4px 0 12px;
+}
+
+/* Decorative bars (top) */
+.color-band-top {
+  display: flex;
+  height: 8px;
+  margin-bottom: 26px;
+}
+
+.band-red {
+  width: 50%;
+  background-color: #df4f43;
+}
+
+.band-orange {
+  width: 50%;
+  background-color: #f3b688;
+}
+
+/* Section divider */
+.divider-orange-half {
+  width: 50%;
+  height: 6px;
+  background: #f3b688;
+  margin: 20px 0;
+}
+
+/* Section titles */
+.section-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #791b40;
+  margin: 18px 0 10px;
+}
+
+/* Grid layout */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 32px;
+}
+
+/* Each label/value pair */
+.info-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #791b40;
+  margin-bottom: 2px;
+}
+
+.value {
+  font-size: 14px;
+  color: #203243;
+}
+
+.pre-line {
+  white-space: pre-line;
+}
+
+/* Medication table */
+.med-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.med-table th,
+.med-table td {
+  border: 1px solid #e3e7eb;
+  padding: 10px 8px;
+  font-size: 13px;
+}
+
+.med-table th {
+  background: rgba(248,252,253,0.95);
+  color: #791b40;
+  font-weight: 700;
+  text-align: center;
+}
+
+.med-table td {
+  text-align: center;
+}
+
+/* Doctor info at bottom */
+.info-grid.mt-5 {
+  margin-top: 40px;
+}
+
+/* Bottom actions (screen only) */
+.bottom-actions {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 40px;
+}
+
+.btn-interactive-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid rgba(216,228,234,0.95);
+  background: rgba(255,255,255,0.95);
+  color: #203243;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-interactive-back:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15,35,65,0.15);
+}
+
+/* Loading / Error */
+.loading-state,
+.error-state {
+  margin-top: 80px;
+  text-align: center;
+  font-size: 16px;
+  color: #66788a;
+}
+
+/* ---------------- PRINT STYLES ---------------- */
+
+@media print {
+
+  body {
+    background: #ffffff;
+  }
+
+  .document-a4 {
+    margin: 0;
+    box-shadow: none;
+    padding: 32px 36px;
+  }
+
+  .no-print,
+  .bottom-actions {
+    display: none !important;
+  }
+}
