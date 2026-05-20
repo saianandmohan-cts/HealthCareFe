@@ -1,73 +1,80 @@
-import { Component } from '@angular/core';
-// import { AVAILABILITY } from '../../mockdata/availability.mock';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-const AVAILABILITY: any[] = [];
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-doctor-availability-slot',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './doctor-availability-slot.html',
   styleUrl: './doctor-availability-slot.css',
 })
 
-export class DoctorAvailabilitySlot {
-  //doctor that is logged in from token 
-    id = 2;
+export class DoctorAvailabilitySlot implements OnInit {
 
-  
-    allData = AVAILABILITY;
-  
-  selectedDate: string = ""; // Bound to <input type="date">
-  
-  filteredSlots: any[] = []; // Slots for the selected day
+  allData: any[] = [];
+  selectedDate: Date | null = null;
+  filteredSlots: any[] = [];
   doctorRecord: any;
 
-
-  date!:Date;
-  endDate!:Date;
+  date!: Date;
+  endDate!: Date;
   dateRange: Date[] = [];
 
+  constructor(private http: HttpClient) {}
+
   ngOnInit() {
-      this.doctorRecord = this.allData.find(d => d.doctorId === this.id);
-      this.setDateFunction();
-
-  }
-  setDateFunction(){
-      this.date = new Date();
-      this.endDate = new Date(this.date);
-      this.endDate.setDate(this.date.getDate() + 6);
-      this.generateRange();
+    this.setDateFunction();
+    this.fetchAvailability();
   }
 
-  generateRange(){
+  setDateFunction() {
+    this.date = new Date();
+    this.endDate = new Date(this.date);
+    this.endDate.setDate(this.date.getDate() + 4); 
+    this.generateRange();
+  }
+
+  generateRange() {
     const range: Date[] = [];
-
-    for (let i = 0; i <= 6; i++) {
+    for (let i = 0; i <= 4; i++) {
       const d = new Date(this.date);
       d.setDate(this.date.getDate() + i);
       range.push(d);
     }
-
     this.dateRange = range;
   }
 
+  fetchAvailability() {
+    this.http.get<any[]>(`http://localhost:5000/doctor/availability/`)
+      .subscribe(data => {
+        this.allData = data;
+        this.onDateChange();
+      });
+  }
 
-  // Triggered when date input changes
+
   onDateChange() {
     if (!this.selectedDate) return;
 
-    this.filteredSlots = this.doctorRecord.slots.filter((s: any) => 
-      s.time.startsWith(this.selectedDate)
+    const record = this.allData.find(d =>
+      new Date(d.date).toDateString() === this.selectedDate!.toDateString()
     );
+
+    this.doctorRecord = record;
+    this.filteredSlots = record ? record.slots : [];
   }
 
   updateAvailability() {
-    alert("Availability Updated Successfully!");
-    console.log("Updated Data:", this.doctorRecord);
-    this.onDateChange();
-  }
+    if (!this.doctorRecord) return;
 
-    
+    this.http.put(
+      `http://localhost:5000/doctor/availability/`,
+      this.doctorRecord
+    ).subscribe(res => {
+      alert("Availability Updated Successfully!");
+      console.log("Updated Data:", res);
+      this.onDateChange();
+    });
+  }
 }

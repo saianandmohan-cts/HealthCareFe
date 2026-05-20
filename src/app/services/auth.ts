@@ -77,10 +77,14 @@ export class Auth {
    */
   loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
     // 🚀 FIXED: Pura function backend API call ke sath withCredentials: true map kar diya
-    return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true }).pipe(
+    return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`,
+       credentials,
+        { withCredentials: true })
+        .pipe(
       tap((response) => {
         if (response && response.success === true) {
-          console.log("🔒 Doctor login successful. Syncing profile signals...");
+          console.log("Doctor login successful.");
+          
           this.checkSession().subscribe({
             next: () => {
               response.success = true;
