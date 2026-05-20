@@ -35,25 +35,28 @@
       
       <div class="info-group">
         <span class="label">Phone Number</span>
-        <span class="value">{{ prescriptionDetails.patient.phone }}</span>
+        <span class="value">{{ prescriptionDetails.patient?.phone }}</span>
       </div>
 
       <div class="info-group">
         <span class="label">Gender</span>
-        <span class="value">{{ prescriptionDetails.patient.gender }}</span>
+        <span class="value">{{ prescriptionDetails.patient?.gender }}</span>
       </div>
       
       <div class="info-group">
         <span class="label">Address</span>
-        <span class="value pre-line">{{ prescriptionDetails.patient.address }}</span>
+        <span class="value pre-line">{{ prescriptionDetails.patient?.address }}</span>
       </div>
-      <div></div> <div class="info-group mt-3">
+      
+      <div></div> <!-- Grid alignment space -->
+
+      <div class="info-group mt-3">
         <span class="label">Allergies</span>
-        <span class="value">{{ prescriptionDetails.patient.allergies }}</span>
+        <span class="value">{{ prescriptionDetails.patient?.allergies || 'None recorded' }}</span>
       </div>
       <div class="info-group mt-3">
         <span class="label">Notable Health Condition</span>
-        <span class="value">{{ prescriptionDetails.patient.condition || 'None' }}</span>
+        <span class="value">{{ prescriptionDetails.patient?.condition || 'None' }}</span>
       </div>
     </div>
 
@@ -84,7 +87,11 @@
     <div class="info-grid mt-5">
       <div class="info-group">
         <span class="label">Doctor Name</span>
-        <span class="value">{{ prescriptionDetails.physician?.name }}</span>
+        <span class="value">Dr. {{ prescriptionDetails.physician?.name }}</span>
+      </div>
+      <div class="info-group" style="text-align: right;">
+        <span class="label">Department</span>
+        <span class="value">{{ prescriptionDetails.physician?.department || 'General' }}</span>
       </div>
     </div>
 

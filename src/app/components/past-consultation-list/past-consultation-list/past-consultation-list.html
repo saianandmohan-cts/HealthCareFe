@@ -42,6 +42,22 @@
                     <td class="py-3 text-secondary fw-medium">{{ record.date | date:'mediumDate' }}</td> 
                     <td class="py-3 fw-bold text-secondary">{{ record.doctorName }}</td>
                     
+<<<<<<< HEAD
+                    <td class="px-4 py-3 text-center">
+                      @if (record.hasPrescription) {
+                        <div class="d-flex justify-content-center gap-2">
+                          <button (click)="viewPrescription(record.consultationId)" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all">
+                            <i class="bi bi-eye me-1"></i> View
+                          </button>
+                          <button (click)="downloadPrescription(record.consultationId)" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all hover-shadow">
+                            <i class="bi bi-download me-1"></i> Download
+                          </button>
+                        </div>
+                      } @else {
+                        <span class="text-muted fst-italic">—</span>
+                      }
+                    </td>
+=======
                   <td class="px-4 py-3 text-center">
                   @if (record.hasPrescription) {
                   <div class="d-flex justify-content-center gap-2">
@@ -56,6 +72,7 @@
                   <span class="text-muted fst-italic">—</span>
                 }
               </td>
+>>>>>>> 502caad8c6409b81773743e67d9e8ae32d5ce06b
                   </tr>
                 } @empty {
                   <tr>
@@ -80,6 +97,14 @@
 
     </div>
   </div>
+<<<<<<< HEAD
+</div>
+
+<!-- 
+  FIXED: `@if (hiddenDownloadData)` waale poore dead-code block ko yahan se permanently remove kar diya gaya hai. 
+  Ab aapka Angular Compiler bina kisi error ke project ko smoothly compile aur save karega!
+-->
+=======
 </div> 
 
 @if (hiddenDownloadData) {
@@ -139,3 +164,4 @@
     </div>
   </div>
 }
+>>>>>>> 502caad8c6409b81773743e67d9e8ae32d5ce06b

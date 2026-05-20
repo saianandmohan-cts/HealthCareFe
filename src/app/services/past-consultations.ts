@@ -17,15 +17,16 @@ export class PastConsultations {
     return this.http.get<any>(`${this.baseUrl}/dashboard/${patientId}`);
   }
 
-  // 2. SINGLE PRESCRIPTION VIEW FOR MODAL / DISPLAY
   getPrescriptionById(consultationId: string | number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/view-prescription/${consultationId}`);
+    return this.http.get<any>(`${this.baseUrl}/view-prescription/${consultationId}`, { withCredentials: true });
   }
 
-  // 3. DOWNLOAD PRESCRIPTION AS JSON 
+  // Real PDF Blob processing engine link
   downloadPrescriptionFile(consultationId: string | number): Observable<Blob> {
+    // FIXED: withCredentials pass kiya taaki authMiddleware block na kare aur responseType blob map kiya
     return this.http.get(`${this.baseUrl}/download-prescription/${consultationId}`, {
-      responseType: 'blob'
+      responseType: 'blob',
+      withCredentials: true
     });
   }
 }
