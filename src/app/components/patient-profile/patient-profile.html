@@ -1,0 +1,158 @@
+<form #personalForm="ngForm" novalidate (ngSubmit)="savePersonalDetails()">
+
+  <div class="header-row">
+    <h2>Personal Details</h2>
+    @if (!isEditingPersonal) {
+      <button type="button" class="primary-btn sm" (click)="beginEditPersonal()">
+        Update
+      </button>
+    }
+  </div>
+
+  @if (showSavedBanner) {
+    <div class="saved-banner">
+      ✔ Personal details updated successfully
+    </div>
+  }
+
+  <div class="details-view">
+    <div>
+      <label>Full Name</label>
+      <strong>{{ patientDetails?.name }}</strong>
+    </div>
+
+    <div>
+      <label>Patient ID</label>
+      <strong>{{ patientDetails?.patientId }}</strong>
+    </div>
+
+    <div>
+      <label>Gender</label>
+      <strong>{{ patientDetails?.gender }}</strong>
+    </div>
+
+    <div>
+      <label>Age</label>
+      <strong>{{ patientDetails?.age }}</strong>
+    </div>
+
+    <div>
+      <label>Blood Group</label>
+      <strong>{{ patientDetails?.bloodGroup }}</strong>
+    </div>
+
+    <div>
+      <label>Phone</label>
+      @if (!isEditingPersonal) {
+        <strong>{{ patientDetails?.contactNumber }}</strong>
+      }
+      
+      @if (isEditingPersonal) {
+        <ng-container>
+          <div class="field-box">
+            <input
+              type="text"
+              name="contact"
+              [(ngModel)]="editableDetails.contactNumber"
+              required
+              minlength="10"
+              maxlength="10"
+              pattern="^[0-9]{10}$"
+              #contact="ngModel" />
+          </div>
+          @if (contact.invalid && contact.touched) {
+            <small class="error">
+              @if (contact.errors?.['required']) { <span>Phone number is required</span> }
+              @if (contact.errors?.['pattern']) { <span>Phone must be exactly 10 digits</span> }
+            </small>
+          }
+        </ng-container>
+      }
+    </div>
+
+    <div>
+      <label>Email</label>
+      @if (!isEditingPersonal) {
+        <strong>{{ patientDetails?.email }}</strong>
+      }
+
+      @if (isEditingPersonal) {
+        <ng-container>
+          <div class="field-box">
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="editableDetails.email"
+              required
+              email
+              #email="ngModel" />
+          </div>
+          @if (email.invalid && email.touched) {
+            <small class="error">
+              @if (email.errors?.['required']) { <span>Email is required</span> }
+              @if (email.errors?.['email']) { <span>Enter a valid email address</span> }
+            </small>
+          }
+        </ng-container>
+      }
+    </div>
+
+    <div class="wide">
+      <label>Address</label>
+      @if (!isEditingPersonal) {
+        <strong>{{ patientDetails?.address }}</strong>
+      }
+
+      @if (isEditingPersonal) {
+        <ng-container>
+          <div class="field-box">
+            <input
+              type="text"
+              name="address"
+              [(ngModel)]="editableDetails.address"
+              required
+              #address="ngModel" />
+          </div>
+          @if (address.invalid && address.touched) {
+            <small class="error">Address is required</small>
+          }
+        </ng-container>
+      }
+    </div>
+
+    <div class="wide"> 
+      <label>Allergies</label>
+      @if (!isEditingPersonal) {
+        <strong>{{ patientDetails?.allergy?.join(', ') || 'None' }}</strong>
+      }
+
+      @if (isEditingPersonal) {
+        <div class="field-box">
+          <input
+            type="text"
+            name="allergyStr"
+            placeholder="e.g. Peanuts, Penicillin"
+            [(ngModel)]="editableDetails.allergyStr" />
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (isEditingPersonal) {
+    <div class="form-actions right-align">
+      <button
+        type="submit"
+        class="primary-btn sm"
+        [disabled]="!isPersonalDetailsChanged || personalForm.invalid">
+        Save
+      </button>
+
+      <button
+        type="button"
+        class="ghost-btn sm"
+        (click)="cancelPersonalEdit()">
+        Cancel
+      </button>
+    </div>
+  }
+</form>

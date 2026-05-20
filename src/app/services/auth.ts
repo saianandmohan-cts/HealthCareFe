@@ -27,36 +27,40 @@ export class Auth {
   readonly authenticated = computed(() => this.isAuthenticatedSignal());
 
   constructor() {
-    // 🚀 PURE COOKIE: App load/refresh hote hi background check lagaya
+    // App load/refresh hote hi background check lagaya
     this.checkSession().subscribe();
   }
 
+  /**
+   * Who Am I Session Check (Smart Dynamic Handling)
+   */
+  checkSession(): Observable<any> {
+    return this.http.get<any>(`${this.API_BASE_URL}/login/me`, { withCredentials: true }).pipe(
+      tap((response) => {
+        if (response && response.success && response.user) {
+          console.log(`🔄 Session restored via HttpOnly Cookie for role [${response.role}]:`, response.user);
+          
+          this.currentUserSignal.set(response.user);
+          // 🚀 FIXED: Dynamic role set hoga jo backend se aayega ('DOCTOR' ya 'PATIENT')
+          this.roleSignal.set(response.role as UserRole);
+          this.isAuthenticatedSignal.set(true);
+        }
+      }),
+      catchError(() => {
+        this.clearAuthState();
+        return of({ success: false, message: 'No active session' }); 
+      })
+    );
+  }
 
- checkSession(): Observable<any> {
-  return this.http.get<any>(`${this.API_BASE_URL}/login/me`, { withCredentials: true }).pipe(
-    tap((response) => {
-      if (response?.success && response.user) {
-        console.log(`🔄 Session restored for role [${response.role}]`, response.user);
-        this.currentUserSignal.set(response.user);
-        this.roleSignal.set(response.role as UserRole);
-        this.isAuthenticatedSignal.set(true);
-      }
-    }),
-    catchError(() => {
-      this.clearAuthState();
-      return of({ success: false, message: 'No active session' });
-    })
-  );
-}
-
-
-
+  /**
+   * Patient Login
+   */
   loginPatient(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.API_BASE_URL}/login`, credentials, { withCredentials: true })
-    .pipe(tap((response) => {
-        if (response?.message === "Login successful") {
+    return this.http.post<any>(`${this.API_BASE_URL}/login`, credentials, { withCredentials: true }).pipe(
+      tap((response) => {
+        if (response && (response.success === true || response.message === "Login successful")) {
           console.log("🔒 Patient login successful. Syncing profile...");
-
           this.checkSession().subscribe({
             next: () => {
               response.success = true; 
@@ -67,16 +71,16 @@ export class Auth {
     );
   }
 
+  /**
+   * 🩺 LIVE COOKIE-BASED DOCTOR LOGIN
+   * Hit marega backend secure endpoint par aur session restore karega
+   */
   loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
     // 🚀 FIXED: Pura function backend API call ke sath withCredentials: true map kar diya
-    return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`,
-       credentials,
-        { withCredentials: true })
-        .pipe(
+    return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true }).pipe(
       tap((response) => {
         if (response && response.success === true) {
-          console.log("Doctor login successful.");
-          
+          console.log("🔒 Doctor login successful. Syncing profile signals...");
           this.checkSession().subscribe({
             next: () => {
               response.success = true;
@@ -120,5 +124,25 @@ export class Auth {
         this.router.navigate(['/login-user']);
       }
     });
+  }
+
+isAuthenticated(): boolean {
+    return this.authenticated();
+  }
+
+  // Live signal data wrapper
+  getLoggedInPatient(): Patient | null {
+    return this.getRole() === 'PATIENT' ? (this.currentUser() as Patient) : null;
+  }
+
+  // Local state update template wrapper
+  updateLoggedInPatient(updatedPatient: any): void {
+    if (this.getRole() === 'PATIENT') {
+      this.currentUserSignal.set({
+        ...this.currentUser(),
+        ...updatedPatient
+      });
+      console.log("✏️ Local patient profile signal updated:", this.currentUser());
+    }
   }
 }

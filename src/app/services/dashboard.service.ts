@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; // 👈 HttpClient inject kiya direct hit ke liye
-import { AuthService } from './auth.service';
+import { HttpClient } from '@angular/common/http'; 
+import { Auth } from './auth';
 import { Appointment } from '../models/appointment.model';
 import { Observable, map, of } from 'rxjs'; 
 
@@ -9,14 +9,14 @@ import { Observable, map, of } from 'rxjs';
 })
 export class DashboardService {
 
-  private authService = inject(AuthService);
-  private http = inject(HttpClient); // 👈 Direct HTTP client instance
+  private auth = inject(Auth);
+  private http = inject(HttpClient); 
   private baseUrl = 'http://localhost:5000/patient'; 
 
   constructor() {}
 
   getPatientContext() {
-    return this.authService.getLoggedInPatient();
+    return this.auth.getLoggedInPatient();
   }
 
   // ✅ Helper: Backend ke /dashboard/:patientId se complete array stream nikalna
