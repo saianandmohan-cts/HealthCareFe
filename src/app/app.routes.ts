@@ -18,8 +18,7 @@ export const routes: Routes = [
     
     {path:"doctor",component:DoctorDashboard},
 
-    
-
+    { path: '**', redirectTo: '/', pathMatch: 'full' }
 ];
 
 
