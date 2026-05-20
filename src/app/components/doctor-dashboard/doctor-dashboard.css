@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+
+
+* {
+  box-sizing: border-box;
+}
+      
+#profile_img{
+    width: 50px;
+    height: 50px;
+}
+
+.inner-container{
+    display: flex;
+    flex-direction: row;
+}
+
+.button{
+  background: linear-gradient(135deg, #0f766e, #0f7db7);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(15, 118, 110, 0.18);
+}
+
+
+
+/* Modal content */
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+
+/* Cancel appointment button */
+.cancel-btn {
+  margin-left: auto; /* pushes it to the right side */
+  align-self: center;
+  background-color: #e63946;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #c53030;
+  transform: scale(1.05);
+}
+
+/* View More / View Less button */
+.button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #388e3c;
+}

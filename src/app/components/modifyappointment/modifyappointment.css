@@ -1,0 +1,325 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+:host {
+  --bg: #eff5f7;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-strong: #ffffff;
+  --line: #d8e4ea;
+  --text: #102133;
+  --muted: #66788a;
+  --primary: #0f766e;
+  --primary-dark: #0b5f59;
+  --secondary: #0f7db7;
+  --accent-soft: #e8f6f3;
+  --blue-soft: #eaf5fb;
+  --danger: #e03131;
+  --danger-soft: rgba(224,49,49,0.08);
+  --shadow-soft: 0 12px 32px rgba(15, 35, 65, 0.08);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+
+  display: block;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top right, rgba(15,125,183,0.08), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(15,118,110,0.08), transparent 26%),
+    linear-gradient(180deg, #f8fcfd 0%, #eef4f6 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ───────── PAGE WRAPPER ───────── */
+
+.dashboard-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 20px 28px;
+  color: var(--text);
+  font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* ───────── TOP BAR ───────── */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  color: var(--primary);
+  background: rgba(15,118,110,0.09);
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-text strong {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.logo-text span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ───────── BUTTONS ───────── */
+
+.primary-btn,
+.ghost-btn,
+.danger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(15,118,110,0.18);
+}
+
+.primary-btn.sm {
+  min-height: 42px;
+  padding: 0 16px;
+}
+
+.ghost-btn {
+  background: rgba(255,255,255,0.92);
+  color: #203243;
+  border: 1px solid rgba(216,228,234,0.95);
+}
+
+.danger-btn {
+  background: var(--danger);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(224,49,49,0.25);
+}
+
+.primary-btn:hover,
+.ghost-btn:hover,
+.danger-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ───────── CONTENT CARD ───────── */
+
+.content-card {
+  margin-top: 16px;
+  padding: 22px;
+  border-radius: var(--radius-xl);
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(216,228,234,0.95);
+  box-shadow: var(--shadow-soft);
+}
+
+.content-card h2 {
+  margin: 0 0 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.muted {
+  margin-bottom: 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ───────── SUCCESS BANNER ───────── */
+
+.saved-banner {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(15,118,110,0.12);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ───────── DETAILS VIEW (READ ONLY) ───────── */
+
+.details-view {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.details-view label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.details-view strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ───────── FORM ───────── */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-grid span {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(216,228,234,0.95);
+  background: rgba(255,255,255,0.95);
+  font-size: 14px;
+  font-family: 'Manrope', sans-serif;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus {
+  border-color: rgba(15,118,110,0.55);
+  box-shadow: 0 0 0 4px rgba(15,118,110,0.08);
+}
+
+.form-grid .wide {
+  grid-column: span 2;
+}
+
+/* ───────── VALIDATION ───────── */
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+.error {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+/* ───────── FORM ACTIONS ───────── */
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+/* ───────── RESPONSIVE ───────── */
+
+@media (max-width: 900px) {
+  .form-grid,
+  .details-view {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-page {
+    padding: 14px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: start;
+    gap: 12px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+/* ───────── CARD HEADER (TOP RIGHT BACK BUTTON) ───────── */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.card-header .back-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ───────── FORM FOOTER (BOTTOM RIGHT ACTIONS) ───────── */
+.form-footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Mobile stacking */
+@media (max-width: 640px) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

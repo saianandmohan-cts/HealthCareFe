@@ -1,0 +1,77 @@
+<div class="login-page">
+  <!-- Header -->
+  <div class="login-header">
+    <span class="hospital-icon">🏥</span>
+    <h1>1C Hospital</h1>
+    <p class="tagline"></p>
+  </div>
+
+  <!-- Login Card -->
+  <div class="login-card">
+    <h2>Patient Login</h2>
+    <p class="subtitle">
+      Access your appointments and medical records
+    </p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="patient@example.com"
+        />
+
+        @if (email.invalid && (email.dirty || email.touched)) {
+          <div class="error">
+            @for (error of getEmailErrors(); track error) {
+              <span>⚠ {{ error }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Enter your password"
+        />
+
+        @if (password.invalid && (password.dirty || password.touched)) {
+          <div class="error">
+            @for (error of getPasswordErrors(); track error) {
+              <span>⚠ {{ error }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Login Error -->
+      @if (loginError) {
+        <div class="login-error">
+          {{ loginError }}
+        </div>
+      }
+
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid ">
+        Login
+      </button>
+    </form>
+
+    <div class="extra-links">
+      <a href="#">Forgot Password?</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <p class="back-link">
+    <a routerLink="/home">← Back to Home</a>
+  </p>
+</div>

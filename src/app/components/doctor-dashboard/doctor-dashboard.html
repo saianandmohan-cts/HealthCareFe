@@ -1,0 +1,87 @@
+<div class="outer-container bg-light p-4" style="min-height: 100vh;">
+
+  <div
+    class="inner-container bg-white rounded-4 shadow-sm p-3 mb-4 d-flex justify-content-between align-items-center border border-2"
+    style="border-color: #8b5cf6;"
+    *ngIf="DoctorInfo$ | async as doctor"
+  >
+    <div class="d-flex align-items-center flex-grow-1">
+      <div>
+        <img
+          [src]="doctor.profilePic"
+          alt="Profile Pic"
+          id="profile_img"
+          class="rounded-circle border"
+          style="width: 80px; height: 80px; object-fit: cover;"
+        />
+      </div>
+      <div class="ms-4 mt-2">
+        <h4 class="mb-0 fs-5 text-dark fw-bold">
+          Dr. {{ doctor.name }} <span class="fs-6 text-secondary" *ngIf="doctor.degree">({{ doctor.degree }})</span>
+        </h4>
+        <h5 class="mb-0 mt-1 fs-6 text-muted fw-normal">
+          {{ doctor.department }}
+        </h5>
+      </div>
+    </div>
+    <div>
+      <p class="mb-0 me-3 fw-medium text-purple" style="color: #8b5cf6;">Exp: {{ doctor.experience }} yrs+</p>
+    </div>
+  </div>
+
+  <div class="d-flex gap-3 mb-4">
+    <button (click)="viewUpcoming()" [class.btn-primary]="flag === 1" [class.btn-success]="flag !== 1" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+      Upcoming Appointments
+    </button>
+    <button (click)="viewPast()" [class.btn-primary]="flag === 2" [class.btn-success]="flag !== 2" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+      Past Consultations
+    </button>
+    <button (click)="editAvailability()" [class.btn-primary]="flag === 3" [class.btn-success]="flag !== 3" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+      Edit Availability
+    </button>
+  </div>
+
+  <div class="bg-white rounded-4 shadow-sm p-4" style="min-height: 350px;">
+    
+    @if(flag === 1){
+      <h4 class="mb-4 text-dark fw-bold">Upcoming Appointments</h4>
+      
+      @for (val of (upcomingAppointments$ | async); track val.appointmentId) {
+        <div class="border rounded-3 p-3 mb-3 d-flex justify-content-between align-items-center bg-mb-custom shadow-sm">
+        <div>
+          <p class="mb-1 fw-bold text-dark fs-5">Patient Name: {{val.patient.name}}</p>
+          <p class="mb-1 text-secondary small">Patient ID: {{val.patient.patientId}}</p>
+          <p class="mb-1 text-muted small">📅 Date: {{val.date}} | ⏰ Time: {{val.time}}</p>
+
+          <button class="btn btn-sm btn-link text-decoration-none p-0 mt-2" (click)="toggleConsultation(val.appointmentId)">
+            {{ selectedConsultation === val.appointmentId ? '🔼 View Less' : '🔽 View More Details' }}
+          </button>
+
+          <div *ngIf="selectedConsultation === val.appointmentId" class="expanded-details mt-3 p-3 bg-light rounded-3 border">
+            <p class="mb-2 text-dark"><strong>Medical History:</strong> {{val.patient.medicalHistory || 'None'}}</p>
+            <p class="mb-0 text-dark"><strong>Allergy History:</strong> {{val.patient.allergy || 'No known allergies'}}</p>
+          </div>
+      </div>
+          
+          <div>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="cancelAppointment(val.appointmentId)">
+              Cancel Appointment
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="text-center py-5">
+          <p class="text-muted fs-5 mb-0">No upcoming appointments scheduled for today.</p>
+        </div>
+      }
+
+    } @else if(flag === 2){
+      <h5 class="mb-3 text-dark fw-bold">Past Consultations</h5>
+      <app-past-consultation></app-past-consultation>
+
+    } @else if(flag === 3){
+      <h5 class="mb-3 text-dark fw-bold">Edit Schedule Settings</h5>
+      <app-doctor-availability-slot></app-doctor-availability-slot>
+    }
+  </div>
+</div>

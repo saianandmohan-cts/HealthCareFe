@@ -1,0 +1,355 @@
+<div class="dashboard-page">
+
+  <section class="profile-hero">
+    <div class="profile-left">
+      <div class="avatar">
+        <div class="avatar-inner">{{ patientInitials }}</div>
+      </div>
+
+      <div>
+        <p class="hero-eyebrow">Patient Profile</p>
+        <h1>{{ patientDetails?.name }}</h1>
+
+        <div class="profile-meta">
+          <span>Patient ID : {{ patientDetails?.patientId }}</span>
+          <br>
+          <span>{{ patientDetails?.address }}</span>
+        
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-right">
+      <div class="stat-box">
+        <label>Upcoming</label>
+        <strong>{{ upcomingCount }}</strong>
+      </div>
+
+      <div class="stat-box">
+        <label>Completed</label>
+        <strong>{{ completedCount }}</strong>
+      </div>
+
+
+
+      <a routerLink="/book" class="primary-btn">Book Appointment</a>
+
+      <button class="ghost-btn" (click)="onLogout()">
+        🚪 Logout 
+      </button>
+
+    </div>
+  </section>
+
+  <section class="snapshot">
+    <div>
+      <span>Gender</span>
+      <strong>{{ patientDetails?.gender }}</strong>
+    </div>
+
+    <div>
+      <span>Phone</span>
+      <strong>{{ patientDetails?.contactNumber }}</strong>    
+    </div>
+
+    <div>
+      <span>Email</span>
+      <strong>{{ patientDetails?.email }}</strong>
+    </div>
+  </section>
+
+  <div class="tab-buttons">
+    <button class="tab-btn"
+            [class.active]="activeTab === 'appointments'"
+            (click)="setActiveTab('appointments')">
+      Appointments
+    </button>
+
+    <button class="tab-btn"
+            [class.active]="activeTab === 'history'"
+            (click)="setActiveTab('history')">
+      Medical History
+    </button>
+
+    <button class="tab-btn"
+            [class.active]="activeTab === 'personal'"
+            (click)="setActiveTab('personal')">
+      Personal Details
+    </button>
+  </div>
+
+  @if (activeTab === 'appointments') {
+    <section class="content-card">
+
+      <div class="sub-tab-buttons">
+        <button class="sub-tab-btn"
+                [class.active]="appointmentView === 'upcoming'"
+                (click)="appointmentView = 'upcoming'">
+          Upcoming
+        </button>
+
+        <button class="sub-tab-btn"
+                [class.active]="appointmentView === 'past'"
+                (click)="appointmentView = 'past'">
+          Past
+        </button>
+      </div>
+
+      @if (appointmentView === 'upcoming') {
+        <div>
+          <h2>Next Upcoming Appointment</h2>
+
+          @if (nextAppointment; as next) {
+            <div class="appointment-box">
+              <h3>Doctor Name: {{ next.doctorName }}</h3>
+
+              <div class="appt-info">
+                <div>
+                  <label>Date</label>
+                  <strong>{{ next.date | date:'fullDate'}}</strong>
+                </div>
+
+                <div>
+                  <label>Time</label>
+                  <strong>{{ next.time }}</strong>
+                </div>
+
+                <div>
+                  <label>Status</label>
+                  <strong>{{ next.status }}</strong>
+                </div>
+              </div>
+
+              <a class="primary-btn sm" [routerLink]="['/modify', next.appointmentId]">
+                Modify Appointment
+              </a>
+            </div>
+          } @else {
+            <div class="empty-box">
+              <h3>No Upcoming Appointment</h3>
+              <p>You can schedule your next appointment anytime.</p>
+              <a routerLink="/book" class="primary-btn sm">Book Now</a>
+            </div>
+          }
+
+          <h2 class="mt-30">All Upcoming Appointments</h2>
+
+          @for (item of upcomingAppointments; track item.appointmentId) {
+            <div class="list-row">
+              <div>
+                <strong>Doctor Name: {{ item.doctorName }}</strong>
+                <span>{{ item.date | date:'fullDate'}}</span>
+                <span>{{ item.time }}</span>
+              </div>
+
+              <div class="right-actions">
+                <span class="status upcoming">{{ item.status }}</span>
+                <a class="ghost-btn sm" [routerLink]="['/modify', item.appointmentId]">Modify</a>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (appointmentView === 'past') {
+        <div>
+          <h2>Past Appointments</h2>
+
+          @if (pastAppointments.length) {
+            @for (item of pastAppointments; track item.appointmentId) {
+              <div class="list-row">
+                <div>
+                  <strong>Doctor Name: {{ item.doctorName }}</strong>
+                  <span>{{ item.date | date:'fullDate'}}</span>
+                  <span>{{ item.time }}</span>
+                </div>
+                <span class="status">{{ item.status }}</span>
+              </div>
+            }
+          } @else {
+            <div class="empty-box">
+              <h3>No Past Appointments</h3>
+            </div>
+          }
+        </div>
+      }
+
+    </section>
+  }
+
+  @if (activeTab === 'history') {
+    <section class="content-card">
+      <app-past-consultation-list></app-past-consultation-list>
+    </section>
+  }
+
+  @if (activeTab === 'personal') {
+    <section class="content-card">
+
+      <form #personalForm="ngForm" novalidate (ngSubmit)="savePersonalDetails()">
+
+        <div class="header-row">
+          <h2>Personal Details</h2>
+
+          @if (!isEditingPersonal) {
+            <button type="button" class="primary-btn sm" (click)="beginEditPersonal()">
+              Update
+            </button>
+          }
+        </div>
+
+        @if (showSavedBanner) {
+          <div class="saved-banner">
+            ✔ Personal details updated successfully
+          </div>
+        }
+
+        <div class="details-view">
+          <div>
+            <label>Full Name</label>
+            <strong>{{ patientDetails?.name }}</strong>
+          </div>
+
+          <div>
+            <label>Patient ID</label>
+            <strong>{{ patientDetails?.patientId }}</strong>
+          </div>
+
+          <div>
+            <label>Gender</label>
+            <strong>{{ patientDetails?.gender }}</strong>
+          </div>
+
+          <div>
+            <label>Age</label>
+            <strong>{{ patientDetails?.age }}</strong>
+          </div>
+
+          <div>
+            <label>Blood Group</label>
+            <strong>{{ patientDetails?.bloodGroup }}</strong>
+          </div>
+
+          <div>
+            <label>Phone</label>
+            @if (!isEditingPersonal) {
+              <strong>{{ patientDetails?.contactNumber }}</strong>
+            }
+            
+            @if (isEditingPersonal) {
+              <ng-container>
+                <div class="field-box">
+                  <input
+                    type="text"
+                    name="contact"
+                    [(ngModel)]="editableDetails.contactNumber"
+                    required
+                    minlength="10"
+                    maxlength="10"
+                    pattern="^[0-9]{10}$"
+                    #contact="ngModel" />
+                </div>
+
+                @if (contact.invalid && contact.touched) {
+                  <small class="error">
+                    @if (contact.errors?.['required']) { <span>Phone number is required</span> }
+                    @if (contact.errors?.['pattern']) { <span>Phone must be exactly 10 digits</span> }
+                  </small>
+                }
+              </ng-container>
+            }
+          </div>
+
+          <div>
+            <label>Email</label>
+            @if (!isEditingPersonal) {
+              <strong>{{ patientDetails?.email }}</strong>
+            }
+
+            @if (isEditingPersonal) {
+              <ng-container>
+                <div class="field-box">
+                  <input
+                    type="email"
+                    name="email"
+                    [(ngModel)]="editableDetails.email"
+                    required
+                    email
+                    #email="ngModel" />
+                </div>
+                @if (email.invalid && email.touched) {
+                  <small class="error">
+                    @if (email.errors?.['required']) { <span>Email is required</span> }
+                    @if (email.errors?.['email']) { <span>Enter a valid email address</span> }
+                  </small>
+                }
+              </ng-container>
+            }
+          </div>
+
+          <div class="wide">
+            <label>Address</label>
+            @if (!isEditingPersonal) {
+              <strong>{{ patientDetails?.address }}</strong>
+            }
+
+            @if (isEditingPersonal) {
+              <ng-container>
+                <div class="field-box">
+                  <input
+                    type="text"
+                    name="address"
+                    [(ngModel)]="editableDetails.address"
+                    required
+                    #address="ngModel" />
+                </div>
+                @if (address.invalid && address.touched) {
+                  <small class="error">
+                    Address is required
+                  </small>
+                }
+              </ng-container>
+            }
+          </div>
+
+          <div class="wide"> 
+            <label>Allergies</label>
+            @if (!isEditingPersonal) {
+              <strong>{{ patientDetails?.allergy?.join(', ') || 'None' }}</strong>
+            }
+
+            @if (isEditingPersonal) {
+              <div class="field-box">
+                <input
+                  type="text"
+                  name="allergyStr"
+                  placeholder="e.g. Peanuts, Penicillin"
+                  [(ngModel)]="editableDetails.allergyStr" />
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (isEditingPersonal) {
+          <div class="form-actions right-align">
+            <button
+              type="submit"
+              class="primary-btn sm"
+              [disabled]="!isPersonalDetailsChanged || personalForm.invalid">
+              Save
+            </button>
+
+            <button
+              type="button"
+              class="ghost-btn sm"
+              (click)="cancelPersonalEdit()">
+              Cancel
+            </button>
+          </div>
+        }
+
+      </form>
+    </section>
+  }
+
+</div>

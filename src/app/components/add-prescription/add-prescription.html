@@ -1,0 +1,108 @@
+<div class="container py-5">
+  <div class="card shadow rounded-4 border-0 p-4">
+    <h2 class="text-primary border-bottom pb-2 mb-4">
+      <i class="bi bi-file-earmark-medical-fill"></i> Add New Consultation & Prescription
+    </h2>
+
+    <!-- Alert Messages -->
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <form [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Part 1: Consultation Details -->
+      <h5 class="text-secondary mb-3">1. Consultation Meta Details</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Consultation ID <span class="text-danger">*</span></label>
+          <input type="number" formControlName="consultationId" class="form-control" placeholder="E.g. 1001">
+        </div>
+        
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Doctor ID <span class="text-danger">*</span></label>
+          <input type="text" formControlName="doctorId" class="form-control" placeholder="E.g. DOC201">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Appointment Object ID <span class="text-danger">*</span></label>
+          <input type="text" formControlName="appointmentId" class="form-control" placeholder="MongoDB _id format">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+          <input type="date" formControlName="date" class="form-control">
+        </div>
+      </div>
+
+      <!-- Part 2: Clinical Notes -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Consultation Notes / Diagnosis</label>
+        <textarea formControlName="notes" class="form-control" rows="3" placeholder="Enter patient current condition or notes..."></textarea>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Part 3: Dynamic Medications (FormArray) -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-secondary mb-0">2. Prescribed Medications</h5>
+        <button type="button" class="btn btn-sm btn-success rounded-pill px-3" (click)="addMedicine()">
+          <i class="bi bi-plus-circle-fill"></i> + Add More Medicine
+        </button>
+      </div>
+
+      <div formArrayName="prescriptions">
+        @for (med of prescriptions.controls; track $index) {
+          <div [formGroupName]="$index" class="row g-3 p-3 mb-3 border rounded-3 bg-light align-items-end position-relative">
+            
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-muted">Medicine Name *</label>
+              <input type="text" formControlName="medicineName" class="form-control" placeholder="Paracetamol, Amoxicillin etc.">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted">Dosage *</label>
+              <input type="text" formControlName="dosage" class="form-control" placeholder="E.g. 500mg, 1 Tablet">
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small fw-bold text-muted">Route *</label>
+              <select formControlName="route" class="form-select">
+                <option value="Oral">Oral</option>
+                <option value="Injection">Injection</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small fw-bold text-muted">Frequency *</label>
+              <input type="text" formControlName="frequency" class="form-control" placeholder="E.g. 1-0-1, Once a day">
+            </div>
+
+            <!-- Delete Medicine Row Button -->
+            <div class="col-md-1 text-center">
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeMedicine($index)">
+                <i class="bi bi-trash-fill">X</i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Action Footer Buttons -->
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button type="button" class="btn btn-light border rounded-pill px-4" [disabled]="isSubmitting">Cancel</button>
+        <button type="submit" class="btn btn-primary rounded-pill px-5" [disabled]="isSubmitting || prescriptionForm.invalid">
+          @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+          } @else {
+            <i class="bi bi-cloud-arrow-up-fill"></i> Save Prescription
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

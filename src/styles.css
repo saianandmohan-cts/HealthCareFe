@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+:root {
+  --bg: #eff5f7;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-strong: #ffffff;
+  --line: #d8e4ea;
+  --text: #102133;
+  --muted: #66788a;
+  --primary: #0f766e;
+  --primary-dark: #0b5f59;
+  --secondary: #0f7db7;
+  --accent-soft: #e8f6f3;
+  --blue-soft: #eaf5fb;
+  --shadow-soft: 0 12px 32px rgba(15, 35, 65, 0.08);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+}
+ 
+/* 3. GLOBAL RESET & BACKGROUND */
+* {
+  box-sizing: border-box;
+}
+ 
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: var(--text);
+  /* This moves your background logic to every page */
+  background:
+    radial-gradient(circle at top right, rgba(15, 125, 183, 0.08), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(15, 118, 110, 0.08), transparent 26%),
+    linear-gradient(180deg, #f8fcfd 0%, #eef4f6 100%);
+}
+ 
+.button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}

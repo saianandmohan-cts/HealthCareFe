@@ -1,0 +1,232 @@
+/* ================================
+   PAST CONSULTATION – CONSISTENT UI
+   Matches Patient Dashboard Theme
+================================ */
+
+/* 🔹 Neutralise Bootstrap layout noise (safe) */
+.container-fluid,
+.row,
+[class^="col-"] {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.min-vh-100 {
+  min-height: auto !important;
+}
+
+/* ================= HEADER ================= */
+
+h2 {
+  font-family: 'Plus Jakarta Sans', 'Manrope', sans-serif;
+  font-weight: 800;
+  color: var(--text);
+}
+
+p.text-muted {
+  color: var(--muted) !important;
+  font-size: 14px;
+}
+
+/* ================= CARD ================= */
+
+.card {
+  margin-top: 14px;
+  border-radius: var(--radius-xl) !important;
+  border: 1px solid rgba(216,228,234,0.95) !important;
+  background: rgba(255,255,255,0.92) !important;
+  box-shadow: var(--shadow-soft) !important;
+  overflow: hidden;
+}
+
+/* ================= TABLE ================= */
+
+.table {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Table Header */
+.table thead th {
+  background: rgba(240,247,249,0.95) !important;
+  color: #3f5667 !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(216,228,234,0.8);
+}
+
+/* Table Row Hover */
+.table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(15,118,110,0.04);
+}
+
+/* Table Cells */
+.table td {
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: 600;
+  color: #203243;
+  border-top: 1px solid rgba(220,232,238,0.9);
+}
+
+/* ================= BADGES ================= */
+
+.badge {
+  font-weight: 800;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* Consultation ID */
+.badge.bg-primary {
+  background: rgba(15,118,110,0.14) !important;
+  color: var(--primary) !important;
+  border: none !important;
+}
+
+/* Appointment ID */
+.badge.bg-light {
+  background: rgba(255,255,255,0.95) !important;
+  border: 1px solid rgba(216,228,234,0.9) !important;
+}
+
+/* Doctor Name emphasis */
+td.fw-bold.text-secondary {
+  color: var(--primary) !important;
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.btn {
+  border-radius: 999px !important;
+  font-size: 13px;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* View Button */
+.btn-outline-primary {
+  border-color: rgba(15,118,110,0.5) !important;
+  color: var(--primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background: rgba(15,118,110,0.1) !important;
+  box-shadow: 0 6px 18px rgba(15,118,110,0.2);
+}
+
+/* Download Button */
+.btn-light {
+  background: rgba(255,255,255,0.9) !important;
+  border: 1px solid rgba(216,228,234,0.9) !important;
+}
+
+.btn-light:hover {
+  box-shadow: 0 6px 18px rgba(15,35,65,0.1);
+}
+
+/* ================= STATES ================= */
+
+.bi-folder-x {
+  color: var(--muted) !important;
+}
+
+.spinner-border {
+  color: var(--primary) !important;
+}
+
+/* ================= PDF TEMPLATE (HIDDEN) ================= */
+
+.pdf-download-container {
+  font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif;
+  color: var(--text);
+  background: #ffffff;
+}
+
+/* PDF Titles */
+.main-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.sub-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* PDF Sections */
+.section-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #203243;
+}
+
+/* PDF Table */
+.med-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.med-table th {
+  background: rgba(240,247,249,0.95);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #3f5667;
+  border-bottom: 1px solid rgba(216,228,234,0.9);
+  padding: 8px;
+}
+
+.med-table td {
+  border-bottom: 1px solid rgba(220,232,238,0.8);
+  padding: 8px;
+  text-align: center;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 14px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.95);
+  }
+
+  .table td {
+    border: none;
+    padding: 6px 0;
+  }
+}

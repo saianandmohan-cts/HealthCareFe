@@ -1,0 +1,145 @@
+<div class="dashboard-page">
+
+  <section class="content-card">
+
+    <div class="card-header">
+      <h2>Book New Appointment</h2>
+      <a routerLink="/patient" class="ghost-btn back-btn">
+        Back to Dashboard
+      </a>
+    </div>
+
+    <p class="muted">
+      Fill in the details below to schedule your consultation.
+    </p>
+
+    <div *ngIf="booked" class="saved-banner">
+      ✅ Appointment booked successfully!
+    </div>
+
+    <form
+      #apptForm="ngForm"
+      novalidate
+      (ngSubmit)="submitAppointment()"
+      class="edit-form">
+
+      <div class="form-grid">
+
+        <label>
+          <span>Doctor</span>
+          <select
+            name="doctorId"
+            [(ngModel)]="appointment.doctorId"
+            (change)="generateTimeSlots()" required
+            #doctorId="ngModel">
+            <option value="" disabled selected>Select doctor</option>
+            <option *ngFor="let d of doctors" [value]="d.doctorId">
+              {{ d.name }} ({{ d.department }})
+            </option>
+          </select>
+
+          <small class="error" *ngIf="doctorId.invalid && doctorId.touched">
+            Doctor is required
+          </small>
+        </label>
+
+        <label>
+          <span>Date</span>
+          <select
+            name="date"
+            [(ngModel)]="appointment.date"
+            (change)="onDateChange()" required
+            #date="ngModel">
+            <option value="" disabled selected>Select date</option>
+            <option *ngFor="let d of availableDates" [value]="d">
+              {{ d | date:'mediumDate' }} </option>
+          </select>
+
+          <small class="error" *ngIf="date.invalid && date.touched">
+            Date is required
+          </small>
+        </label>
+
+        <label>
+          <span>Time</span>
+          <select
+            name="time"
+            [(ngModel)]="appointment.time"
+            required
+            [disabled]="timeSlots.length === 0" #time="ngModel">
+            <option value="" disabled selected>
+              {{ timeSlots.length === 0 ? 'No slots available' : 'Select time' }}
+            </option>
+            <option
+              *ngFor="let slot of timeSlots"
+              [value]="slot.time"
+              [disabled]="slot.disabled">
+              {{ slot.time }} {{ slot.disabled ? '(Unavailable)' : '' }}
+            </option>
+          </select>
+
+          <small class="error" *ngIf="time.invalid && time.touched">
+            Time is required
+          </small>
+        </label>
+
+        <label>
+          <span>Consultation Type</span>
+          <select
+            name="mode"
+            [(ngModel)]="appointment.mode"
+            required
+            #mode="ngModel">
+            <option value="" disabled selected>Select mode</option>
+            <option>In-person</option>
+            <option>Online</option>
+          </select>
+
+          <small class="error" *ngIf="mode.invalid && mode.touched">
+            Consultation type is required
+          </small>
+        </label>
+
+        <label class="wide">
+          <span>Reason for Visit</span>
+          <textarea
+            rows="3"
+            name="reason"
+            [(ngModel)]="appointment.reason"
+            required
+            minlength="5"
+            #reason="ngModel">
+          </textarea>
+
+          <small *ngIf="reason.invalid && reason.touched">
+            <span class="error" *ngIf="reason.errors?.['required']">
+              Reason is required
+            </span>
+            <span class="error" *ngIf="reason.errors?.['minlength']">
+              Minimum 5 characters required
+            </span>
+          </small>
+        </label>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="primary-btn sm"
+          [disabled]="apptForm.invalid || booked">
+          Book Appointment
+        </button>
+
+        <button
+          type="button" class="ghost-btn sm"
+          (click)="apptForm.resetForm()">
+          Clear
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+
+</div>
