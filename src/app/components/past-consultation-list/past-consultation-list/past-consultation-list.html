@@ -42,7 +42,6 @@
                     <td class="py-3 text-secondary fw-medium">{{ record.date | date:'mediumDate' }}</td> 
                     <td class="py-3 fw-bold text-secondary">{{ record.doctorName }}</td>
                     
-<<<<<<< HEAD
                     <td class="px-4 py-3 text-center">
                       @if (record.hasPrescription) {
                         <div class="d-flex justify-content-center gap-2">
@@ -57,22 +56,6 @@
                         <span class="text-muted fst-italic">—</span>
                       }
                     </td>
-=======
-                  <td class="px-4 py-3 text-center">
-                  @if (record.hasPrescription) {
-                  <div class="d-flex justify-content-center gap-2">
-                  <button (click)="viewPrescription(record.consultationId)" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all">
-                  <i class="bi bi-eye me-1"></i> View
-                  </button>
-                  <button (click)="downloadPrescription(record.consultationId)" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all hover-shadow">
-                  <i class="bi bi-download me-1"></i> Download
-                  </button>
-                  </div>
-                } @else {
-                  <span class="text-muted fst-italic">—</span>
-                }
-              </td>
->>>>>>> 502caad8c6409b81773743e67d9e8ae32d5ce06b
                   </tr>
                 } @empty {
                   <tr>
@@ -97,71 +80,9 @@
 
     </div>
   </div>
-<<<<<<< HEAD
 </div>
 
 <!-- 
   FIXED: `@if (hiddenDownloadData)` waale poore dead-code block ko yahan se permanently remove kar diya gaya hai. 
   Ab aapka Angular Compiler bina kisi error ke project ko smoothly compile aur save karega!
 -->
-=======
-</div> 
-
-@if (hiddenDownloadData) {
-  <div style="position: absolute; left: -9999px; top: 0; width: 800px;">
-    <div id="hidden-pdf-template" class="pdf-download-container">
-      
-      <h1 class="main-title">1C Hospital</h1>
-      <h2 class="sub-title">Prescription</h2>
-      
-      <div class="header-lines">
-        <div class="line-red"></div><div class="line-orange"></div>
-      </div>
-
-      <div class="info-grid">
-        <div class="info-group"><span class="label">Prescription No.</span><span class="value">#{{ hiddenDownloadData.consultationId }}</span></div>
-        <div class="info-group"><span class="label">Date</span><span class="value">{{ hiddenDownloadData.date }}</span></div>
-      </div>
-
-      <div class="divider-orange"></div>
-
-      <h2 class="section-title">Patient Info:</h2>
-      <div class="info-grid">
-        <div class="info-group"><span class="label">Name</span><span class="value">{{ hiddenDownloadData.patient.name }}</span></div>
-        <div class="info-group"><span class="label">Age</span><span class="value">{{ hiddenDownloadData.patient.age }}</span></div>
-        <div class="info-group"><span class="label">Phone Number</span><span class="value">{{ hiddenDownloadData.patient.phone }}</span></div>
-        <div class="info-group"><span class="label">Email</span><span class="value">{{ hiddenDownloadData.patient.email }}</span></div>
-        <div class="info-group"><span class="label">Gender</span><span class="value">{{ hiddenDownloadData.patient.gender }}</span></div>
-        <div class="info-group"><span class="label">Address</span><span class="value pre-line">{{ hiddenDownloadData.patient.address }}</span></div>
-        <div></div> 
-        <div class="info-group"><span class="label">Allergies</span><span class="value">{{ hiddenDownloadData.patient.allergies }}</span></div>
-        <div class="info-group"><span class="label">Notable Health Condition</span><span class="value">{{ hiddenDownloadData.patient.condition }}</span></div>
-      </div>
-
-      <div class="divider-orange"></div>
-
-      <h2 class="section-title">List of Prescribed Medications</h2>
-      <table class="med-table">
-        <thead>
-          <tr><th>Medication Name</th><th>Purpose</th><th>Dosage</th><th>Route</th><th>Frequency</th></tr>
-        </thead>
-        <tbody>
-          @for (med of hiddenDownloadData.medications; track med.name) {
-            <tr>
-              <td>{{ med.name }}</td>
-              <td>{{ med.purpose || 'N/A' }}</td>
-              <td>{{ med.dosage }}</td>
-              <td>{{ med.route || 'Oral' }}</td>
-              <td>{{ med.frequency || 'As directed' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-
-      <div class="info-grid" style="margin-top: 40px;">
-        <div class="info-group"><span class="label">Doctor Name</span><span class="value">{{ hiddenDownloadData.physician?.name }}</span></div>
-      </div>
-    </div>
-  </div>
-}
->>>>>>> 502caad8c6409b81773743e67d9e8ae32d5ce06b

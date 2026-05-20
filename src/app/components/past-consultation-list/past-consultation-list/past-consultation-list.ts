@@ -68,58 +68,34 @@ export class PastConsultationList implements OnInit {
     });
   }
 
+  // REFACTORED: Ab yeh direct backend compiled binary stream ko downolad karega natively
   downloadPrescription(id: string | number): void {
     if (this.isDownloading) return;
     this.isDownloading = true;
 
-    this.pastService.getPrescriptionById(id).subscribe({
-      next: (data) => {
-        if (!data) {
-          this.isDownloading = false;
-          return;
-        }
-
-        this.hiddenDownloadData = data;
-
-        setTimeout(() => {
-          const element = document.getElementById('hidden-pdf-template');
-          if (!element) return;
-
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>Prescription #${id}</title>
-              <style>
-                body { font-family: 'Segoe UI', Arial, sans-serif; padding: 2rem; background: #fff; }
-                .pdf-download-container { max-width: 800px; margin: 0 auto; }
-                .main-title { color: #791b40; text-align: center; font-size: 26px; font-weight: 700; }
-                .sub-title { color: #791b40; text-align: center; font-size: 20px; margin-bottom: 15px; }
-              </style>
-            </head>
-            <body>
-              ${element.innerHTML}
-            </body>
-            </html>
-          `;
-
-          const blob = new Blob([htmlContent], { type: 'text/html' });
-          const url = window.URL.createObjectURL(blob);
-
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `Prescription_${id}.html`;
-
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          window.URL.revokeObjectURL(url);
-          this.hiddenDownloadData = null;
-          this.isDownloading = false;
-        }, 200);
+    this.pastService.downloadPrescriptionFile(id).subscribe({
+      next: (blobResponse: Blob) => {
+        // Backend binary blob packet process instantiation
+        const blob = new Blob([blobResponse], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        
+        // Native machine window anchor allocation download hook
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Prescription_${id}.pdf`; // Extention mapped to real PDF file format layout
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // Clean memory footprints context maps
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        this.isDownloading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error("Binary download runtime capture crashed:", err);
+        alert("PDF download karne mein asafalta hui.");
         this.isDownloading = false;
       }
     });
