@@ -24,13 +24,18 @@ export class RegisterUser {
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.registerForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['',
+          [
+            Validators.required,
+            Validators.pattern('^[A-Z][a-zA-Z\\s]{2,}$')
+          ]
+      ],
       age: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
       gender: ['', Validators.required],
       // 🚀 FIXED: Blood group hatakar contactNumber add kiya (Strict 10 digit validation ke sath)
       contactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       address: ['', Validators.required],
       pastProblem: [''],
       allergic: ['', Validators.required],
