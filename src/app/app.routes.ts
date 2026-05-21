@@ -12,7 +12,7 @@ export const routes: Routes = [
     {path:'login-doctor', component:LoginDoctor},
     {path:'register-user', component:RegisterUser},
 
-    {path:'patient',loadComponent: ()=>import('./components/patient-dashboard/patient-dashboard').then(r=>r.PatientDashboard),canActivate: [authGuard]},
+    {path:'patient',loadComponent: ()=>import('./components/patient-dashboard/patient-dashboard').then(r=>r.PatientDashboard)},
     {path:'book',loadComponent: ()=>import('./components/bookappointment/bookappointment').then(r=>r.BookAppointment)},
     {path: 'modify/:appointmentId',loadComponent:()=>import('./components/modifyappointment/modifyappointment').then(r=>r.Modifyappointment)},
     

@@ -6,6 +6,7 @@ import { DoctorService } from '../../services/doctor.service';
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
 import { Observable } from 'rxjs';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -16,6 +17,7 @@ import { Observable } from 'rxjs';
 })
 export class DoctorDashboard implements OnInit {
   docService = inject(DoctorService);
+  auth = inject(Auth)
 
   DoctorInfo$!: Observable<Doctor>;
   upcomingAppointments$!: Observable<Appointment[]>;
@@ -54,6 +56,13 @@ export class DoctorDashboard implements OnInit {
     this.flag = 3;
   }
 
+  onLogout(): void {
+      this.auth.logout();
+  }
+
+  /**
+   * 🗑️ Live Cancellation Request Handle
+   */
   cancelAppointment(appointmentId: string): void {
     if (confirm('Are you sure you want to cancel this appointment?')) { 
       this.docService.deleteAppointment(appointmentId).subscribe({

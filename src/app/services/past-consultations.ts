@@ -23,7 +23,7 @@ export class PastConsultations {
 
   // Real PDF Blob processing engine link
   downloadPrescriptionFile(consultationId: string | number): Observable<Blob> {
-    // FIXED: withCredentials pass kiya taaki authMiddleware block na kare aur responseType blob map kiya
+    // FIXED: withCredentials pass kiya taaki verifyPatient block na kare aur responseType blob map kiya
     return this.http.get(`${this.baseUrl}/download-prescription/${consultationId}`, {
       responseType: 'blob',
       withCredentials: true

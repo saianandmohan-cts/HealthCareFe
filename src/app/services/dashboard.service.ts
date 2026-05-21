@@ -19,7 +19,7 @@ export class DashboardService {
     return this.auth.getLoggedInPatient();
   }
 
-  // ✅ Helper: Backend ke /dashboard/:patientId se complete array stream nikalna
+  // Backend ke /dashboard/:patientId se complete array stream nikalna
   private getDashboardDataFromBackend(): Observable<any> {
     const patient = this.getPatientContext();
     const pId = patient ? (patient.patientId || (patient as any)._id || "1") : "1"; 
