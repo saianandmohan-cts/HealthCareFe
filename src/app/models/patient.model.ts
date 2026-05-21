@@ -3,13 +3,12 @@ export interface Patient {
   name: string;
   age: number;
   gender: string;
-  bloodGroup: string;
+  contactNumber: string;
   email: string;
   password: string;
-  contactNumber: string;
   address: string;
   medicalHistory: string[];
   allergy: string[];
-  doctorAssigned: number[];
-  consulations: number[]; 
+  doctorAssigned: number[] | string[];
+  consultations: number[] | string[]; 
 }

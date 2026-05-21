@@ -53,7 +53,7 @@ export class PatientProfile implements OnChanges {
     this.isEditingPersonal = false;
     this.cdr.detectChanges();
   }
-
+ // Need to See In Detail
   get isPersonalDetailsChanged(): boolean {
     if (!this.patientDetails) return false;
     const currentAllergyStr = Array.isArray(this.patientDetails.allergy) ? this.patientDetails.allergy.join(', ') : '';
