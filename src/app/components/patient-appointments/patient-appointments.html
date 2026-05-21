@@ -1,0 +1,86 @@
+<div class="sub-tab-buttons">
+  <button class="sub-tab-btn"
+          [class.active]="appointmentView === 'upcoming'"
+          (click)="appointmentView = 'upcoming'">
+    Upcoming
+  </button>
+  <button class="sub-tab-btn"
+          [class.active]="appointmentView === 'past'"
+          (click)="appointmentView = 'past'">
+    Past
+  </button>
+</div>
+
+@if (appointmentView === 'upcoming') {
+  <div>
+    <h2>Next Upcoming Appointment</h2>
+
+    @if (nextAppointment; as next) {
+      <div class="appointment-box">
+        <h3>Doctor Name: {{ next.doctorName }}</h3>
+        <div class="appt-info">
+          <div>
+            <label>Date</label>
+            <strong>{{ next.date | date:'fullDate'}}</strong>
+          </div>
+          <div>
+            <label>Time</label>
+            <strong>{{ next.time }}</strong>
+          </div>
+          <div>
+            <label>Status</label>
+            <strong>{{ next.status }}</strong>
+          </div>
+        </div>
+        <a class="primary-btn sm" [routerLink]="['/modify', next.appointmentId]">
+          Modify Appointment
+        </a>
+      </div>
+    } @else {
+      <div class="empty-box">
+        <h3>No Upcoming Appointment</h3>
+        <p>You can schedule your next appointment anytime.</p>
+        <a routerLink="/book" class="primary-btn sm">Book Now</a>
+      </div>
+    }
+
+    <h2 class="mt-30">All Upcoming Appointments</h2>
+
+    @for (item of upcomingAppointments; track item.appointmentId) {
+      <div class="list-row">
+        <div>
+          <strong>Doctor Name: {{ item.doctorName }}</strong>
+          <span>{{ item.date | date:'fullDate'}}</span>
+          <span>{{ item.time }}</span>
+        </div>
+        <div class="right-actions">
+          <span class="status upcoming">{{ item.status }}</span>
+          <a class="ghost-btn sm" [routerLink]="['/modify', item.appointmentId]">Modify</a>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (appointmentView === 'past') {
+  <div>
+    <h2>Past Appointments</h2>
+
+    @if (pastAppointments.length) {
+      @for (item of pastAppointments; track item.appointmentId) {
+        <div class="list-row">
+          <div>
+            <strong>Doctor Name: {{ item.doctorName }}</strong>
+            <span>{{ item.date | date:'fullDate'}}</span>
+            <span>{{ item.time }}</span>
+          </div>
+          <span class="status">{{ item.status }}</span>
+        </div>
+      }
+    } @else {
+      <div class="empty-box">
+        <h3>No Past Appointments</h3>
+      </div>
+    }
+  </div>
+}
