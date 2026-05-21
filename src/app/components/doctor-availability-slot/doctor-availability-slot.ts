@@ -67,7 +67,7 @@ export class DoctorAvailabilitySlot implements OnInit {
 
   updateAvailability() {
     if (!this.doctorRecord) return;
-
+    
     this.http.put(
       `http://localhost:5000/doctor/availability/`,
       this.doctorRecord

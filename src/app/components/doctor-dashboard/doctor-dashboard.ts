@@ -64,11 +64,10 @@ export class DoctorDashboard implements OnInit {
    * 🗑️ Live Cancellation Request Handle
    */
   cancelAppointment(appointmentId: string): void {
-    if (confirm('Are you sure you want to cancel this appointment?')) { // Extra UI layer protection
+    if (confirm('Are you sure you want to cancel this appointment?')) { 
       this.docService.deleteAppointment(appointmentId).subscribe({
         next: (res: any) => {
           console.log('🎉 Appointment deleted from system successfully:', res);
-          // Stream ko re-assign karenge taaki UI automatic dynamic update ho jaye bina page refresh kiye
           this.upcomingAppointments$ = this.docService.getUpcomingAppointments();
         },
         error: (err) => {
