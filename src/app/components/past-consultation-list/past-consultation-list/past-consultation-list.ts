@@ -22,10 +22,9 @@ export class PastConsultationList implements OnInit {
   private doctorService = inject(DoctorService);
   private router = inject(Router);
 
-  hiddenDownloadData: any = null;
   isDownloading = false;
 
-  /** doctorId -> doctorName map */
+  /** doctorId -> doctorName map */ 
   private doctorMap = new Map<string, string>();
 
   ngOnInit(): void {
