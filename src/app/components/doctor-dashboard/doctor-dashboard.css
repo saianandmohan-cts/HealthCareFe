@@ -72,3 +72,30 @@
 .button:hover {
   background-color: #388e3c;
 }
+
+
+button.ghost-btn {
+  border: 1px solid #ff4d4d !important;
+  color: white !important;
+  background: red !important;
+  padding: 11px 0 !important;
+  width: 14% !important;
+  border-radius: 999px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  font-size: 0.95rem !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-align: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+button.ghost-btn:hover {
+  box-shadow: 0 4px 12px rgba(255, 77, 77, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+button.ghost-btn:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.3) !important;
+}

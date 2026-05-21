@@ -24,12 +24,15 @@
         </h5>
       </div>
     </div>
-    <div>
-      <p class="mb-0 me-3 fw-medium text-purple" style="color: #8b5cf6;">Exp: {{ doctor.experience }} yrs+</p>
+    
+    <div class="d-flex align-items-center gap-3">
+      <p class="mb-0 fw-medium text-purple" style="color: #8b5cf6;">Exp: {{ doctor.experience }} yrs+</p>
+      
     </div>
   </div>
 
   <div class="d-flex gap-3 mb-4">
+    
     <button (click)="viewUpcoming()" [class.btn-primary]="flag === 1" [class.btn-success]="flag !== 1" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
       Upcoming Appointments
     </button>
@@ -39,6 +42,9 @@
     <button (click)="editAvailability()" [class.btn-primary]="flag === 3" [class.btn-success]="flag !== 3" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
       Edit Availability
     </button>
+        <button class="ghost-btn" (click)="onLogout()">
+        <span class="me-1">🚪</span> Logout
+      </button>
   </div>
 
   <div class="bg-white rounded-4 shadow-sm p-4" style="min-height: 350px;">
@@ -48,20 +54,20 @@
       
       @for (val of (upcomingAppointments$ | async); track val.appointmentId) {
         <div class="border rounded-3 p-3 mb-3 d-flex justify-content-between align-items-center bg-mb-custom shadow-sm">
-        <div>
-          <p class="mb-1 fw-bold text-dark fs-5">Patient Name: {{val.patient.name}}</p>
-          <p class="mb-1 text-secondary small">Patient ID: {{val.patient.patientId}}</p>
-          <p class="mb-1 text-muted small">📅 Date: {{val.date}} | ⏰ Time: {{val.time}}</p>
+          <div>
+            <p class="mb-1 fw-bold text-dark fs-5">Patient Name: {{val.patient.name}}</p>
+            <p class="mb-1 text-secondary small">Patient ID: {{val.patient.patientId}}</p>
+            <p class="mb-1 text-muted small">📅 Date: {{val.date}} | ⏰ Time: {{val.time}}</p>
 
-          <button class="btn btn-sm btn-link text-decoration-none p-0 mt-2" (click)="toggleConsultation(val.appointmentId)">
-            {{ selectedConsultation === val.appointmentId ? '🔼 View Less' : '🔽 View More Details' }}
-          </button>
+            <button class="btn btn-sm btn-link text-decoration-none p-0 mt-2" (click)="toggleConsultation(val.appointmentId)">
+              {{ selectedConsultation === val.appointmentId ? '🔼 View Less' : '🔽 View More Details' }}
+            </button>
 
-          <div *ngIf="selectedConsultation === val.appointmentId" class="expanded-details mt-3 p-3 bg-light rounded-3 border">
-            <p class="mb-2 text-dark"><strong>Medical History:</strong> {{val.patient.medicalHistory || 'None'}}</p>
-            <p class="mb-0 text-dark"><strong>Allergy History:</strong> {{val.patient.allergy || 'No known allergies'}}</p>
+            <div *ngIf="selectedConsultation === val.appointmentId" class="expanded-details mt-3 p-3 bg-light rounded-3 border">
+              <p class="mb-2 text-dark"><strong>Medical History:</strong> {{val.patient.medicalHistory || 'None'}}</p>
+              <p class="mb-0 text-dark"><strong>Allergy History:</strong> {{val.patient.allergy || 'No known allergies'}}</p>
+            </div>
           </div>
-      </div>
           
           <div>
             <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="cancelAppointment(val.appointmentId)">
