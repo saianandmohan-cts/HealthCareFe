@@ -82,7 +82,7 @@ export class Auth {
    * Hit marega backend secure endpoint par aur session restore karega
    */
 loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
-  
+  console.log(credentials);
   return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true });
 }
 
