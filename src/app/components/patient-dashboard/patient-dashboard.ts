@@ -72,29 +72,31 @@ export class PatientDashboard implements OnInit {
   }
 
   /* ---------------- FETCH BACKEND DATA ---------------- */
-  private loadDashboardData(patientId: string): void {
-    if (!patientId) return;
+private loadDashboardData(patientId: string): void {
+  // ✅ NOTE: Humne patientId ko filter validation se hata diya kyunki ab backend cookie-based hai
+  // Lekin method ka signature 'patientId: string' waise hi rehne diya taaki baaki jahan se yeh call ho raha ho, wahan break na ho.
 
-    this.pastService.listAll(patientId).subscribe({
-      next: (res) => {
-        console.log("📥 Dashboard Data Fetched Successfully:", res);
+  // ✅ FIXED: listAll() ke andar se 'patientId' argument ko poori tarah hata diya hai
+  this.pastService.listAll().subscribe({
+    next: (res) => {
+      console.log("📥 Dashboard Data Fetched Successfully:", res);
+      
+      if (res && res.patientList) {
+        this.patientDetails = res.patientList;
+        this.medicalHistory = res.patientList.medicalHistory || [];
         
-        if (res && res.patientList) {
-          this.patientDetails = res.patientList;
-          this.medicalHistory = res.patientList.medicalHistory || [];
-          
-          const rawAppointments = res.appointments || [];
-          if (rawAppointments.length > 0) {
-            this.processAppointmentsWithDoctors(rawAppointments);
-          } else {
-            this.appointments = [];
-            this.cdr.detectChanges();
-          }
+        const rawAppointments = res.appointments || [];
+        if (rawAppointments.length > 0) {
+          this.processAppointmentsWithDoctors(rawAppointments);
+        } else {
+          this.appointments = [];
+          this.cdr.detectChanges();
         }
-      },
-      error: (err) => console.error('❌ Dashboard Fetch Error:', err)
-    });
-  }
+      }
+    },
+    error: (err) => console.error('❌ Dashboard Fetch Error:', err)
+  });
+}
 
   private processAppointmentsWithDoctors(rawAppointments: any[]): void {
     const mapped = rawAppointments.map(app => ({

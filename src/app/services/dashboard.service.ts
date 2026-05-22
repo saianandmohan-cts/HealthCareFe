@@ -22,7 +22,7 @@ export class DashboardService {
   // Backend ke /dashboard/:patientId se complete array stream nikalna
   private getDashboardDataFromBackend(): Observable<any> {
     const patient = this.getPatientContext();
-    const pId = patient ? (patient.patientId || (patient as any)._id || "1") : "1"; 
+    const pId = patient ? (patient.patientId || (patient as any)._id) : "1"; 
     
     // Seedha backend router mapping -> /patient/dashboard/:patientId
     return this.http.get<any>(`${this.baseUrl}/dashboard/${pId}`);

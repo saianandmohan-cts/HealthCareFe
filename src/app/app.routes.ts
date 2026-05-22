@@ -15,6 +15,10 @@ export const routes: Routes = [
     {path:'patient',loadComponent: ()=>import('./components/patient-dashboard/patient-dashboard').then(r=>r.PatientDashboard)},
     {path:'book',loadComponent: ()=>import('./components/bookappointment/bookappointment').then(r=>r.BookAppointment)},
     {path: 'modify/:appointmentId',loadComponent:()=>import('./components/modifyappointment/modifyappointment').then(r=>r.Modifyappointment)},
+    { 
+      path: 'view-prescription',
+      loadComponent: () => import('./components/view-prescription/view-prescription/view-prescription').then(r=>r.ViewPrescription) 
+    },
     
     {path:"doctor",component:DoctorDashboard},
 
