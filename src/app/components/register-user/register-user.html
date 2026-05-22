@@ -19,8 +19,16 @@
         <input type="text" formControlName="name" placeholder="Enter full name" />
       </div>
       @if (name.invalid && (name.touched || isSubmitted)) {
-        <div class="error">Name is required</div>
+        <div class="error">
+          @if (name.errors?.['required']) {
+            <span>Name is required</span>
+          }
+          @if (name.errors?.['pattern']) {
+            <span>Name must start with a capital letter and be at least 3 characters</span>
+          }
+        </div>
       }
+
 
       <div class="form-group">
         <label>Age</label>
@@ -75,12 +83,12 @@
 
       <div class="form-group">
         <label>Password</label>
-        <input type="password" formControlName="password" placeholder="Minimum 6 characters" />
+        <input type="password" formControlName="password" placeholder="Minimum 8 characters" />
       </div>
       @if (password.invalid && (password.touched || isSubmitted)) {
         <div class="error">
           @if (password.errors?.['required']) { <span>Password is required</span> }
-          @if (password.errors?.['minlength']) { <span>Minimum 6 characters</span> }
+          @if (password.errors?.['minlength']) { <span>Password must be at least 8 characters</span> }
         </div>
       }
 

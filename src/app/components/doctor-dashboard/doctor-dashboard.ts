@@ -6,11 +6,13 @@ import { DoctorService } from '../../services/doctor.service';
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
 import { Observable } from 'rxjs';
+// 1. Add map import here
+import { map } from 'rxjs/operators'; 
 import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-doctor-dashboard',
-  standalone: true, // Standalone feature verification
+  standalone: true,
   imports: [CommonModule, PastConsultation, DoctorAvailabilitySlot],
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css',
@@ -22,7 +24,6 @@ export class DoctorDashboard implements OnInit {
   DoctorInfo$!: Observable<Doctor>;
   upcomingAppointments$!: Observable<Appointment[]>;
 
-  // 🚀 FIXED: Default screen ko '1' kiya taaki doctor ko dashboard khulte hi sabse pehle upcoming appointments dikhein
   flag: number = 1; 
   selectedConsultation: string | null = null;
 
@@ -30,15 +31,19 @@ export class DoctorDashboard implements OnInit {
     this.loadDashboardData();
   }
 
-  /**
-   * Central data stream loader helper
-   * HttpOnly Cookies automatically header mapping bypass karega backend par
-   */
   private loadDashboardData(): void {
-    this.DoctorInfo$ = this.docService.getDoctor();
-    this.upcomingAppointments$ = this.docService.getUpcomingAppointments();
+    // Extract the nested doctor data object if your backend wraps it too
+    this.DoctorInfo$ = this.docService.getDoctor().pipe(
+      map((res: any) => res.data) 
+    );
+    
+    // 2. FIX: Map the backend structure to extract the raw array from res.data
+    this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
+      map((res: any) => res.data) // This targets the underlying array
+    );
   }
 
+  // ... rest of your existing code remains exactly the same ...
   toggleConsultation(appointmentId: string): void {
     this.selectedConsultation =
       this.selectedConsultation === appointmentId ? null : appointmentId;
@@ -60,16 +65,15 @@ export class DoctorDashboard implements OnInit {
       this.auth.logout();
   }
 
-  /**
-   * 🗑️ Live Cancellation Request Handle
-   */
   cancelAppointment(appointmentId: string): void {
-    if (confirm('Are you sure you want to cancel this appointment?')) { // Extra UI layer protection
+    if (confirm('Are you sure you want to cancel this appointment?')) { 
       this.docService.deleteAppointment(appointmentId).subscribe({
         next: (res: any) => {
           console.log('🎉 Appointment deleted from system successfully:', res);
-          // Stream ko re-assign karenge taaki UI automatic dynamic update ho jaye bina page refresh kiye
-          this.upcomingAppointments$ = this.docService.getUpcomingAppointments();
+          // 3. FIX: Apply the same map operation here when refreshing data
+          this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
+            map((res: any) => res.data)
+          );
         },
         error: (err) => {
           console.error('❌ Error deleting appointment:', err);
