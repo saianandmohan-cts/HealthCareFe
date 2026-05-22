@@ -12,10 +12,9 @@ export class PastConsultations {
 
   constructor() {}
 
-  // 1. All records load karne ke liye dashboard dynamic data endpoint ka use karenge
-  listAll(patientId: string = '1'): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/dashboard/${patientId}`);
-  }
+listAll(patientId: string = '1'): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/dashboard/${patientId}`, { withCredentials: true });
+}
 
   getPrescriptionById(consultationId: string | number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/view-prescription/${consultationId}`, { withCredentials: true });
