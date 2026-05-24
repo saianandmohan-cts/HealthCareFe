@@ -72,10 +72,10 @@
           <th>Frequency</th>
         </tr>
       </thead>
-      <tbody>
-        @for (med of prescriptionDetails.medications; track med.name) {
+<tbody>
+        @for (med of prescriptionDetails.medications; track med.medicineName || med.name) {
           <tr>
-            <td>{{ med.name }}</td>
+            <td>{{ med.medicineName || med.name }}</td>
             <td>{{ med.dosage }}</td>
             <td>{{ med.route || 'Oral' }}</td>
             <td>{{ med.frequency || 'As directed' }}</td>
