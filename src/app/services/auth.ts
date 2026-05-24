@@ -41,7 +41,6 @@ export class Auth {
           console.log(`🔄 Session restored via HttpOnly Cookie for role [${response.role}]:`, response.user);
           
           this.currentUserSignal.set(response.user);
-          // 🚀 FIXED: Dynamic role set hoga jo backend se aayega ('DOCTOR' ya 'PATIENT')
           this.roleSignal.set(response.role as UserRole);
           this.isAuthenticatedSignal.set(true);
         }
@@ -53,9 +52,7 @@ export class Auth {
     );
   }
 
-
   registerPatient(patientData: any): Observable<any> {
-    // Ye ek open signup route hai, isliye withCredentials ki mandatory requirement nahi hai, par safe payload pass karega
     return this.http.post<any>(`${this.API_BASE_URL}/login/register`, patientData);
   }
 
@@ -79,12 +76,18 @@ export class Auth {
 
   /**
    * 🩺 LIVE COOKIE-BASED DOCTOR LOGIN
-   * Hit marega backend secure endpoint par aur session restore karega
    */
-loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
-  console.log(credentials);
-  return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true });
-}
+  loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
+    console.log("Doctor credentials sent:", credentials);
+    return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true }).pipe(
+      tap((response) => {
+        if (response && response.success === true) {
+          console.log("🔒 Doctor login verified successfully. Securing state...");
+          this.checkSession().subscribe();
+        }
+      })
+    );
+  }
 
   /**
    * State Clear Helper
@@ -99,14 +102,13 @@ loginDoctor(credentials: { doctorId: string; password: string }): Observable<any
    * Logout (Clears everything dynamically)
    */
   logout(): void {
-    const currentRole = this.getRole(); // Check dynamic current login state role
+    const currentRole = this.getRole(); 
     
     this.http.post<any>(`${this.API_BASE_URL}/login/logout`, {}, { withCredentials: true }).subscribe({
       next: (res) => {
         console.log("🔒 Backend session cleared:", res.message);
         this.clearAuthState();
         
-        // Dynamic routing base redirect
         if (currentRole === 'DOCTOR') {
           this.router.navigate(['/login-doctor']);
         } else {
@@ -121,22 +123,20 @@ loginDoctor(credentials: { doctorId: string; password: string }): Observable<any
     });
   }
 
-isAuthenticated(): boolean {
+  isAuthenticated(): boolean {
     return this.authenticated();
   }
 
-  // Live signal data wrapper
   getLoggedInPatient(): Patient | null {
     return this.getRole() === 'PATIENT' ? (this.currentUser() as Patient) : null;
   }
 
-  // Local state update template wrapper
   updateLoggedInPatient(updatedPatient: any): void {
     if (this.getRole() === 'PATIENT') {
       this.currentUserSignal.set({
         ...this.currentUser(),
         ...updatedPatient
-      });
+      } as any);
       console.log("✏️ Local patient profile signal updated:", this.currentUser());
     }
   }

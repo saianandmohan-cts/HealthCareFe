@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { AppointmentService } from '../../services/appointment.service';
 import { DoctorService } from '../../services/doctor.service';
-import { Auth } from '../../services/auth'; // 🚀 FIXED: Secure cookie-based Auth service import
+import { Auth } from '../../services/auth'; 
 
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
@@ -37,25 +37,23 @@ export class Modifyappointment implements OnInit {
   private doctorService = inject(DoctorService);
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
-  private authService = inject(Auth); // 🚀 FIXED: Inject secure cookie service
+  private authService = inject(Auth); 
 
   constructor() {}
 
   ngOnInit(): void {
-    // 🚀 PURE COOKIE CHECK: Agar refresh par signal empty hai, pehle state restore karo
     if (!this.authService.authenticated()) {
       this.authService.checkSession().subscribe({
         next: () => {
           if (!this.authService.authenticated()) {
-            // No valid cookie? Bounce back to login instantly
             this.router.navigate(['/login-user']);
             return;
           }
-          this.loadComponentData(); // Condition clear, data uthao
+          this.loadComponentData(); 
         }
       });
     } else {
-      this.loadComponentData(); // Pehle se logged in hai, direct load karo
+      this.loadComponentData(); 
     }
   }
 
@@ -63,7 +61,6 @@ export class Modifyappointment implements OnInit {
     const id = this.route.snapshot.paramMap.get('appointmentId') || '';
     console.log("Fetching Appointment ID for modification:", id);
     
-    // Wrapper handle for incoming backend response objects
     this.appointmentService.getById(id).subscribe({
       next: (res: any) => {
         console.log("Raw Appointment data received:", res);
@@ -78,10 +75,10 @@ export class Modifyappointment implements OnInit {
 
         this.appointment = { ...apptData };
 
-        // Doctor data fetch fallback trigger
+        // ✅ FIX: Backend response format { success: true, data: doctorInfo } ke sath map kiya
         this.doctorService.getDoctorById(this.appointment.doctorId).subscribe({
           next: (data: any) => {
-            const doctorData = data?.doctor || data?.allDoctor?.[0] || data;
+            const doctorData = data?.data || data?.doctor || data;
             if (doctorData) {
               this.doctor = doctorData;
               this.generateTimeSlots(); 
@@ -125,17 +122,25 @@ export class Modifyappointment implements OnInit {
     const doctorId = this.appointment.doctorId;
     const date = this.appointment.date;
 
-    const url = `http://localhost:5000/api/availability/slots?doctorId=${doctorId}&date=${date}`;
+    // ✅ FIX: Router path ko correct target endpoint string se change kiya
+    const url = `http://localhost:5000/doctor/availability?doctorId=${doctorId}&date=${date}`;
     
-    this.http.get<{ status: boolean, slots: any[] }>(url).subscribe({
+    this.http.get<any>(url).subscribe({
       next: (res: any) => {
-        if (res && res.slots) {
-          this.timeSlots = res.slots.map((s: any) => ({
+        console.log("Backend response for modification slots:", res);
+        
+        const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
+        
+        if (slotsArray.length > 0) {
+          this.timeSlots = slotsArray.map((s: any) => ({
             time: s.time,
-            disabled: s.isBooked && s.time !== this.appointment.time // User ka current slot select hone par lock na ho
+            // ✅ FIX: Pure boolean matching loop validation lagayi
+            disabled: (s.isAvailable === false || s.isBooked === true) && s.time !== this.appointment.time
           }));
-          this.cdr.detectChanges(); 
+        } else {
+          this.timeSlots = [];
         }
+        this.cdr.detectChanges(); 
       },
       error: (err: any) => {
         console.error('Error fetching slots for modification:', err);
@@ -157,12 +162,11 @@ export class Modifyappointment implements OnInit {
       status: 'Scheduled'
     };
 
-    console.log("🚀 SENDING MODIFICATION PAYLOAD:", updatePayload);
+    console.log("SENDING MODIFICATION PAYLOAD:", updatePayload);
 
-    // Baki code same secure method use karega
     this.appointmentService.update(this.appointment.appointmentId, updatePayload).subscribe({
       next: (res: any) => {
-        console.log('🎉 SUCCESS: Appointment updated in database:', res);
+        console.log('SUCCESS: Appointment updated in database:', res);
         this.router.navigate(['/patient']);
       },
       error: (err: any) => console.error('Update operation failed:', err)
@@ -177,11 +181,11 @@ export class Modifyappointment implements OnInit {
       status: 'Cancelled' 
     };
 
-    console.log("🚀 SENDING CANCELLATION PAYLOAD:", cancelPayload);
+    console.log("SENDING CANCELLATION PAYLOAD:", cancelPayload);
 
     this.appointmentService.update(this.appointment.appointmentId, cancelPayload).subscribe({
       next: (res: any) => {
-        console.log('🎉 SUCCESS: Appointment cancelled successfully:', res);
+        console.log('SUCCESS: Appointment cancelled successfully:', res);
         this.router.navigate(['/patient']);
       },
       error: (err: any) => console.error('Cancellation failed:', err)

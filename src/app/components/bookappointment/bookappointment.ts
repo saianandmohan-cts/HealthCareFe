@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild, inject, ChangeDetectorRef } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router'; // 🚀 Router import kiya redirect ke liye
+import { RouterModule, Router } from '@angular/router'; 
 import { HttpClient } from '@angular/common/http';
 
 import { DoctorService } from '../../services/doctor.service';
 import { AppointmentService } from '../../services/appointment.service';
-import { Auth } from '../../services/auth'; // 🚀 FIXED: Sahi secure Auth service import ki
+import { Auth } from '../../services/auth'; 
 
 import { Doctor } from '../../models/doctor.model';
 import { Appointment } from '../../models/appointment.model';
@@ -43,31 +43,29 @@ export class BookAppointment implements OnInit {
 
   private doctorService = inject(DoctorService);
   private appointmentService = inject(AppointmentService);
-  private authService = inject(Auth); // 🚀 FIXED: Apni secure cookie-based service connect ki
+  private authService = inject(Auth); 
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef); 
-  private router = inject(Router); // Router inject kiya
+  private router = inject(Router); 
 
   constructor() {}
 
   ngOnInit(): void {
-    // 🚀 PURE COOKIE FIX: Agar page refresh hua aur state khali hai, toh pehle session load karo
     if (!this.authService.authenticated()) {
       this.authService.checkSession().subscribe({
         next: (res) => {
           if (!this.authService.authenticated()) {
-            // Agar session check ke baad bhi login nahi mila, toh login page par bhagao
             this.router.navigate(['/login-user']);
           }
         }
       });
     }
 
-    // Fetch doctors on load
+    // Response format `{ success: true, status: "success", data: [...] }` ko safely read karega
     this.doctorService.getAllDoctors().subscribe({
-      next: (data: any) => {
-        this.doctors = Array.isArray(data) ? data : (data.allDoctor || []);
-        console.log("Dropdown ke liye Doctors loaded:", this.doctors);
+      next: (res: any) => {
+        this.doctors = res && Array.isArray(res.data) ? res.data : [];
+        console.log("Dropdown ke liye Doctors loaded successfully:", this.doctors);
         this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error fetching doctors:', err)
@@ -104,16 +102,20 @@ export class BookAppointment implements OnInit {
       return;
     }
 
-    const url = `http://localhost:5000/api/availability/slots?doctorId=${doctorId}&date=${date}`;
+    const url = `http://localhost:5000/doctor/availability?doctorId=${doctorId}&date=${date}`;
     
-    this.http.get<{ status: boolean, slots: any[] }>(url).subscribe({
+    this.http.get<any>(url).subscribe({
       next: (res) => {
         console.log("Backend se mile slots response:", res);
         
-        if (res && res.slots && res.slots.length > 0) {
-          this.timeSlots = res.slots.map(s => ({
+        // Backend layout matrix array extraction helper
+        const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
+        
+        if (slotsArray.length > 0) {
+          this.timeSlots = slotsArray.map((s: any) => ({
             time: s.time,
-            disabled: s.isBooked
+            // ✅ FIX: Agar slot available nahi hai YA pehle se booked ho chuka hai, toh dynamic input block (disabled) ho jaye
+            disabled: s.isAvailable === false || s.isBooked === true
           }));
         } else {
           this.timeSlots = []; 
@@ -136,17 +138,16 @@ export class BookAppointment implements OnInit {
       return;
     }
 
-    // 🚀 FIXED: Ab data direct secure signals state se uthega
     const currentPatient = this.authService.currentUser() as any;
     
-    if (!currentPatient || !currentPatient.patientId) {
+    if (!currentPatient) {
       console.error("❌ Session Error: No valid patient session found!");
       this.router.navigate(['/login-user']);
       return;
     }
 
-    // Custom patient ID jo dashboard fetch karne ke liye database ko chahiye
-    const finalPatientId = currentPatient.patientId; 
+    // Auth pipeline backup fallback validation rules
+    const finalPatientId = currentPatient.id || currentPatient.patientId; 
 
     const bookingPayload = {
       patient_id: String(finalPatientId), 
@@ -172,7 +173,6 @@ export class BookAppointment implements OnInit {
           this.timeSlots = [];
           this.cdr.detectChanges();
           
-          // 🚀 SUCCESS REDIRECT: Appointment book hote hi user ko safely patient dashboard par wapas bhej do
           this.router.navigate(['/patient']);
         }, 2000);
       },

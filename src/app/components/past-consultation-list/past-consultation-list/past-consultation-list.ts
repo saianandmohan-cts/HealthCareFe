@@ -26,10 +26,8 @@ export class PastConsultationList implements OnInit {
   private doctorMap = new Map<string, string>();
 
   ngOnInit(): void {
-    // Pipeline initialization driven by HTTPOnly cookies natively
     this.allList$ = this.doctorService.getAllDoctors().pipe(
       switchMap((doctorResponse: any) => {
-        
         const doctorsArray = Array.isArray(doctorResponse) 
           ? doctorResponse 
           : (doctorResponse?.data || doctorResponse?.doctors || []);
@@ -42,27 +40,27 @@ export class PastConsultationList implements OnInit {
           });
         }
 
-        // Dynamic native call without parsing parameters
         return this.pastService.listAll().pipe(
           map((res) => {
-            console.log("📥 Dynamic Payload tracking successfully trace verified:", res);
-            const records = res && res.appointments ? res.appointments : [];
+            console.log("📥 Consultation Pipeline Target Trace:", res);
+            const rawAppointments = res && res.appointments ? res.appointments : [];
             
-            return records.map((record: any, index: number) => {
-              // Custom map configuration matching database properties
-              const fallbackConsultationId = (5001 + index).toString();
-              
+            // Sirf Completed appointments nikalien
+            const pastRecords = rawAppointments.filter((app: any) => app.status === 'Completed');
+            
+            return pastRecords.map((record: any) => {
               return {
                 ...record,
-                consultationId: record.consultationId || fallbackConsultationId,
-                doctorName: this.doctorMap.get(record.doctorId?.toString()) || 'Unknown Doctor',
-                hasPrescription: record.status === 'Completed' || !!record.consultationId
+                // ✅ ULTRA DYNAMIC FIX: Direct database hex _id ko target kiya communication pass ke liye
+                targetId: record._id, 
+                doctorName: this.doctorMap.get(record.doctorId?.toString()) || 'Hospital Doctor',
+                hasPrescription: true 
               };
             });
           }),
           catchError((err) => {
             console.warn("No dynamic appointment history pipeline returned:", err);
-            return of([]); // Toggle loader state immediately to render @empty
+            return of([]); 
           })
         );
       }),
@@ -73,25 +71,29 @@ export class PastConsultationList implements OnInit {
     );
   }
 
-  viewPrescription(id: string | number): void {
+  viewPrescription(id: string): void {
     if (!id) return;
     this.router.navigate(['/view-prescription'], {
-      queryParams: { consultationId: id }
+      queryParams: { consultationId: id } // Isme ab direct internal hex _id jayegi
     });
   }
-
-  downloadPrescription(id: string | number): void {
-    if (this.isDownloading) return;
+downloadPrescription(record: any): void {
+    if (this.isDownloading || !record) return;
     this.isDownloading = true;
 
-    this.pastService.downloadPrescriptionFile(id).subscribe({
+    // ✅ TargetId (Hex ID) ko api execution call ke liye pass karenge
+    const trackingId = record.targetId;
+    // Download hone wali file ke name ke liye serial consultationId use karenge
+    const displayId = record.consultationId || record.appointmentId || 'Doc';
+
+    this.pastService.downloadPrescriptionFile(trackingId).subscribe({
       next: (blobResponse: Blob) => {
         const blob = new Blob([blobResponse], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
         
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Prescription_${id}.pdf`;
+        link.download = `Prescription_${displayId}.pdf`; // ✅ File name professional number format me aayega
         
         document.body.appendChild(link);
         link.click();

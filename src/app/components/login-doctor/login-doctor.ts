@@ -26,7 +26,7 @@ export class LoginDoctor {
   ) {
     this.loginForm = this.fb.group({
       doctorId: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
 
@@ -51,9 +51,7 @@ export class LoginDoctor {
     if (this.password.errors?.['required']) {
       errors.push('Password is required');
     }
-    if (this.password.errors?.['minlength']) {
-      errors.push('Password must be at least 6 characters');
-    }
+  
     return errors;
   }
 

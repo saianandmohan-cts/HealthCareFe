@@ -7,8 +7,6 @@ import { DoctorService } from '../../services/doctor.service';
 import { PastConsultations } from '../../services/past-consultations'; 
 
 import { Patient } from '../../models/patient.model';
-import { Appointment } from '../../models/appointment.model';
-
 import { PastConsultationList } from '../past-consultation-list/past-consultation-list/past-consultation-list';
 import { PatientAppointments } from '../patient-appointments/patient-appointments';
 import { PatientProfile } from '../patient-profile/patient-profile';
@@ -16,24 +14,19 @@ import { PatientProfile } from '../patient-profile/patient-profile';
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  // 🚀 Dono naye standalone components ko yahan add kar diya
   imports: [CommonModule, RouterModule, PastConsultationList, PatientAppointments, PatientProfile],
   templateUrl: './patient-dashboard.html',
   styleUrls: ['./patient-dashboard.css']
 })
 export class PatientDashboard implements OnInit {
 
-  /* ---------------- MAIN TABS ---------------- */
   activeTab: 'appointments' | 'history' | 'personal' = 'appointments';
-
-  /* ---------------- DATA STATE ---------------- */
   patientDetails: Patient | null = null;
-  appointments: (Appointment & { doctorName: string })[] = [];
+  appointments: any[] = []; 
   medicalHistory: string[] = [];
 
-  /* ---------------- SERVICES INJECTION ---------------- */
   private authService = inject(Auth); 
-  private doctorService = inject(DoctorService);
+  private doctorService = inject(DoctorService); 
   private pastService = inject(PastConsultations);
   private route = inject(ActivatedRoute); 
   private cdr = inject(ChangeDetectorRef);
@@ -55,14 +48,15 @@ export class PatientDashboard implements OnInit {
     if (routeId) {
       this.loadDashboardData(routeId);
     } else {
-      const savedUserStr = localStorage.getItem('user');
-      if (savedUserStr) {
-        const savedUser = JSON.parse(savedUserStr);
-        const finalId = savedUser.id || savedUser.patientId;
-        if (finalId && !this.patientDetails) {
-          this.loadDashboardData(finalId.toString());
+      this.authService.checkSession().subscribe({
+        next: () => {
+          const user = this.authService.currentUser() as any;
+          const finalId = user?.id || user?.patientId;
+          if (finalId && !this.patientDetails) {
+            this.loadDashboardData(finalId.toString());
+          }
         }
-      }
+      });
     }
   }
 
@@ -71,74 +65,68 @@ export class PatientDashboard implements OnInit {
     this.cdr.detectChanges();
   }
 
-  /* ---------------- FETCH BACKEND DATA ---------------- */
-private loadDashboardData(patientId: string): void {
-  // ✅ NOTE: Humne patientId ko filter validation se hata diya kyunki ab backend cookie-based hai
-  // Lekin method ka signature 'patientId: string' waise hi rehne diya taaki baaki jahan se yeh call ho raha ho, wahan break na ho.
-
-  // ✅ FIXED: listAll() ke andar se 'patientId' argument ko poori tarah hata diya hai
-  this.pastService.listAll().subscribe({
-    next: (res) => {
-      console.log("📥 Dashboard Data Fetched Successfully:", res);
-      
-      if (res && res.patientList) {
-        this.patientDetails = res.patientList;
-        this.medicalHistory = res.patientList.medicalHistory || [];
+  private loadDashboardData(patientId: string): void {
+    this.pastService.listAll().subscribe({
+      next: (res) => {
+        console.log("📥 Dashboard Data Fetched Successfully:", res);
         
-        const rawAppointments = res.appointments || [];
-        if (rawAppointments.length > 0) {
-          this.processAppointmentsWithDoctors(rawAppointments);
-        } else {
-          this.appointments = [];
-          this.cdr.detectChanges();
-        }
-      }
-    },
-    error: (err) => console.error('❌ Dashboard Fetch Error:', err)
-  });
-}
-
-  private processAppointmentsWithDoctors(rawAppointments: any[]): void {
-    const mapped = rawAppointments.map(app => ({
-      ...app,
-      doctorName: 'Hospital Doctor' 
-    }));
-
-    this.appointments = mapped;
-    this.cdr.detectChanges();
-
-    mapped.forEach((app, index) => {
-      if (app.doctorId) {
-        this.doctorService.getDoctorById(app.doctorId).subscribe({
-          next: (doc) => {
-            if (doc && doc.name) {
-              this.appointments[index].doctorName = doc.name;
-              // Reference update taaki child component updates pakad sake
-              this.appointments = [...this.appointments];
-              this.cdr.detectChanges();
-            }
+        if (res && res.patientList) {
+          this.patientDetails = res.patientList;
+          this.medicalHistory = res.patientList.medicalHistory || [];
+          
+          const rawAppointments = res.appointments || [];
+          if (rawAppointments.length > 0) {
+            this.processAppointmentsWithDoctors(rawAppointments);
+          } else {
+            this.appointments = [];
+            this.cdr.detectChanges();
           }
-        });
-      }
+        }
+      },
+      error: (err) => console.error('❌ Dashboard Fetch Error:', err)
     });
   }
 
+  private processAppointmentsWithDoctors(rawAppointments: any[]): void {
+    this.appointments = rawAppointments.map(app => {
+      const appObj = { ...app, doctorName: 'Loading Doctor...' };
+
+      if (app.doctorId) {
+        this.doctorService.getDoctorById(app.doctorId).subscribe({
+          next: (docRes: any) => {
+            const docData = docRes?.data || docRes?.doctor || docRes;
+            if (docData && docData.name) {
+              appObj.doctorName = docData.name;
+            } else {
+              appObj.doctorName = 'Hospital Doctor';
+            }
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            appObj.doctorName = 'Hospital Doctor';
+            this.cdr.detectChanges();
+          }
+        });
+      } else {
+        appObj.doctorName = 'General Physician';
+      }
+      return appObj;
+    });
+    this.cdr.detectChanges();
+  }
+
   get patientInitials(): string {
-    return this.patientDetails?.name
-      ?.split(' ')
-      ?.map(n => n[0])
-      ?.join('') || 'P';
+    return this.patientDetails?.name?.split(' ')?.map(n => n[0])?.join('') || 'P';
   }
 
   get upcomingCount(): number {
-    return this.appointments.filter(a => a.status === 'Scheduled').length;
+    return this.appointments.filter(a => a.status && a.status.toLowerCase() === 'scheduled').length;
   }
 
   get completedCount(): number {
-    return this.appointments.filter(a => a.status !== 'Scheduled').length;
+    return this.appointments.filter(a => a.status && a.status.toLowerCase() === 'completed').length;
   }
 
-  // Child Profile save event handler
   handleProfileSave(updatedPatient: Patient): void {
     this.patientDetails = updatedPatient;
     this.cdr.detectChanges();

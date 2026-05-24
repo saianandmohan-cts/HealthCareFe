@@ -52,9 +52,7 @@ export class LoginUser {
     if (this.password.errors?.['required']) {
       error.push('Password is required');
     }
-    if (this.password.errors?.['minlength']) {
-      error.push('Password must be at least 8 characters');
-    }
+
     return error;
   }
 

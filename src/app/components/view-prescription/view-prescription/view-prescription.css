@@ -1,182 +1,310 @@
-/* ============================================
-   PRESCRIPTION PDF – 1C HOSPITAL THEME
-============================================ */
+/* =========================================================================
+   🏥 1C HOSPITAL - PREMIUM PRESCRIPTION VIEW CARD LAYOUT
+   ========================================================================= */
 
-/* Page wrapper (A4 size) */
-.document-a4 {
-  width: 210mm;
-  min-height: 297mm;
-  margin: 20px auto;
-  padding: 40px 48px;
-  background: #ffffff;
-  color: #102133;
+:host {
+  --bg: #eff5f7;
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-strong: #ffffff;
+  --line: #d8e4ea;
+  --text: #102133;
+  --muted: #66788a;
+  --primary: #0f766e;        /* Premium Teal */
+  --primary-dark: #0b5f59;
+  --secondary: #0f7db7;      /* Fluid Blue */
+  --accent-soft: #e8f6f3;
+  --blue-soft: #eaf5fb;
+  --danger: #ff4d4d;
+  --shadow-soft: 0 16px 36px rgba(15, 35, 65, 0.06);
+  --radius-xl: 24px;
+  --radius-md: 12px;
+  
+  display: block;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: 
+    radial-gradient(circle at top right, rgba(15, 125, 183, 0.06), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(15, 118, 110, 0.06), transparent 30%),
+    linear-gradient(180deg, #f8fcfd 0%, #eef4f6 100%);
   font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
-  box-shadow: 0 16px 40px rgba(15,35,65,0.12);
 }
 
-/* Headings */
+/* 📄 A4 DOCUMENT SHEET CONTAINER */
+.document-a4 {
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--surface-strong);
+  border: 1px solid rgba(216, 228, 234, 0.8);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: 50px 60px;
+  color: var(--text);
+  position: relative;
+}
+
+/* 🏥 HEADER SECTION TITLE LAYOUT */
 .main-title {
-  text-align: center;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 30px;
-  font-weight: 800;
-  color: #791b40;
   margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+.hospital-subtitle {
+  margin: 2px 0 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .sub-title {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  color: #791b40;
-  margin: 4px 0 12px;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--secondary);
+  text-align: right;
+  position: absolute;
+  top: 55px;
+  right: 60px;
 }
 
-/* Decorative bars (top) */
+/* 🌟 PREMIUM SUBTLE BRAND ACCENT STRIP */
 .color-band-top {
   display: flex;
-  height: 8px;
-  margin-bottom: 26px;
+  height: 4px;
+  width: 100%;
+  margin: 24px 0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.band-teal {
+  flex: 2;
+  background: var(--primary);
+}
+.band-blue {
+  flex: 1;
+  background: var(--secondary);
 }
 
-.band-red {
-  width: 50%;
-  background-color: #df4f43;
+/* 🗂️ METADATA INFO GRID (Prescription No & Date) */
+.info-grid-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.meta-no {
+  font-weight: 700;
+  color: var(--text);
+}
+.meta-no span {
+  color: var(--primary);
+}
+.meta-date {
+  color: var(--muted);
+  font-weight: 600;
 }
 
-.band-orange {
-  width: 50%;
-  background-color: #f3b688;
+/* ✂️ SPLIT DIVIDER LINES */
+.divider-half {
+  height: 1px;
+  background: var(--line);
+  margin: 24px 0;
 }
 
-/* Section divider */
-.divider-orange-half {
-  width: 50%;
-  height: 6px;
-  background: #f3b688;
-  margin: 20px 0;
-}
-
-/* Section titles */
+/* 📑 SECTION TITLES */
 .section-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
-  color: #791b40;
-  margin: 18px 0 10px;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 16px 0;
 }
 
-/* Grid layout */
-.info-grid {
+/* 👤 PATIENT DETAILS CARD CONTAINER */
+.patient-info-box {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px 32px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(239, 245, 247, 0.4), rgba(255, 255, 255, 0));
+  border: 1px solid rgba(216, 228, 234, 0.6);
+  border-radius: var(--radius-md);
+  padding: 20px;
 }
 
-/* Each label/value pair */
 .info-group {
   display: flex;
-  flex-direction: column;
-}
-
-.label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #791b40;
-  margin-bottom: 2px;
-}
-
-.value {
+  align-items: baseline;
   font-size: 14px;
-  color: #203243;
+  line-height: 1.5;
 }
 
-.pre-line {
-  white-space: pre-line;
-}
-
-/* Medication table */
-.med-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.med-table th,
-.med-table td {
-  border: 1px solid #e3e7eb;
-  padding: 10px 8px;
+.info-group .label {
+  min-width: 110px;
+  color: var(--muted);
+  font-weight: 700;
   font-size: 13px;
 }
 
-.med-table th {
-  background: rgba(248,252,253,0.95);
-  color: #791b40;
+.info-group .value {
+  color: var(--text);
+  font-weight: 600;
+}
+.info-group .value.strong-val {
   font-weight: 700;
-  text-align: center;
+}
+.info-group .value.danger-val {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+/* 🩺 CLINICAL DIAGNOSIS PARAGRAPH */
+.clinical-notes {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: #fbfdfe;
+  border-left: 3px solid var(--primary);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  text-align: justify;
+}
+
+/* 💊 MEDICATIONS DATAGRID TABLE */
+.med-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 8px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.med-table th {
+  background: var(--primary);
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 12px 16px;
+  text-align: left;
 }
 
 .med-table td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--text);
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Alternating zebra row row logic matching PDF stream template */
+.med-table tbody tr:nth-child(even) {
+  background-color: var(--bg);
+}
+
+.med-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ✍️ AUTHORIZATION FOOTER LAYOUT */
+.footer-signature {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.doc-stamp h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.doc-stamp p {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.digital-stamp {
   text-align: center;
+  max-width: 250px;
 }
 
-/* Doctor info at bottom */
-.info-grid.mt-5 {
-  margin-top: 40px;
+.stamp-verified {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--secondary);
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
 }
 
-/* Bottom actions (screen only) */
+.stamp-text {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* 🔘 BOTTOM ACTION BUTTONS (Back to Dashboard) */
 .bottom-actions {
   display: flex;
   justify-content: center;
-  margin: 24px 0 40px;
+  margin-top: 32px;
 }
 
 .btn-interactive-back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
+  justify-content: center;
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #ffffff;
   font-size: 14px;
   font-weight: 700;
-  border-radius: 999px;
-  border: 1px solid rgba(216,228,234,0.95);
-  background: rgba(255,255,255,0.95);
-  color: #203243;
+  border: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-interactive-back:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(15,35,65,0.15);
+  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.22);
 }
 
-/* Loading / Error */
-.loading-state,
-.error-state {
-  margin-top: 80px;
-  text-align: center;
-  font-size: 16px;
-  color: #66788a;
-}
-
-/* ---------------- PRINT STYLES ---------------- */
-
+/* 🖨️ PRINT OPTIMIZATION PREPARATION SHIELD */
 @media print {
-
-  body {
-    background: #ffffff;
+  :host {
+    background: none !important;
+    padding: 0 !important;
   }
-
   .document-a4 {
-    margin: 0;
-    box-shadow: none;
-    padding: 32px 36px;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
   }
-
-  .no-print,
-  .bottom-actions {
+  .no-print {
     display: none !important;
   }
 }

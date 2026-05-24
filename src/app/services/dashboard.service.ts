@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; 
 import { Auth } from './auth';
 import { Appointment } from '../models/appointment.model';
-import { Observable, map, of } from 'rxjs'; 
+import { Observable, map } from 'rxjs'; 
 
 @Injectable({
   providedIn: 'root'
@@ -15,43 +15,65 @@ export class DashboardService {
 
   constructor() {}
 
+  /**
+   * Safe login session reading helper
+   */
   getPatientContext() {
     return this.auth.getLoggedInPatient();
   }
 
-  // Backend ke /dashboard/:patientId se complete array stream nikalna
+  /**
+   * ─── EASY BACKEND COUPLER STREAM ───
+   * Direct login contexts se patient ID uthakar dashboard endpoint hit karega
+   */
   private getDashboardDataFromBackend(): Observable<any> {
     const patient = this.getPatientContext();
-    const pId = patient ? (patient.patientId || (patient as any)._id) : "1"; 
+    // Patient agar load ho gaya h, toh uski ID pass karo, nahi toh fallback "1" string
+    const pId = patient?.patientId || "1"; 
     
-    // Seedha backend router mapping -> /patient/dashboard/:patientId
-    return this.http.get<any>(`${this.baseUrl}/dashboard/${pId}`);
+    return this.http.get<any>(`${this.baseUrl}/dashboard/${pId}`, { withCredentials: true });
   }
 
-  // ✅ FIX 1: Summary cards counts updated via real backend dashboard object
+  /**
+   * ─── EASY SUMMARY WIDGET COUNT ───
+   * Total aur Scheduled appointments ka basic filtering logic
+   */
   getAppointmentSummary(): Observable<{ total: number; upcoming: number }> {
     return this.getDashboardDataFromBackend().pipe(
       map((res: any) => {
-        // Backend se agar appointments array res.appointments me aa raha hai toh use filter karo
-        const appointments: any[] = res.appointments || res.data?.appointments || [];
+        // Backend key matching matrix parsing
+        const appointments: any[] = res?.appointments || [];
+        
         return {
           total: appointments.length,
-          upcoming: appointments.filter((a: any) => a.status === 'Scheduled').length
+          upcoming: appointments.filter(a => a.status === 'Scheduled').length
         };
       })
     );
   }
 
-  // ✅ FIX 2: Nearest upcoming scheduled appointment directly linked
+/**
+   * ─── DYNAMIC NEXT UPCOMING APPOINTMENT DETECTOR ───
+   * Jo date aur exact time wise sabse pehle hone wali scheduled appointment hai, wo nikalega
+   */
   getUpcomingAppointment(): Observable<Appointment | null> {
     return this.getDashboardDataFromBackend().pipe(
       map((res: any) => {
-        const appointments: any[] = res.appointments || res.data?.appointments || [];
-        const upcoming = appointments
-          .filter((a: any) => a.status === 'Scheduled')
-          .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        const appointments: any[] = res?.appointments || [];
+        
+        // 1. Sirf Scheduled appointments filter karein
+        const scheduled = appointments.filter(a => a.status === 'Scheduled');
+        
+        if (scheduled.length === 0) return null;
 
-        return upcoming.length ? upcoming[0] : null;
+        // 2. Exact Date aur Time ke basis par sort karein (Earliest first)
+        scheduled.sort((a, b) => {
+          const dateTimeA = new Date(`${a.date} ${a.time}`);
+          const dateTimeB = new Date(`${b.date} ${b.time}`);
+          return dateTimeA.getTime() - dateTimeB.getTime(); // Ascending order
+        });
+
+        return scheduled[0]; // Sabse pehle wali appointment return hogi
       })
     );
   }

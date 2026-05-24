@@ -2,65 +2,65 @@
   <div class="document-a4">
     
     <h1 class="main-title">1C Hospital</h1>
+    <p class="hospital-subtitle">Premium Healthcare Services</p>
     <h2 class="sub-title">Prescription</h2>
     
     <div class="color-band-top">
-      <div class="band-red"></div>
-      <div class="band-orange"></div>
+      <div class="band-teal"></div>
+      <div class="band-blue"></div>
     </div>
 
-    <div class="info-grid">
-      <div class="info-group">
-        <span class="label">Prescription No.</span>
-        <span class="value">#{{ prescriptionDetails.consultationId }}</span>
+    <div class="info-grid-meta">
+      <div class="meta-no">
+        Prescription No: <span>#{{ prescriptionDetails.consultationId }}</span>
       </div>
-      <div class="info-group">
-        <span class="label">Prescription Date</span>
-        <span class="value">{{ prescriptionDetails.date }}</span>
+      <div class="meta-date">
+        Date: {{ prescriptionDetails.date }}
       </div>
     </div>
 
-    <div class="divider-orange-half"></div>
+    <div class="divider-half"></div>
 
     <h2 class="section-title">Patient Information</h2>
-    <div class="info-grid">
+    <div class="patient-info-box">
       <div class="info-group">
-        <span class="label">Name</span>
-        <span class="value">{{ prescriptionDetails.patient?.name }}</span>
+        <span class="label">Full Name:</span>
+        <span class="value strong-val">{{ prescriptionDetails.patient?.name }}</span>
       </div>
       <div class="info-group">
-        <span class="label">Age</span>
-        <span class="value">{{ prescriptionDetails.patient?.age }}</span>
+        <span class="label">Address:</span>
+        <span class="value pre-line">{{ prescriptionDetails.patient?.address || 'N/A' }}</span>
       </div>
       
       <div class="info-group">
-        <span class="label">Phone Number</span>
+        <span class="label">Age / Gender:</span>
+        <span class="value">{{ prescriptionDetails.patient?.age }} Yrs / {{ prescriptionDetails.patient?.gender }}</span>
+      </div>
+      <div class="info-group">
+        <span class="label">Allergies:</span>
+        <span class="value" [class.danger-val]="prescriptionDetails.patient?.allergies && prescriptionDetails.patient?.allergies !== 'None'">
+          {{ prescriptionDetails.patient?.allergies || 'None recorded' }}
+        </span>
+      </div>
+      
+      <div class="info-group">
+        <span class="label">Contact No:</span>
         <span class="value">{{ prescriptionDetails.patient?.phone }}</span>
       </div>
-
       <div class="info-group">
-        <span class="label">Gender</span>
-        <span class="value">{{ prescriptionDetails.patient?.gender }}</span>
-      </div>
-      
-      <div class="info-group">
-        <span class="label">Address</span>
-        <span class="value pre-line">{{ prescriptionDetails.patient?.address }}</span>
-      </div>
-      
-      <div></div> <!-- Grid alignment space -->
-
-      <div class="info-group mt-3">
-        <span class="label">Allergies</span>
-        <span class="value">{{ prescriptionDetails.patient?.allergies || 'None recorded' }}</span>
-      </div>
-      <div class="info-group mt-3">
-        <span class="label">Notable Health Condition</span>
-        <span class="value">{{ prescriptionDetails.patient?.condition || 'None' }}</span>
+        <span class="label">Condition:</span>
+        <span class="value">{{ prescriptionDetails.patient?.condition || 'General Follow-up' }}</span>
       </div>
     </div>
 
-    <div class="divider-orange-half"></div>
+    <div class="divider-half"></div>
+
+    <h2 class="section-title">Clinical Notes & Diagnosis</h2>
+    <div class="clinical-notes">
+      {{ prescriptionDetails.patient?.condition || 'No generic clinical summaries attached.' }}
+    </div>
+
+    <div class="divider-half"></div>
 
     <h2 class="section-title">List of Prescribed Medications</h2>
     <table class="med-table">
@@ -80,18 +80,23 @@
             <td>{{ med.route || 'Oral' }}</td>
             <td>{{ med.frequency || 'As directed' }}</td>
           </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="text-center text-muted py-3">No medications prescribed.</td>
+          </tr>
         }
       </tbody>
     </table>
 
-    <div class="info-grid mt-5">
-      <div class="info-group">
-        <span class="label">Doctor Name</span>
-        <span class="value">Dr. {{ prescriptionDetails.physician?.name }}</span>
+    <div class="footer-signature">
+      <div class="doc-stamp">
+        <h4>Dr. {{ prescriptionDetails.physician?.name }}</h4>
+        <p>Department of {{ prescriptionDetails.physician?.department || 'General Medicine' }}</p>
       </div>
-      <div class="info-group" style="text-align: right;">
-        <span class="label">Department</span>
-        <span class="value">{{ prescriptionDetails.physician?.department || 'General' }}</span>
+      
+      <div class="digital-stamp">
+        <div class="stamp-verified">Verified Electronic Document</div>
+        <div class="stamp-text">Generated securely via 1C Healthcare Portal Engine.</div>
       </div>
     </div>
 
