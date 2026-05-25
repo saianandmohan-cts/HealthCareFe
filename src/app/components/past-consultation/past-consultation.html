@@ -14,14 +14,14 @@
       *ngIf="$any(val).prescriptions && $any(val).prescriptions.length > 0" 
       class="btn btn-sm btn-warning text-dark rounded-pill px-3 fw-medium shadow-sm" 
       (click)="openPrescriptionModal(val)">
-      ✏️ Edit Prescription
+      Edit Prescription
     </button>
 
     <button 
       *ngIf="!$any(val).prescriptions || $any(val).prescriptions.length === 0" 
       class="btn btn-sm btn-success rounded-pill px-3 fw-medium shadow-sm" 
       (click)="openPrescriptionModal(val)">
-      ➕ Add Prescription
+      Add Prescription
     </button>
   </div>
 </div>

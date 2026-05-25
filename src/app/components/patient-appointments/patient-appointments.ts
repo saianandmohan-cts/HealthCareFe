@@ -26,9 +26,6 @@ export class PatientAppointments implements OnChanges {
 
   private updateAppointmentsView(): void {
     const rawData = this.appointments || [];
-    console.log("=== CHILD RECEIVED RAW DATA ===", rawData);
-
-    // 1. ✅ UPCOMING LIST: Filter Scheduled & Ascending Sort (Earliest First)
     this.upcomingAppointments = rawData
       .filter(a => a.status && a.status.toLowerCase() === 'scheduled')
       .sort((a, b) => {
@@ -36,8 +33,6 @@ export class PatientAppointments implements OnChanges {
         const dateB = b.date ? new Date(b.date).getTime() : 0;
         return dateA - dateB; 
       });
-
-    // 2. ✅ PAST LIST: Filter Completed/Cancelled & Descending Sort (Latest History Top Par)
     this.pastAppointments = rawData
       .filter(a => a.status && a.status.toLowerCase() !== 'scheduled')
       .sort((a, b) => {
@@ -45,8 +40,6 @@ export class PatientAppointments implements OnChanges {
         const dateB = b.date ? new Date(b.date).getTime() : 0;
         return dateB - dateA; 
       });
-
-    // 3. ✅ NEXT NEAREST DETECTOR: First dynamic row item
     this.nextAppointment = this.upcomingAppointments.length > 0 ? this.upcomingAppointments[0] : null;
 
     console.log("=== PROCESSED UPCOMING ===", this.upcomingAppointments);

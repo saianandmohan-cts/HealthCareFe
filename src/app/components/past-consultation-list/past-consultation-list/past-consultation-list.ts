@@ -44,14 +44,11 @@ export class PastConsultationList implements OnInit {
           map((res) => {
             console.log("📥 Consultation Pipeline Target Trace:", res);
             const rawAppointments = res && res.appointments ? res.appointments : [];
-            
-            // Sirf Completed appointments nikalien
             const pastRecords = rawAppointments.filter((app: any) => app.status === 'Completed');
             
             return pastRecords.map((record: any) => {
               return {
                 ...record,
-                // ✅ ULTRA DYNAMIC FIX: Direct database hex _id ko target kiya communication pass ke liye
                 targetId: record._id, 
                 doctorName: this.doctorMap.get(record.doctorId?.toString()) || 'Hospital Doctor',
                 hasPrescription: true 
@@ -74,16 +71,13 @@ export class PastConsultationList implements OnInit {
   viewPrescription(id: string): void {
     if (!id) return;
     this.router.navigate(['/view-prescription'], {
-      queryParams: { consultationId: id } // Isme ab direct internal hex _id jayegi
+      queryParams: { consultationId: id }
     });
   }
 downloadPrescription(record: any): void {
     if (this.isDownloading || !record) return;
     this.isDownloading = true;
-
-    // ✅ TargetId (Hex ID) ko api execution call ke liye pass karenge
     const trackingId = record.targetId;
-    // Download hone wali file ke name ke liye serial consultationId use karenge
     const displayId = record.consultationId || record.appointmentId || 'Doc';
 
     this.pastService.downloadPrescriptionFile(trackingId).subscribe({
@@ -93,7 +87,7 @@ downloadPrescription(record: any): void {
         
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Prescription_${displayId}.pdf`; // ✅ File name professional number format me aayega
+        link.download = `Prescription_${displayId}.pdf`;
         
         document.body.appendChild(link);
         link.click();

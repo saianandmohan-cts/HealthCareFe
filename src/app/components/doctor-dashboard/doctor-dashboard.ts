@@ -6,7 +6,6 @@ import { DoctorService } from '../../services/doctor.service';
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
 import { Observable } from 'rxjs';
-// 1. Add map import here
 import { map } from 'rxjs/operators'; 
 import { Auth } from '../../services/auth';
 
@@ -32,18 +31,18 @@ export class DoctorDashboard implements OnInit {
   }
 
   private loadDashboardData(): void {
-    // Extract the nested doctor data object if your backend wraps it too
+    
     this.DoctorInfo$ = this.docService.getDoctor().pipe(
       map((res: any) => res.data) 
     );
     
-    // 2. FIX: Map the backend structure to extract the raw array from res.data
+    
     this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
-      map((res: any) => res.data) // This targets the underlying array
+      map((res: any) => res.data) 
     );
   }
 
-  // ... rest of your existing code remains exactly the same ...
+  
   toggleConsultation(appointmentId: string): void {
     this.selectedConsultation =
       this.selectedConsultation === appointmentId ? null : appointmentId;
@@ -69,14 +68,12 @@ export class DoctorDashboard implements OnInit {
     if (confirm('Are you sure you want to cancel this appointment?')) { 
       this.docService.deleteAppointment(appointmentId).subscribe({
         next: (res: any) => {
-          console.log('🎉 Appointment deleted from system successfully:', res);
-          // 3. FIX: Apply the same map operation here when refreshing data
           this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
             map((res: any) => res.data)
           );
         },
         error: (err) => {
-          console.error('❌ Error deleting appointment:', err);
+          console.error('Error deleting appointment:', err);
         },
       });
     }
@@ -88,19 +85,16 @@ export class DoctorDashboard implements OnInit {
     if (confirm('Are you sure you want to mark this active appointment session as completed?')) {
       this.docService.markAppointmentAsCompleted(id).subscribe({
         next: (res: any) => {
-          console.log('🎉 Status synced completed successfully on cluster pipeline:', res);
+          console.log('Status synced completed successfully', res);
           
-          // ✅ FORCE RE-FETCH UPCOMING IMMEDIATELY
           this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
             map((res: any) => res.data)
           );
 
-          // ✅ NEW LINE: Child past consultation component ko automatic silent message pass kiya!
           this.docService.triggerPastRefresh();
         },
         error: (err) => {
-          console.error('❌ Error updating state status context:', err);
-          alert('Status completion transition update issue.');
+          console.error('Error updating state status context:', err);
         }
       });
     }

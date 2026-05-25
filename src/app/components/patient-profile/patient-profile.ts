@@ -86,8 +86,6 @@ export class PatientProfile implements OnChanges {
     this.http.patch<any>(`http://localhost:5000/patient/updatePatient/${pId}`, profilePayload).subscribe({
       next: (res: any) => {
         const updatedData = res.patient || { ...this.patientDetails, ...profilePayload };
-        
-        // Parent component ko updated data emit karenge
         this.profileSaved.emit(updatedData);
 
         this.isEditingPersonal = false;
@@ -99,7 +97,7 @@ export class PatientProfile implements OnChanges {
           this.cdr.detectChanges();
         }, 2500);
       },
-      error: (err) => console.error('❌ Profile Update Error:', err)
+      error: (err) => console.error('Profile Update Error:', err)
     });
   }
 }

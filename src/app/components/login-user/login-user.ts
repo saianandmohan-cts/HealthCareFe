@@ -70,20 +70,15 @@ export class LoginUser {
   next: (response) => {
     this.isLoading = false;
     
-    // 🚀 FIXED: Agar response.success ho YA message 'Login successful' ho, dono ko validation manege
     if (response && (response.success === true || response.message === 'Login successful')) {
-      console.log("Real Backend ", response.user);
-      
       this.router.navigate(['/patient']);
 
     } else {
-      console.warn(" Response received but condition did not match:", response);
       this.loginError = 'Invalid response from server.';
     }
   },
   error: (err) => {
     this.isLoading = false;
-    console.error("API ERROR:", err);
     this.loginError = err.error?.message || 'Something went wrong. Please try again.';
   }
 });

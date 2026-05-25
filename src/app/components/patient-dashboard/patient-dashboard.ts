@@ -83,7 +83,7 @@ export class PatientDashboard implements OnInit {
           }
         }
       },
-      error: (err) => console.error('❌ Dashboard Fetch Error:', err)
+      error: (err) => console.error('Dashboard Fetch Error:', err)
     });
   }
 

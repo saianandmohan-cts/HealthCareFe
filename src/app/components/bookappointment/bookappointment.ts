@@ -61,11 +61,10 @@ export class BookAppointment implements OnInit {
       });
     }
 
-    // Response format `{ success: true, status: "success", data: [...] }` ko safely read karega
+
     this.doctorService.getAllDoctors().subscribe({
       next: (res: any) => {
         this.doctors = res && Array.isArray(res.data) ? res.data : [];
-        console.log("Dropdown ke liye Doctors loaded successfully:", this.doctors);
         this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error fetching doctors:', err)
@@ -106,15 +105,11 @@ export class BookAppointment implements OnInit {
     
     this.http.get<any>(url).subscribe({
       next: (res) => {
-        console.log("Backend se mile slots response:", res);
-        
-        // Backend layout matrix array extraction helper
         const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
         
         if (slotsArray.length > 0) {
           this.timeSlots = slotsArray.map((s: any) => ({
             time: s.time,
-            // ✅ FIX: Agar slot available nahi hai YA pehle se booked ho chuka hai, toh dynamic input block (disabled) ho jaye
             disabled: s.isAvailable === false || s.isBooked === true
           }));
         } else {
@@ -123,7 +118,6 @@ export class BookAppointment implements OnInit {
         this.cdr.detectChanges(); 
       },
       error: (err) => {
-        console.error('Error fetching slots from DB:', err);
         this.timeSlots = [];
         this.cdr.detectChanges();
       }
@@ -131,7 +125,7 @@ export class BookAppointment implements OnInit {
   }
 
   submitAppointment(): void {
-    console.log("=== SUBMIT TRIGGERED ===");
+    
     
     if (this.apptForm.invalid) {
       this.apptForm.form.markAllAsTouched();
@@ -141,12 +135,11 @@ export class BookAppointment implements OnInit {
     const currentPatient = this.authService.currentUser() as any;
     
     if (!currentPatient) {
-      console.error("❌ Session Error: No valid patient session found!");
       this.router.navigate(['/login-user']);
       return;
     }
 
-    // Auth pipeline backup fallback validation rules
+   
     const finalPatientId = currentPatient.id || currentPatient.patientId; 
 
     const bookingPayload = {
@@ -158,11 +151,11 @@ export class BookAppointment implements OnInit {
       reason: this.appointment.reason
     };
 
-    console.log("🚀 PAYLOAD SECURED WITH PURE COOKIE ID:", bookingPayload);
+    
 
     this.appointmentService.book(bookingPayload as any).subscribe({
       next: (res: any) => {
-        console.log('🎉 SUCCESS: Database insertion complete!', res);
+       
         this.booked = true; 
         this.cdr.detectChanges(); 
         
@@ -177,7 +170,7 @@ export class BookAppointment implements OnInit {
         }, 2000);
       },
       error: (err: any) => {
-        console.error('❌ BACKEND REJECTED REQ:', err);
+        console.error('BACKEND REJECTED REQ:', err);
       }
     });
   }

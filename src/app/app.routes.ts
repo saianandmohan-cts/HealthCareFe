@@ -7,22 +7,37 @@ import { RegisterUser } from './components/register-user/register-user';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
-    {path:"",component:Home},
-    {path:'login-user', component:LoginUser},
-    {path:'login-doctor', component:LoginDoctor},
-    {path:'register-user', component:RegisterUser},
+    { path: "", component: Home },
+    { path: 'login-user', component: LoginUser },
+    { path: 'login-doctor', component: LoginDoctor },
+    { path: 'register-user', component: RegisterUser },
 
-    {path:'patient',loadComponent: ()=>import('./components/patient-dashboard/patient-dashboard').then(r=>r.PatientDashboard)},
-    {path:'book',loadComponent: ()=>import('./components/bookappointment/bookappointment').then(r=>r.BookAppointment)},
-    {path: 'modify/:appointmentId',loadComponent:()=>import('./components/modifyappointment/modifyappointment').then(r=>r.Modifyappointment)},
     { 
-      path: 'view-prescription',
-      loadComponent: () => import('./components/view-prescription/view-prescription/view-prescription').then(r=>r.ViewPrescription) 
+        path: 'patient', 
+        loadComponent: () => import('./components/patient-dashboard/patient-dashboard').then(r => r.PatientDashboard),
+        canActivate: [authGuard]
+    },
+    { 
+        path: 'book', 
+        loadComponent: () => import('./components/bookappointment/bookappointment').then(r => r.BookAppointment),
+        canActivate: [authGuard]
+    },
+    { 
+        path: 'modify/:appointmentId', 
+        loadComponent: () => import('./components/modifyappointment/modifyappointment').then(r => r.Modifyappointment),
+        canActivate: [authGuard]
+    },
+    { 
+        path: 'view-prescription',
+        loadComponent: () => import('./components/view-prescription/view-prescription/view-prescription').then(r => r.ViewPrescription),
+        canActivate: [authGuard]
     },
     
-    {path:"doctor",component:DoctorDashboard},
+    { 
+        path: "doctor", 
+        component: DoctorDashboard,
+        canActivate: [authGuard]
+    },
 
     { path: '**', redirectTo: '/', pathMatch: 'full' }
 ];
-
-

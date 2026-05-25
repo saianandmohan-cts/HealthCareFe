@@ -1,12 +1,10 @@
 <div class="login-page">
-  <!-- Header -->
   <div class="login-header">
     <span class="hospital-icon">🏥</span>
     <h1>1C Hospital</h1>
     <p class="tagline"></p>
   </div>
 
-  <!-- Login Card -->
   <div class="login-card">
     <h2>Patient Login</h2>
     <p class="subtitle">
@@ -15,7 +13,6 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-      <!-- Email -->
       <div class="form-group">
         <label for="email">Email Address</label>
         <input
@@ -34,7 +31,6 @@
         }
       </div>
 
-      <!-- Password -->
       <div class="form-group">
         <label for="password">Password</label>
         <input
@@ -53,7 +49,6 @@
         }
       </div>
 
-      <!-- Login Error -->
       @if (loginError) {
         <div class="login-error">
           {{ loginError }}
@@ -68,7 +63,6 @@
     
   </div>
 
-  <!-- Footer -->
   <p class="back-link">
     <a routerLink="/home">← Back to Home</a>
   </p>

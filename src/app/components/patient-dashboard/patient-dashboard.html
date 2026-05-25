@@ -1,6 +1,4 @@
 <div class="dashboard-page">
-
-  <!-- Hamesha top par dikhne wala Patient Profile Hero Header Section -->
   <section class="profile-hero">
     <div class="profile-left">
       <div class="avatar">
@@ -32,8 +30,6 @@
       </button>
     </div>
   </section>
-
-  <!-- Quick Snapshot Info Row -->
   <section class="snapshot">
     <div>
       <span>Gender</span>
@@ -48,8 +44,6 @@
       <strong>{{ patientDetails?.email }}</strong>
     </div>
   </section>
-
-  <!-- Navigation Main Tab Buttons -->
   <div class="tab-buttons">
     <button class="tab-btn" [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">
       Appointments
@@ -61,8 +55,6 @@
       Personal Details
     </button>
   </div>
-
-  <!-- Dynamic Content Area Base on Tabs Switch -->
   <section class="content-card">
     
     @if (activeTab === 'appointments') {

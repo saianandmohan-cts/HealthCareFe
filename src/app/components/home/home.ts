@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { LoginDoctor } from '../login-doctor/login-doctor';
-import { LoginUser } from '../login-user/login-user';
 
 @Component({
   selector: 'app-home',

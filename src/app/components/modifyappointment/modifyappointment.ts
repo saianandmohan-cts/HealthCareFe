@@ -74,8 +74,6 @@ export class Modifyappointment implements OnInit {
         }
 
         this.appointment = { ...apptData };
-
-        // ✅ FIX: Backend response format { success: true, data: doctorInfo } ke sath map kiya
         this.doctorService.getDoctorById(this.appointment.doctorId).subscribe({
           next: (data: any) => {
             const doctorData = data?.data || data?.doctor || data;
@@ -121,8 +119,6 @@ export class Modifyappointment implements OnInit {
 
     const doctorId = this.appointment.doctorId;
     const date = this.appointment.date;
-
-    // ✅ FIX: Router path ko correct target endpoint string se change kiya
     const url = `http://localhost:5000/doctor/availability?doctorId=${doctorId}&date=${date}`;
     
     this.http.get<any>(url).subscribe({
@@ -134,7 +130,6 @@ export class Modifyappointment implements OnInit {
         if (slotsArray.length > 0) {
           this.timeSlots = slotsArray.map((s: any) => ({
             time: s.time,
-            // ✅ FIX: Pure boolean matching loop validation lagayi
             disabled: (s.isAvailable === false || s.isBooked === true) && s.time !== this.appointment.time
           }));
         } else {
@@ -149,8 +144,6 @@ export class Modifyappointment implements OnInit {
       }
     });
   }
-
-  /* ---------- UPDATE / RESCHEDULE ---------- */
   updateAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
@@ -166,14 +159,11 @@ export class Modifyappointment implements OnInit {
 
     this.appointmentService.update(this.appointment.appointmentId, updatePayload).subscribe({
       next: (res: any) => {
-        console.log('SUCCESS: Appointment updated in database:', res);
         this.router.navigate(['/patient']);
       },
       error: (err: any) => console.error('Update operation failed:', err)
     });
   }
-
-  /* ---------- CANCEL ---------- */
   cancelAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
@@ -185,7 +175,6 @@ export class Modifyappointment implements OnInit {
 
     this.appointmentService.update(this.appointment.appointmentId, cancelPayload).subscribe({
       next: (res: any) => {
-        console.log('SUCCESS: Appointment cancelled successfully:', res);
         this.router.navigate(['/patient']);
       },
       error: (err: any) => console.error('Cancellation failed:', err)

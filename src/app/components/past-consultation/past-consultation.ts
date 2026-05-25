@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, switchMap } from 'rxjs'; // ✅ switchMap import kiya
+import { Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DoctorService } from '../../services/doctor.service';
 import { Appointment } from '../../models/appointment.model';
@@ -20,8 +20,6 @@ export class PastConsultation implements OnInit {
   activePrescriptionAppointment: any | null = null;
 
   ngOnInit(): void {
-    // ✅ ULTRA DYNAMIC SYNCHRONIZATION RXJS STREAM
-    // Pehle static initialization stream break problem solution tha, ab custom notification handle lagaya h
     this.pastConsultations$ = this.doctorService.refreshPastConsultations$.pipe(
       switchMap(() => this.doctorService.getPastAppointments()),
       map((res: any) => res.data)
@@ -35,8 +33,6 @@ export class PastConsultation implements OnInit {
   closeModal() {
     this.selectedConsultation = null;
   }
-
-  // 4. Prescription modal ko open/close karne ke functions
   openPrescriptionModal(appointment: any) {
     this.activePrescriptionAppointment = appointment;
   }
