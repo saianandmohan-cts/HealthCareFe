@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators'; 
+import { HttpClient } from '@angular/common/http';
 
 import { Doctor } from '../models/doctor.model';
 import { Appointment } from '../models/appointment.model';
-import { HttpClient } from '@angular/common/http';
 
 const DOCTORS: any[] = [];
 
@@ -14,9 +15,14 @@ export class DoctorService {
   private httpClient = inject(HttpClient);
 
   public refreshPastConsultations$ = new BehaviorSubject<boolean>(true);
+  private upcomingRefresh$ = new BehaviorSubject<boolean>(true); 
 
   triggerPastRefresh(): void {
     this.refreshPastConsultations$.next(true);
+  }
+
+  triggerUpcomingRefresh(): void {
+    this.upcomingRefresh$.next(true);
   }
 
   constructor() {}
@@ -40,7 +46,6 @@ export class DoctorService {
     return this.httpClient.get<Doctor[]>('http://localhost:5000/doctor/allDoctor');
   }
 
-
   getDoctor(): Observable<Doctor> {
     return this.httpClient.get<Doctor>(
       `http://localhost:5000/doctor/getDoctor`, 
@@ -60,11 +65,12 @@ export class DoctorService {
     return DOCTORS.filter((d: any) => d.experience >= minExperience);
   }
 
-
   getUpcomingAppointments(): Observable<Appointment[]> {
-    return this.httpClient.get<Appointment[]>(
-      'http://localhost:5000/doctor/upcomingAppointments', 
-      { withCredentials: true }
+    return this.upcomingRefresh$.pipe(
+      switchMap(() => 
+        this.httpClient.get<any>('http://localhost:5000/doctor/upcomingAppointments', { withCredentials: true })
+      ),
+      map((res: any) => res.data || res) // API wrapper clean handler
     );
   }
   

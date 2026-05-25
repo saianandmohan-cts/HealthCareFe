@@ -31,18 +31,13 @@ export class DoctorDashboard implements OnInit {
   }
 
   private loadDashboardData(): void {
-    
     this.DoctorInfo$ = this.docService.getDoctor().pipe(
       map((res: any) => res.data) 
     );
     
-    
-    this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
-      map((res: any) => res.data) 
-    );
+    this.upcomingAppointments$ = this.docService.getUpcomingAppointments();
   }
 
-  
   toggleConsultation(appointmentId: string): void {
     this.selectedConsultation =
       this.selectedConsultation === appointmentId ? null : appointmentId;
@@ -68,9 +63,8 @@ export class DoctorDashboard implements OnInit {
     if (confirm('Are you sure you want to cancel this appointment?')) { 
       this.docService.deleteAppointment(appointmentId).subscribe({
         next: (res: any) => {
-          this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
-            map((res: any) => res.data)
-          );
+          console.log('🎉 Appointment cancelled safely');
+          this.docService.triggerUpcomingRefresh();
         },
         error: (err) => {
           console.error('Error deleting appointment:', err);
@@ -87,10 +81,7 @@ export class DoctorDashboard implements OnInit {
         next: (res: any) => {
           console.log('Status synced completed successfully', res);
           
-          this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
-            map((res: any) => res.data)
-          );
-
+          this.docService.triggerUpcomingRefresh();
           this.docService.triggerPastRefresh();
         },
         error: (err) => {

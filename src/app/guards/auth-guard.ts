@@ -17,7 +17,7 @@ export const authGuard: CanActivateFn = (route, state) => {
       if (res && res.success === true && authService.authenticated()) {
         return true;
       } else {
-        console.log("🔒 Guard Blocking: Redirecting forcefully to /login-user");
+        console.log(" Guard Blocking: Redirecting forcefully to /login-user");
         router.navigateByUrl('/login-user');
         return false;
       }

@@ -1,63 +1,96 @@
-<div *ngFor="let val of (pastConsultations$ | async)" class="border-bottom pb-2 mb-3">
-  <p class="mb-1 fw-bold text-dark">Patient Name: {{ val.patient.name || 'Unknown Patient' }}</p>
-  <p class="mb-1 text-secondary small">Patient ID: {{ val.patient.patientId || 'N/A' }}</p>
-  <p class="mb-1 text-secondary small">Date: {{ val.date }}</p>
-  <p class="mb-1 text-secondary small">Time: {{ val.time }}</p>
-  <p class="mb-0 text-muted">Status: {{ val.status }}</p>
-
-  <div class="d-flex gap-2 mt-2">
-    <button class="button btn btn-sm btn-primary" (click)="expandPatientInfo(val)">
-      View Details
-    </button>
+@for (val of (pastConsultations$ | async); track $any(val)._id) {
+  <div class="border-bottom pb-3 mb-3 position-relative">
     
-    <button 
-      *ngIf="$any(val).prescriptions && $any(val).prescriptions.length > 0" 
-      class="btn btn-sm btn-warning text-dark rounded-pill px-3 fw-medium shadow-sm" 
-      (click)="openPrescriptionModal(val)">
-      Edit Prescription
-    </button>
-
-    <button 
-      *ngIf="!$any(val).prescriptions || $any(val).prescriptions.length === 0" 
-      class="btn btn-sm btn-success rounded-pill px-3 fw-medium shadow-sm" 
-      (click)="openPrescriptionModal(val)">
-      Add Prescription
-    </button>
-  </div>
-</div>
-
-<div class="modal-overlay" *ngIf="selectedConsultation">
-  <div class="modal-content">
-    <span class="close-btn" (click)="closeModal()">✖</span>
-    <h5>Consultation Details</h5>
-    <p><strong>Notes:</strong> {{ selectedConsultation.notes || 'No notes added' }}</p>
-    <h4>Prescriptions:</h4>
-    <ul>
-      <li *ngFor="let rx of $any(selectedConsultation).prescriptions">
-        <strong>{{ rx.medicineName || rx.name }}</strong> - {{ rx.dosage }} ({{ rx.route }}, {{ rx.frequency }})
-      </li>
-    </ul>
-  </div>
-</div>
-
-<div class="modal-overlay" *ngIf="activePrescriptionAppointment">
-  <div class="modal-content" style="max-width: 600px; width: 100%;">
-    <span class="close-btn" (click)="closePrescriptionModal()">✖</span>
+    <p class="mb-1 fw-bold text-dark fs-5">Patient Name: {{ val.patient.name || 'Unknown Patient' }}</p>
+    <p class="mb-1 text-secondary small">Patient ID: {{ val.patient.patientId || 'N/A' }}</p>
+    <p class="mb-1 text-secondary small">📅 Date: {{ val.date }}</p>
+    <p class="mb-1 text-secondary small">🕒 Time: {{ val.time }}</p>
     
-    <h5 class="mb-3 fw-bold" [ngClass]="($any(activePrescriptionAppointment).prescriptions && $any(activePrescriptionAppointment).prescriptions.length > 0) ? 'text-warning' : 'text-success'">
-      {{ ($any(activePrescriptionAppointment).prescriptions && $any(activePrescriptionAppointment).prescriptions.length > 0) ? '✏️ Edit Prescription' : '➕ Create Prescription' }}
-    </h5>
-    
-    <p class="text-muted small mb-3">
-      Patient: <strong>{{ activePrescriptionAppointment.patient?.name }}</strong> | ID: {{ activePrescriptionAppointment.patient?.patientId }}
+    <p class="mb-0 small">
+      Status: 
+      <span class="fw-bold" [ngClass]="$any(val).status === 'Completed' ? 'text-success' : 'text-danger'">
+        {{ val.status }}
+      </span>
     </p>
 
-    <hr>
+    <div class="d-flex gap-2 mt-3">
+      <button 
+        class="button btn btn-sm btn-primary px-3 rounded-pill" 
+        [disabled]="$any(val).status === 'Cancelled'"
+        (click)="expandPatientInfo(val)">
+        View Details
+      </button>
+      
+      @if ($any(val).status !== 'Cancelled') {
+        @if ($any(val).prescriptions && $any(val).prescriptions.length > 0) {
+          <button 
+            class="btn btn-sm btn-warning text-dark rounded-pill px-3 fw-medium shadow-sm" 
+            (click)="openPrescriptionModal(val)">
+            ✏️ Edit Prescription
+          </button>
+        } @else {
+          <button 
+            class="btn btn-sm btn-success rounded-pill px-3 fw-medium shadow-sm" 
+            (click)="openPrescriptionModal(val)">
+            ➕ Add Prescription
+          </button>
+        }
+      }
 
-    <app-add-prescription 
-      [appointmentData]="activePrescriptionAppointment"
-      (prescriptionSaved)="closePrescriptionModal()">
-    </app-add-prescription>
-    
+ 
+    </div>
+
+    @if (selectedConsultation && $any(selectedConsultation)._id === $any(val)._id) {
+      <div class="row mt-3">
+        <div class="col-12 col-md-8 col-xl-6">
+          <div class="expanded-inline-content p-3 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="text-primary fw-bold mb-0">📊 Consultation Summary & Diagnosis</h6>
+              <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" (click)="closeModal()">✖ Close</button>
+            </div>
+            <hr class="my-2">
+            <p class="text-dark mb-2"><strong>Notes/Diagnosis:</strong> {{ selectedConsultation.notes || 'No generic clinical summaries attached.' }}</p>
+            
+            <h6 class="fw-bold text-secondary mt-2 mb-1 small text-uppercase">Prescriptions List:</h6>
+            @if ($any(selectedConsultation).prescriptions && $any(selectedConsultation).prescriptions.length > 0) {
+              <ul class="mb-0 ps-3">
+                <li *ngFor="let rx of $any(selectedConsultation).prescriptions" class="text-dark py-1">
+                  <strong class="text-success">{{ rx.medicineName || rx.name }}</strong> - {{ rx.dosage }} ({{ rx.route || 'Oral' }}, {{ rx.frequency }})
+                </li>
+              </ul>
+            } @else {
+              <p class="text-muted small mb-0 fst-italic">No medications linked to this completed timeline session.</p>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (activePrescriptionAppointment && $any(activePrescriptionAppointment)._id === $any(val)._id) {
+      <div class="row mt-3">
+        <div class="col-12 col-md-9 col-xl-7">
+          <div class="expanded-inline-content p-3 bg-white rounded-3 border shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold mb-0" [ngClass]="$any(activePrescriptionAppointment).prescriptions && $any(activePrescriptionAppointment).prescriptions.length > 0 ? 'text-warning' : 'text-success'">
+                {{ ($any(activePrescriptionAppointment).prescriptions && $any(activePrescriptionAppointment).prescriptions.length > 0) ? '✏️ Edit Medical Prescription' : '➕ Create New Prescription Form' }}
+              </h6>
+              <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" (click)="closePrescriptionModal()">✖ Cancel</button>
+            </div>
+            <p class="text-muted small mb-2">
+              Active Patient Entry: <strong>{{ activePrescriptionAppointment.patient?.name }}</strong>
+            </p>
+            <hr class="my-2">
+
+            <app-add-prescription 
+              [appointmentData]="activePrescriptionAppointment"
+              (prescriptionSaved)="closePrescriptionModal()">
+            </app-add-prescription>
+          </div>
+        </div>
+      </div>
+    }
+
   </div>
-</div>
+} @empty {
+  <div class="text-center py-4 text-muted">No consultation records to display.</div>
+}

@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient , HttpErrorResponse} from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { Patient } from '../models/patient.model'; 
@@ -16,24 +16,19 @@ export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  // Angular Signals for State Management
   private currentUserSignal = signal<Patient | Doctor | null>(null);
   private roleSignal = signal<UserRole | null>(null);
   private isAuthenticatedSignal = signal<boolean>(false);
 
-  // Read-only values for guards and components
   readonly currentUser = computed(() => this.currentUserSignal());
   readonly getRole = computed(() => this.roleSignal());
   readonly authenticated = computed(() => this.isAuthenticatedSignal());
 
   constructor() {
-    // App load/refresh hote hi background check lagaya
     this.checkSession().subscribe();
   }
 
-  /**
-   * Who Am I Session Check (Smart Dynamic Handling)
-   */
+  
   checkSession(): Observable<any> {
     return this.http.get<any>(`${this.API_BASE_URL}/login/me`, { withCredentials: true }).pipe(
       tap((response) => {
@@ -45,8 +40,15 @@ export class Auth {
           this.isAuthenticatedSignal.set(true);
         }
       }),
-      catchError(() => {
+      catchError((error: HttpErrorResponse) => {
         this.clearAuthState();
+       if (error.status === 401 || error.status === 400) {
+          console.log('ℹ️ 1C Hospital Engine: No active session found. User is in Guest Mode.');
+        } else {
+          console.warn('⚠️ Server Connectivity Issue:', error.message);
+        }
+
+
         return of({ success: false, message: 'No active session' }); 
       })
     );
@@ -56,9 +58,7 @@ export class Auth {
     return this.http.post<any>(`${this.API_BASE_URL}/login/register`, patientData);
   }
 
-  /**
-   * Patient Login
-   */
+
   loginPatient(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.API_BASE_URL}/login`, credentials, { withCredentials: true }).pipe(
       tap((response) => {

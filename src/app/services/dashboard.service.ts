@@ -52,7 +52,7 @@ export class DashboardService {
         scheduled.sort((a, b) => {
           const dateTimeA = new Date(`${a.date} ${a.time}`);
           const dateTimeB = new Date(`${b.date} ${b.time}`);
-          return dateTimeA.getTime() - dateTimeB.getTime(); // Ascending order
+          return dateTimeA.getTime() - dateTimeB.getTime(); 
         });
 
         return scheduled[0];

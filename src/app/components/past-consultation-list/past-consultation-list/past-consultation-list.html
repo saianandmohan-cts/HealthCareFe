@@ -13,9 +13,8 @@
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light">
                 <tr>
-                  <th scope="col" class="text-uppercase small fw-bold text-secondary px-4 py-3">Cons ID</th>
-                  <th scope="col" class="text-uppercase small fw-bold text-secondary px-4 py-3">Appt ID</th>
-                  <th scope="col" class="text-uppercase small fw-bold text-secondary py-3">Date</th>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary px-4 py-3">Date</th>
+                  <th scope="col" class="text-uppercase small fw-bold text-secondary py-3">Time</th>
                   <th scope="col" class="text-uppercase small fw-bold text-secondary py-3">Doctor</th>
                   <th scope="col" class="text-uppercase small fw-bold text-secondary text-center px-4 py-3">Prescription</th>
                 </tr>
@@ -25,41 +24,36 @@
                 @for (record of consultations; track record._id) {
                   <tr style="cursor: pointer;">
                     
-                    <td class="px-4 py-3">
-                      @if (record.consultationId) {
-                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-2 py-1 fs-6">
-                          #{{ record.consultationId }}
-                        </span>
-                      } @else {
-                        <span class="text-muted fst-italic px-2">—</span>
-                      }
-                    </td>
+                    <td class="px-4 py-3 text-secondary fw-medium">
+                      {{ record.date | date:'mediumDate' }}
+                    </td> 
 
-                    <td class="px-4 py-3">
-                      <span class="badge bg-light text-dark border px-2 py-1 fs-6">#{{ record.appointmentId }}</span>
+                    <td class="py-3 text-secondary fw-medium">
+                      <span class="badge bg-light text-dark border px-2 py-1 fs-6 fw-normal">
+                        🕒 {{ record.time }}
+                      </span>
                     </td>
                     
-                    <td class="py-3 text-secondary fw-medium">{{ record.date | date:'mediumDate' }}</td> 
                     <td class="py-3 fw-bold text-secondary">{{ record.doctorName }}</td>
                     
-              <td class="px-4 py-3 text-center">
-                @if (record.hasPrescription) {
-                  <div class="d-flex justify-content-center gap-2">
-                    <button (click)="viewPrescription(record.targetId)" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all">
-                      <i class="bi bi-eye me-1"></i> View
-                    </button>
-                    <button (click)="downloadPrescription(record)" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all hover-shadow">
-                      <i class="bi bi-download me-1"></i> Download
-                    </button>
-                  </div>
-                } @else {
-                  <span class="text-muted fst-italic">—</span>
-                }
-              </td>
+                    <td class="px-4 py-3 text-center">
+                      @if (record.hasPrescription) {
+                        <div class="d-flex justify-content-center gap-2">
+                          <button (click)="viewPrescription(record.targetId)" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all">
+                            <i class="bi bi-eye me-1"></i> View
+                          </button>
+                          <button (click)="downloadPrescription(record)" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 fw-medium d-inline-flex align-items-center transition-all hover-shadow">
+                            <i class="bi bi-download me-1"></i> Download
+                          </button>
+                        </div>
+                      } @else {
+                        <span class="text-muted fst-italic">—</span>
+                      }
+                    </td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="6" class="text-center py-5 text-muted">
+                    <td colspan="4" class="text-center py-5 text-muted">
                       <i class="bi bi-folder-x display-4 d-block mb-3 text-secondary opacity-50"></i>
                       <p class="fs-5 mb-0">No consultations found.</p>
                     </td>

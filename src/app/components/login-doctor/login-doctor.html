@@ -1,21 +1,15 @@
 <div class="login-page">
-
-  
   <div class="login-header">
     <span class="hospital-icon">🩺</span>
     <h1>1C Hospital</h1>
     <p class="tagline">Doctor Portal</p>
   </div>
 
-  
   <div class="login-card">
     <h2>Doctor Login</h2>
-    <p class="subtitle">
-      Manage appointments and patient records
-    </p>
+    <p class="subtitle">Manage appointments and patient records</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
       
       <div class="form-group">
         <label for="doctorId">Doctor ID</label>
@@ -24,6 +18,7 @@
           type="text"
           formControlName="doctorId"
           placeholder="e.g. DOC1001"
+          [class.is-invalid]="(doctorId.invalid && (doctorId.dirty || doctorId.touched)) || loginError.includes('Doctor')"
         />
 
         @if (doctorId.invalid && (doctorId.dirty || doctorId.touched)) {
@@ -33,9 +28,13 @@
             }
           </div>
         }
+        @if (loginError && loginError.includes('Doctor')) {
+          <div class="error">
+            <span>⚠ {{ loginError }}</span>
+          </div>
+        }
       </div>
 
-      
       <div class="form-group">
         <label for="password">Password</label>
         <input
@@ -43,35 +42,34 @@
           type="password"
           formControlName="password"
           placeholder="Enter your password"
+          [class.is-invalid]="(password.invalid && (password.dirty || password.touched)) || loginError.includes('password')"
         />
 
         @if (password.invalid && (password.dirty || password.touched)) {
           <div class="error">
             @for (error of getPasswordErrors(); track error) {
-              <span>{{ error }}</span>
+              <span>⚠ {{ error }}</span>
             }
+          </div>
+        }
+        @if (loginError && loginError.includes('password')) {
+          <div class="error">
+            <span>⚠ {{ loginError }}</span>
           </div>
         }
       </div>
 
-      
-      @if (loginError) {
-        <div class="login-error">
-          {{ loginError }}
-        </div>
-      }
-
-      <button type="submit" class="login-btn" [disabled]="loginForm.invalid">
-        Login
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading">
+        @if (isLoading) {
+          <span>Logging in...</span>
+        } @else {
+          Login
+        }
       </button>
     </form>
-
-    
   </div>
 
-  <!-- Back -->
   <p class="back-link">
     <a routerLink="/home">← Back to Home</a>
   </p>
 </div>
-

@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; // ✅ ChangeDetectorRef inject kiya
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
-
-
 
 @Component({
   selector: 'app-login-doctor',
@@ -13,11 +11,12 @@ import { Auth } from '../../services/auth';
   templateUrl: './login-doctor.html',
   styleUrl: './login-doctor.css',
 })
-export class LoginDoctor {
+export class LoginDoctor implements OnInit { 
 
   loginForm!: FormGroup;
   loginError = '';
   isLoading = false;
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private fb: FormBuilder,
@@ -27,6 +26,15 @@ export class LoginDoctor {
     this.loginForm = this.fb.group({
       doctorId: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(8)]]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loginForm.valueChanges.subscribe(() => {
+      if (this.loginError) {
+        this.loginError = ''; 
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -51,7 +59,6 @@ export class LoginDoctor {
     if (this.password.errors?.['required']) {
       errors.push('Password is required');
     }
-  
     return errors;
   }
 
@@ -64,6 +71,8 @@ export class LoginDoctor {
     }
 
     this.isLoading = true;
+    this.cdr.detectChanges();
+
     const credentials = {
       doctorId: this.loginForm.value.doctorId,
       password: this.loginForm.value.password
@@ -75,11 +84,14 @@ export class LoginDoctor {
           this.router.navigate(['/doctor']);
         } else {
           this.loginError = response.message || "Invalid Doctor ID or Password";
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.loginError = err.error?.message || "Invalid Credentials or Server Connection Error";
+        this.loginError = err.error?.message || err.message || "Incorrect Doctor ID or Password.";
+        
+        this.cdr.detectChanges(); 
       }
     });
   }

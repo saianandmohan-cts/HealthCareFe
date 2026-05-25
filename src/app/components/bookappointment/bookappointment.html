@@ -61,7 +61,7 @@
         </label>
 
         <label>
-          <span>Time</span>
+          <span>Time Slot</span>
           <select
             name="time"
             [(ngModel)]="appointment.time"
@@ -70,16 +70,22 @@
             <option value="" disabled selected>
               {{ timeSlots.length === 0 ? 'No slots available' : 'Select time' }}
             </option>
+            
             <option
               *ngFor="let slot of timeSlots"
               [value]="slot.time"
-              [disabled]="slot.disabled">
-              {{ slot.time }} {{ slot.disabled ? '(Unavailable)' : '' }}
+              [disabled]="slot.disabled"
+              [style.color]="slot.disabled ? '#d32f2f' : '#1b5e20'"
+              [style.background-color]="slot.disabled ? '#f9fafb' : '#ffffff'">
+              {{ slot.time }} {{ slot.disabled ? 'Unavailable' : 'Available' }}
             </option>
           </select>
 
-          <small class="error" *ngIf="time.invalid && time.touched">
-            Time is required
+          <small class="error" *ngIf="time.invalid && time.touched" style="color: #d32f2f; font-weight: 500; display: block; margin-top: 4px;">
+            <span *ngIf="time.errors?.['required']">Time is required</span>
+            <span *ngIf="time.errors?.['backendError']" class="backend-error-msg">
+              ⚠️ {{ time.errors?.['backendError'] }}
+            </span>
           </small>
         </label>
 

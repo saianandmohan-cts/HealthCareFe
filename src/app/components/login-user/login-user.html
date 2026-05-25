@@ -2,14 +2,11 @@
   <div class="login-header">
     <span class="hospital-icon">🏥</span>
     <h1>1C Hospital</h1>
-    <p class="tagline"></p>
   </div>
 
   <div class="login-card">
     <h2>Patient Login</h2>
-    <p class="subtitle">
-      Access your appointments and medical records
-    </p>
+    <p class="subtitle">Access your appointments and medical records</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
@@ -20,6 +17,7 @@
           type="email"
           formControlName="email"
           placeholder="patient@example.com"
+          [class.is-invalid]="(email.invalid && (email.dirty || email.touched)) || loginError.includes('User')"
         />
 
         @if (email.invalid && (email.dirty || email.touched)) {
@@ -27,6 +25,11 @@
             @for (error of getEmailErrors(); track error) {
               <span>⚠ {{ error }}</span>
             }
+          </div>
+        }
+        @if (loginError && loginError.includes('User')) {
+          <div class="error">
+            <span>⚠ {{ loginError }}</span>
           </div>
         }
       </div>
@@ -38,6 +41,7 @@
           type="password"
           formControlName="password"
           placeholder="Enter your password"
+          [class.is-invalid]="(password.invalid && (password.dirty || password.touched)) || loginError.includes('password')"
         />
 
         @if (password.invalid && (password.dirty || password.touched)) {
@@ -47,20 +51,21 @@
             }
           </div>
         }
+        @if (loginError && loginError.includes('password')) {
+          <div class="error">
+            <span>⚠ {{ loginError }}</span>
+          </div>
+        }
       </div>
 
-      @if (loginError) {
-        <div class="login-error">
-          {{ loginError }}
-        </div>
-      }
-
-      <button type="submit" class="login-btn" [disabled]="loginForm.invalid ">
-        Login
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading">
+        @if (isLoading) {
+          <span>Logging in...</span>
+        } @else {
+          Login
+        }
       </button>
     </form>
-
-    
   </div>
 
   <p class="back-link">

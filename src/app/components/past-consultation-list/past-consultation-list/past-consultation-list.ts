@@ -44,12 +44,14 @@ export class PastConsultationList implements OnInit {
           map((res) => {
             console.log("📥 Consultation Pipeline Target Trace:", res);
             const rawAppointments = res && res.appointments ? res.appointments : [];
+            
             const pastRecords = rawAppointments.filter((app: any) => app.status === 'Completed');
             
             return pastRecords.map((record: any) => {
               return {
                 ...record,
                 targetId: record._id, 
+                time: record.time || 'N/A', 
                 doctorName: this.doctorMap.get(record.doctorId?.toString()) || 'Hospital Doctor',
                 hasPrescription: true 
               };
@@ -71,12 +73,14 @@ export class PastConsultationList implements OnInit {
   viewPrescription(id: string): void {
     if (!id) return;
     this.router.navigate(['/view-prescription'], {
-      queryParams: { consultationId: id }
+      queryParams: { consultationId: id } 
     });
   }
-downloadPrescription(record: any): void {
+
+  downloadPrescription(record: any): void {
     if (this.isDownloading || !record) return;
     this.isDownloading = true;
+
     const trackingId = record.targetId;
     const displayId = record.consultationId || record.appointmentId || 'Doc';
 
@@ -87,7 +91,7 @@ downloadPrescription(record: any): void {
         
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Prescription_${displayId}.pdf`;
+        link.download = `Prescription_${displayId}.pdf`; 
         
         document.body.appendChild(link);
         link.click();

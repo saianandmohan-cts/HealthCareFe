@@ -310,3 +310,16 @@ input[disabled] {
   font-size: 13px;
   font-weight: 700;
 }
+
+select[name="time"] option:disabled {
+  color: #d32f2f !important;
+  font-weight: 500;
+  background-color: #fff1f2 !important;
+}
+
+.backend-error-msg {
+  color: #c62828 !important;
+  font-weight: 600;
+  font-size: 13px;
+  animation: shake 0.2s ease-in-out;
+}
