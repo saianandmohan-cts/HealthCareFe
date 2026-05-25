@@ -32,7 +32,6 @@ export class RegisterUser {
       ],
       age: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
       gender: ['', Validators.required],
-      // 🚀 FIXED: Blood group hatakar contactNumber add kiya (Strict 10 digit validation ke sath)
       contactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
@@ -43,7 +42,6 @@ export class RegisterUser {
     });
   }
 
-  // Getters for cleaner validation access in HTML
   get name() { return this.registerForm.controls['name']; }
   get age() { return this.registerForm.controls['age']; }
   get gender() { return this.registerForm.controls['gender']; }
@@ -71,12 +69,11 @@ export class RegisterUser {
     this.isLoading = true;
     const formVal = this.registerForm.value;
 
-    // 🚀 FIXED: Ab actual user ka numeric phone number body data payload me jayega
     const backendPayload = {
       name: formVal.name,
       age: Number(formVal.age),
       gender: formVal.gender,
-      contactNumber: formVal.contactNumber, // Direct dynamic connection
+      contactNumber: formVal.contactNumber, 
       email: formVal.email,
       password: formVal.password,
       address: formVal.address,

@@ -32,18 +32,15 @@ export class DoctorDashboard implements OnInit {
   }
 
   private loadDashboardData(): void {
-    // Extract the nested doctor data object if your backend wraps it too
     this.DoctorInfo$ = this.docService.getDoctor().pipe(
       map((res: any) => res.data) 
     );
     
-    // 2. FIX: Map the backend structure to extract the raw array from res.data
     this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
-      map((res: any) => res.data) // This targets the underlying array
+      map((res: any) => res.data) 
     );
   }
 
-  // ... rest of your existing code remains exactly the same ...
   toggleConsultation(appointmentId: string): void {
     this.selectedConsultation =
       this.selectedConsultation === appointmentId ? null : appointmentId;
@@ -70,7 +67,6 @@ export class DoctorDashboard implements OnInit {
       this.docService.deleteAppointment(appointmentId).subscribe({
         next: (res: any) => {
           console.log('🎉 Appointment deleted from system successfully:', res);
-          // 3. FIX: Apply the same map operation here when refreshing data
           this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
             map((res: any) => res.data)
           );
@@ -90,12 +86,10 @@ export class DoctorDashboard implements OnInit {
         next: (res: any) => {
           console.log('🎉 Status synced completed successfully on cluster pipeline:', res);
           
-          // ✅ FORCE RE-FETCH UPCOMING IMMEDIATELY
           this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
             map((res: any) => res.data)
           );
 
-          // ✅ NEW LINE: Child past consultation component ko automatic silent message pass kiya!
           this.docService.triggerPastRefresh();
         },
         error: (err) => {

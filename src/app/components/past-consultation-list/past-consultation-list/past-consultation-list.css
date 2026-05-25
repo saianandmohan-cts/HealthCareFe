@@ -1,9 +1,4 @@
-/* ================================
-   PAST CONSULTATION – CONSISTENT UI
-   Matches Patient Dashboard Theme
-================================ */
 
-/* 🔹 Neutralise Bootstrap layout noise (safe) */
 .container-fluid,
 .row,
 [class^="col-"] {
@@ -15,7 +10,7 @@
   min-height: auto !important;
 }
 
-/* ================= HEADER ================= */
+
 
 h2 {
   font-family: 'Plus Jakarta Sans', 'Manrope', sans-serif;
@@ -28,7 +23,6 @@ p.text-muted {
   font-size: 14px;
 }
 
-/* ================= CARD ================= */
 
 .card {
   margin-top: 14px;
@@ -39,14 +33,13 @@ p.text-muted {
   overflow: hidden;
 }
 
-/* ================= TABLE ================= */
 
 .table {
   margin: 0;
   font-family: 'Manrope', sans-serif;
 }
 
-/* Table Header */
+
 .table thead th {
   background: rgba(240,247,249,0.95) !important;
   color: #3f5667 !important;
@@ -57,7 +50,7 @@ p.text-muted {
   border-bottom: 1px solid rgba(216,228,234,0.8);
 }
 
-/* Table Row Hover */
+
 .table tbody tr {
   transition: background 0.18s ease;
 }
@@ -66,7 +59,6 @@ p.text-muted {
   background: rgba(15,118,110,0.04);
 }
 
-/* Table Cells */
 .table td {
   vertical-align: middle;
   font-size: 14px;
@@ -75,7 +67,6 @@ p.text-muted {
   border-top: 1px solid rgba(220,232,238,0.9);
 }
 
-/* ================= BADGES ================= */
 
 .badge {
   font-weight: 800;
@@ -83,25 +74,21 @@ p.text-muted {
   font-size: 12px;
 }
 
-/* Consultation ID */
 .badge.bg-primary {
   background: rgba(15,118,110,0.14) !important;
   color: var(--primary) !important;
   border: none !important;
 }
 
-/* Appointment ID */
 .badge.bg-light {
   background: rgba(255,255,255,0.95) !important;
   border: 1px solid rgba(216,228,234,0.9) !important;
 }
 
-/* Doctor Name emphasis */
 td.fw-bold.text-secondary {
   color: var(--primary) !important;
 }
 
-/* ================= ACTION BUTTONS ================= */
 
 .btn {
   border-radius: 999px !important;
@@ -114,7 +101,6 @@ td.fw-bold.text-secondary {
   transform: translateY(-1px);
 }
 
-/* View Button */
 .btn-outline-primary {
   border-color: rgba(15,118,110,0.5) !important;
   color: var(--primary) !important;
@@ -125,7 +111,6 @@ td.fw-bold.text-secondary {
   box-shadow: 0 6px 18px rgba(15,118,110,0.2);
 }
 
-/* Download Button */
 .btn-light {
   background: rgba(255,255,255,0.9) !important;
   border: 1px solid rgba(216,228,234,0.9) !important;
@@ -135,7 +120,6 @@ td.fw-bold.text-secondary {
   box-shadow: 0 6px 18px rgba(15,35,65,0.1);
 }
 
-/* ================= STATES ================= */
 
 .bi-folder-x {
   color: var(--muted) !important;
@@ -145,7 +129,6 @@ td.fw-bold.text-secondary {
   color: var(--primary) !important;
 }
 
-/* ================= PDF TEMPLATE (HIDDEN) ================= */
 
 .pdf-download-container {
   font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif;
@@ -153,7 +136,6 @@ td.fw-bold.text-secondary {
   background: #ffffff;
 }
 
-/* PDF Titles */
 .main-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
@@ -165,7 +147,6 @@ td.fw-bold.text-secondary {
   color: var(--text);
 }
 
-/* PDF Sections */
 .section-title {
   font-size: 13px;
   font-weight: 800;
@@ -186,7 +167,6 @@ td.fw-bold.text-secondary {
   color: #203243;
 }
 
-/* PDF Table */
 .med-table {
   width: 100%;
   border-collapse: collapse;
@@ -209,7 +189,6 @@ td.fw-bold.text-secondary {
   text-align: center;
 }
 
-/* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
   .table thead {

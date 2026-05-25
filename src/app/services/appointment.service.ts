@@ -9,7 +9,7 @@ import { Appointment } from '../models/appointment.model';
 export class AppointmentService {
   
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:5000/patient'; // Backend patient base route
+  private baseUrl = 'http://localhost:5000/patient';
 
   constructor() {}
 
@@ -29,24 +29,14 @@ export class AppointmentService {
     return this.http.get<Appointment[]>(`${this.baseUrl}/doctor/${doctorId}`);
   }
 
-  /**
-   * New appointment document initialization
-   */
   book(appointmentData: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/book-appointment`, appointmentData, { withCredentials: true });
   }
 
-  /**
-   * Reschedule ya properties change karne ke liye PATCH trigger
-   */
   update(appointmentId: string, updatedData: any): Observable<any> {
     return this.http.patch<any>(`${this.baseUrl}/modify-appointment/${appointmentId}`, updatedData, { withCredentials: true });
   }
 
-  /**
-   * ✅ FIXED: Express backend workflow ke sath cancel operations ko sync kiya
-   * Delete hitting ki jagah backend status code controller property override use karega
-   */
   cancel(appointmentId: string): Observable<any> {
     const cancelPayload = { status: 'Cancelled' };
     return this.http.patch<any>(`${this.baseUrl}/modify-appointment/${appointmentId}`, cancelPayload, { withCredentials: true });

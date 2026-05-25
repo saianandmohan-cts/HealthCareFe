@@ -15,7 +15,7 @@ export class ViewPrescription implements OnInit {
   private route = inject(ActivatedRoute);
   private pastService = inject(PastConsultations);
   private location = inject(Location); 
-  private cdr = inject(ChangeDetectorRef); // ✅ Change detection service inject ki
+  private cdr = inject(ChangeDetectorRef); 
 
   prescriptionDetails: any = null; 
   isLoading: boolean = true;
@@ -30,7 +30,7 @@ export class ViewPrescription implements OnInit {
       } else {
         this.isLoading = false;
         this.errorMessage = 'Invalid link: No consultation ID provided.';
-        this.cdr.detectChanges(); // Dynamic updates trigger
+        this.cdr.detectChanges(); 
       }
     });
   }
@@ -39,29 +39,25 @@ export class ViewPrescription implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.prescriptionDetails = null;
-    this.cdr.detectChanges(); // Loading state trigger kiya
+    this.cdr.detectChanges(); 
 
     this.pastService.getPrescriptionById(id).subscribe({
       next: (res: any) => {
-        console.log("📥 FRONTEND RECEIVED PRESCRIPTION PACKET:", res);
         
         if (res) {
-          // Wrapper object unpack matrix parsing standard
           this.prescriptionDetails = res.data || res; 
-          console.log("🎯 FINALIZED CONTENT FOR BINDING:", this.prescriptionDetails);
         } else {
           this.errorMessage = 'Prescription record format invalid.';
         }
         
         this.isLoading = false;
-        // ✅ CRITICAL PUSH: Component UI tree ko force-refresh kiya taaki loading state turant hat jaye
         this.cdr.detectChanges(); 
       },
       error: (err: any) => {
         console.error('Error fetching data from backend:', err);
-        this.errorMessage = err.error?.message || 'An error occurred while loading the prescription.';
+        this.errorMessage = err.error?.message || 'Error occurred while loading the prescription.';
         this.isLoading = false;
-        this.cdr.detectChanges(); // Error state trigger kiya
+        this.cdr.detectChanges(); 
       }
     });
   }

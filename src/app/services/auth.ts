@@ -2,8 +2,8 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
-import { Patient } from '../model/patient'; 
-import { Doctor } from '../model/doctor';
+import { Patient } from '../models/patient.model'; 
+import { Doctor } from '../models/doctor.model';
 
 export type UserRole = 'PATIENT' | 'DOCTOR';
 
@@ -74,9 +74,7 @@ export class Auth {
     );
   }
 
-  /**
-   * 🩺 LIVE COOKIE-BASED DOCTOR LOGIN
-   */
+
   loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
     console.log("Doctor credentials sent:", credentials);
     return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true }).pipe(
@@ -89,18 +87,13 @@ export class Auth {
     );
   }
 
-  /**
-   * State Clear Helper
-   */
+
   private clearAuthState(): void {
     this.currentUserSignal.set(null);
     this.roleSignal.set(null);
     this.isAuthenticatedSignal.set(false);
   }
 
-  /**
-   * Logout (Clears everything dynamically)
-   */
   logout(): void {
     const currentRole = this.getRole(); 
     
@@ -116,7 +109,7 @@ export class Auth {
         }
       },
       error: (err) => {
-        console.error("❌ Logout failed, clearing state anyway:", err);
+        console.error("Logout failed", err);
         this.clearAuthState();
         this.router.navigate(['/login-user']);
       }

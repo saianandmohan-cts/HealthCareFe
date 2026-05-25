@@ -13,9 +13,6 @@ export class PastConsultations {
 
   constructor() {}
 
-  /**
-   * ✅ FIXED: Yahan se filtering hata di h taaki raw array bina break hue dashboard tak jaye
-   */
   listAll(): Observable<any> {
     const currentPatient = this.authService.currentUser() as any;
     const patientId = currentPatient?.patientId || 'session';

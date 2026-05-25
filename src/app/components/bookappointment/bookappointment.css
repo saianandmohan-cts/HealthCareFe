@@ -37,7 +37,6 @@
   font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-/* ───────── TOPBAR (same as dashboard) ───────── */
 
 .topbar {
   display: flex;
@@ -79,7 +78,6 @@
   color: var(--muted);
 }
 
-/* ───────── BUTTONS (reused) ───────── */
 
 .primary-btn,
 .ghost-btn {
@@ -130,7 +128,6 @@
   border: 1px solid rgba(216,228,234,0.95);
 }
 
-/* ───────── CONTENT CARD (same as dashboard) ───────── */
 
 .content-card {
   margin-top: 16px;
@@ -154,7 +151,6 @@
   color: var(--muted);
 }
 
-/* ───────── SUCCESS MESSAGE ───────── */
 
 .saved-banner {
   margin-bottom: 18px;
@@ -166,7 +162,6 @@
   font-weight: 800;
 }
 
-/* ───────── FORM (same pattern as dashboard edit form) ───────── */
 
 .edit-form {
   margin-top: 6px;
@@ -229,7 +224,6 @@
   gap: 12px;
 }
 
-/* ───────── VALIDATION (same as dashboard) ───────── */
 
 input.ng-invalid.ng-touched,
 select.ng-invalid.ng-touched,
@@ -249,7 +243,6 @@ input[disabled] {
   color: red;
 }
 
-/* ───────── RESPONSIVE ───────── */
 
 @media (max-width: 900px) {
   .form-grid {
@@ -276,19 +269,17 @@ input[disabled] {
     flex-direction: column;
   }
 }
-/* ───────── DISABLED PRIMARY BUTTON (FORM SUBMIT) ───────── */
 
 .primary-btn:disabled,
 .primary-btn[disabled] {
-  background: #cfd8dc !important;       /* soft grey */
-  color: #6b7280 !important;            /* muted text */
+  background: #cfd8dc !important;       
+  color: #6b7280 !important;            
   cursor: not-allowed !important;
   box-shadow: none !important;
   transform: none !important;
   opacity: 0.75;
 }
 
-/* Disable hover / lift when button is disabled */
 .primary-btn:disabled:hover,
 .primary-btn[disabled]:hover {
   background: #cfd8dc !important;
@@ -296,13 +287,11 @@ input[disabled] {
   transform: none !important;
 }
 
-/* ───────── FORM ACTIONS ALIGN RIGHT ───────── */
 .form-actions {
   display: flex;
-  justify-content: flex-end;  /* ✅ buttons right side */
+  justify-content: flex-end;  
   gap: 12px;
 }
-/* ───────── CARD HEADER (TITLE + BACK BUTTON) ───────── */
 .card-header {
   display: flex;
   align-items: center;
@@ -311,12 +300,10 @@ input[disabled] {
   margin-bottom: 8px;
 }
 
-/* Keep title clean */
 .card-header h2 {
   margin: 0;
 }
 
-/* Back button sizing consistency */
 .card-header .back-btn {
   min-height: 40px;
   padding: 0 16px;
