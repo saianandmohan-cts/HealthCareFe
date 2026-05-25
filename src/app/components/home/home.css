@@ -214,6 +214,7 @@
   max-width: 1280px;
   margin: auto;
   padding: 28px;
+  color:#0f766e
 }
 
 .how-we-care h3 {
@@ -227,6 +228,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
+  color: black;
 }
 
 .point {
@@ -239,30 +241,85 @@
 }
 
 /* ================= FOOTER ================= */
+/* ================= FOOTER (GRADIENT & COMPACT) ================= */
 .footer {
   margin-top: 40px;
-  background: #4f5558;
-  color: #ffffff;
-  padding: 40px;
+  background: linear-gradient(135deg, #0f766e, #0f7db7); /* Your brand gradient */
+  color: #ffffff; /* Crisp white text */
+  padding: 24px 40px 16px; /* Ultra-compact height */
+  font-family: 'Manrope', sans-serif;
 }
 
 .footer-grid {
   max-width: 1280px;
   margin: auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  display: flex;
+  justify-content: space-between; /* Pushes content cleanly to opposite sides */
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.footer-col {
+  flex: 1;
+}
+
+/* Aligns the second column's text to the right for a balanced look */
+.footer-col.right-align {
+  text-align: right;
 }
 
 .footer h4 {
-  margin-bottom: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #e2f1f0; /* Ultra-light teal tint for clean title hierarchy */
+  margin-bottom: 8px;
 }
 
+.footer-col p, 
+.footer-col a {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85); /* Slightly translucent white for readability */
+  line-height: 1.5;
+  margin-bottom: 4px;
+  text-decoration: none;
+  display: block;
+  transition: color 0.18s ease;
+}
+
+/* Link hover effect */
+.footer-col a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Bottom Copyright Bar */
 .copyright {
-  margin-top: 24px;
-  font-size: 12px;
-  opacity: 0.85;
+  max-width: 1280px;
+  margin: 16px auto 0;
+  padding-top: 12px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
   text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.15); /* Soft divider lines over the gradient */
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .footer-grid {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .footer-col.right-align {
+    text-align: left; /* Reverts alignment on mobile devices */
+  }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 /* ================= RESPONSIVE ================= */
