@@ -24,7 +24,6 @@
 
 
 
-/* Modal content */
 .modal-content {
   background: #fff;
   border-radius: 12px;
@@ -36,9 +35,8 @@
 }
 
 
-/* Cancel appointment button */
 .cancel-btn {
-  margin-left: auto; /* pushes it to the right side */
+  margin-left: auto; 
   align-self: center;
   background-color: #e63946;
   color: #fff;
@@ -56,7 +54,6 @@
   transform: scale(1.05);
 }
 
-/* View More / View Less button */
 .button {
   background-color: #4caf50;
   color: #fff;

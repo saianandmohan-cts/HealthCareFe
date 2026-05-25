@@ -25,7 +25,6 @@ h2 {
   font-weight: 700;
 }
 
-/* REUSABLE FORM GRID LAYOUT */
 .details-view {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -44,7 +43,6 @@ h2 {
   box-shadow: 0 14px 32px rgba(15, 35, 65, 0.08);
 }
 
-/* Grid layout rules for full width fields */
 .details-view > div.wide {
   grid-column: 1 / -1 !important;
 }
@@ -65,7 +63,6 @@ h2 {
   color: #102133;
 }
 
-/* PREMIUM EDIT MODE INPUTS */
 .details-view .field-box input {
   width: 100% !important;
   padding: 10px 14px !important;
@@ -83,7 +80,6 @@ h2 {
   box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08) !important;
 }
 
-/* UTILITY INTERFACE ACTION CONTROLS */
 .form-actions.right-align {
   display: flex;
   justify-content: flex-end;
@@ -135,7 +131,6 @@ h2 {
   font-weight: 600;
 }
 
-/* RESPONSIVE LAYOUT RULES FOR CHIPS */
 @media (max-width: 1160px) {
   .details-view { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

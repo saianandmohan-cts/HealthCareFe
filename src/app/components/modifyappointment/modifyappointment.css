@@ -31,7 +31,6 @@
   box-sizing: border-box;
 }
 
-/* ───────── PAGE WRAPPER ───────── */
 
 .dashboard-page {
   max-width: 1280px;
@@ -41,7 +40,6 @@
   font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-/* ───────── TOP BAR ───────── */
 
 .topbar {
   display: flex;
@@ -83,7 +81,6 @@
   color: var(--muted);
 }
 
-/* ───────── BUTTONS ───────── */
 
 .primary-btn,
 .ghost-btn,
@@ -131,7 +128,6 @@
   transform: translateY(-1px);
 }
 
-/* ───────── CONTENT CARD ───────── */
 
 .content-card {
   margin-top: 16px;
@@ -155,7 +151,6 @@
   color: var(--muted);
 }
 
-/* ───────── SUCCESS BANNER ───────── */
 
 .saved-banner {
   margin-bottom: 18px;
@@ -167,7 +162,6 @@
   font-weight: 800;
 }
 
-/* ───────── DETAILS VIEW (READ ONLY) ───────── */
 
 .details-view {
   display: grid;
@@ -189,7 +183,6 @@
   font-weight: 700;
 }
 
-/* ───────── FORM ───────── */
 
 .form-grid {
   display: grid;
@@ -235,7 +228,6 @@
   grid-column: span 2;
 }
 
-/* ───────── VALIDATION ───────── */
 
 input.ng-invalid.ng-touched,
 select.ng-invalid.ng-touched,
@@ -250,7 +242,6 @@ textarea.ng-invalid.ng-touched {
   color: var(--danger);
 }
 
-/* ───────── FORM ACTIONS ───────── */
 
 .form-actions {
   margin-top: 20px;
@@ -258,7 +249,6 @@ textarea.ng-invalid.ng-touched {
   gap: 12px;
 }
 
-/* ───────── RESPONSIVE ───────── */
 
 @media (max-width: 900px) {
   .form-grid,
@@ -283,7 +273,6 @@ textarea.ng-invalid.ng-touched {
   }
 }
 
-/* ───────── CARD HEADER (TOP RIGHT BACK BUTTON) ───────── */
 .card-header {
   display: flex;
   align-items: center;
@@ -302,7 +291,6 @@ textarea.ng-invalid.ng-touched {
   font-weight: 700;
 }
 
-/* ───────── FORM FOOTER (BOTTOM RIGHT ACTIONS) ───────── */
 .form-footer {
   margin-top: 24px;
   display: flex;
@@ -310,7 +298,6 @@ textarea.ng-invalid.ng-touched {
   gap: 12px;
 }
 
-/* Mobile stacking */
 @media (max-width: 640px) {
   .card-header {
     flex-direction: column;

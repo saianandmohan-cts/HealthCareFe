@@ -10,7 +10,6 @@ h2 {
   margin-top: 30px;
 }
 
-/* SUB TABS BUTTONS */
 .sub-tab-buttons {
   display: inline-flex;
   gap: 6px;
@@ -42,7 +41,6 @@ h2 {
   color: #ffffff;
 }
 
-/* APPOINTMENT CONTAINER BOX */
 .appointment-box, .empty-box {
   padding: 20px;
   border-radius: 22px;
@@ -89,7 +87,6 @@ h2 {
   font-size: 15px;
 }
 
-/* APPOINTMENTS TABLE ROWS */
 .list-row {
   display: flex;
   justify-content: space-between;
@@ -114,7 +111,6 @@ h2 {
   color: #66788a;
 }
 
-/* BADGES & LAYOUT BUTTONS */
 .status {
   display: inline-flex;
   align-items: center;
@@ -169,7 +165,6 @@ h2 {
   transform: translateY(-1px);
 }
 
-/* RESPONSIVE SUB WINDOW */
 @media (max-width: 640px) {
   .appt-info { grid-template-columns: 1fr; }
   .list-row { flex-direction: column; align-items: start; }

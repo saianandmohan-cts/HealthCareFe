@@ -32,7 +32,6 @@
   font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-/* HERO SECTION */
 .profile-hero {
   display: grid;
   grid-template-columns: 1.65fr 0.95fr;
@@ -115,7 +114,6 @@
   font-weight: 800;
 }
 
-/* BUTTONS GLOBAL STYLES FOR OVERRIDE */
 .primary-btn, .ghost-btn {
   display: inline-flex;
   align-items: center;
@@ -144,7 +142,6 @@
   border-radius: 14px;
 }
 
-/* SNAPSHOT STATS */
 .snapshot {
   margin-top: 16px;
   display: grid;
@@ -178,7 +175,6 @@
   line-height: 1.45;
 }
 
-/* TABS ROW */
 .tab-buttons {
   margin-top: 18px;
   display: inline-flex;
@@ -210,7 +206,6 @@
   color: #ffffff;
 }
 
-/* DYNAMIC CONTENT CONTAINER WINDOW */
 .content-card {
   margin-top: 16px;
   padding: 20px;
@@ -220,7 +215,6 @@
   box-shadow: var(--shadow-soft);
 }
 
-/* LOGOUT BUTTON RED PREMIUM */
 button.ghost-btn {
   border: 1px solid #ff4d4d !important;
   color: white !important;
@@ -247,7 +241,6 @@ button.ghost-btn:focus {
   box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.3) !important;
 }
 
-/* MEDIA QUERIES LAYER 1 */
 @media (max-width: 1160px) {
   .snapshot { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
