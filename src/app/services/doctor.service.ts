@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { Doctor } from '../models/doctor.model';
 import { Appointment } from '../models/appointment.model';
@@ -14,6 +14,12 @@ const DOCTORS: any[] = [];
 export class DoctorService {
   private httpClient = inject(HttpClient);
 
+  public refreshPastConsultations$ = new BehaviorSubject<boolean>(true);
+
+  triggerPastRefresh(): void {
+    this.refreshPastConsultations$.next(true);
+  }
+
   constructor() {}
 
   /**
@@ -22,6 +28,14 @@ export class DoctorService {
   deleteAppointment(appointmentId: string): Observable<any> {
     return this.httpClient.delete<any>(
       `http://localhost:5000/doctor/deleteAppointment/${appointmentId}`, 
+      { withCredentials: true }
+    );
+  }
+
+  markAppointmentAsCompleted(appointmentId: string): Observable<any> {
+    return this.httpClient.patch<any>(
+      `http://localhost:5000/doctor/markAsCompleted/${appointmentId}`,
+      {}, // Empty body payload because parameter is path bound
       { withCredentials: true }
     );
   }

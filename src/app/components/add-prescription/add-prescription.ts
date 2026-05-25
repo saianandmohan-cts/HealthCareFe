@@ -35,10 +35,6 @@ export class AddPrescription implements OnInit, OnChanges {
       prescriptions: this.fb.array([]) 
     });
 
-    if (this.prescriptions.length === 0) {
-      this.addMedicine();
-    }
-
     this.patchIncomingData();
   }
 
@@ -48,18 +44,40 @@ export class AddPrescription implements OnInit, OnChanges {
     }
   }
 
-  private patchIncomingData(): void {
-    if (this.appointmentData) {
-      this.prescriptionForm.patchValue({
-        appointmentId: this.appointmentData._id || this.appointmentData.appointmentId, 
-        doctorId: this.appointmentData.doctorId,
-        consultationId: Math.floor(Date.now() / 1000) 
-      });
-    }
-  }
-
   get prescriptions(): FormArray {
     return this.prescriptionForm.get('prescriptions') as FormArray;
+  }
+
+  private patchIncomingData(): void {
+    if (!this.appointmentData || !this.prescriptionForm) return;
+
+    console.log("📥 [FORM ENGINE] MAPPING RECEIVED CONTEXT OBJECT:", this.appointmentData);
+
+    const secureMongoId = this.appointmentData._id || this.appointmentData.appointmentId;
+
+
+    this.prescriptionForm.patchValue({
+      appointmentId: secureMongoId, 
+      doctorId: this.appointmentData.doctorId || 'D001',
+      notes: this.appointmentData.notes && this.appointmentData.notes !== 'No notes added' ? this.appointmentData.notes : '',
+      consultationId: this.appointmentData.consultationId || Math.floor(Date.now() / 1000)
+    });
+
+    this.prescriptions.clear();
+
+    if (this.appointmentData.prescriptions && this.appointmentData.prescriptions.length > 0) {
+      this.appointmentData.prescriptions.forEach((med: any) => {
+        const medicineGroup = this.fb.group({
+          medicineName: [med.medicineName || med.name || '', Validators.required],
+          dosage: [med.dosage || '', Validators.required],
+          route: [med.route || 'Oral', Validators.required], 
+          frequency: [med.frequency || '', Validators.required]
+        });
+        this.prescriptions.push(medicineGroup);
+      });
+    } else {
+      this.addMedicine();
+    }
   }
 
   addMedicine(): void {
@@ -76,13 +94,13 @@ export class AddPrescription implements OnInit, OnChanges {
     if (this.prescriptions.length > 1) {
       this.prescriptions.removeAt(index);
     } else {
-      alert("Kam se kam ek medicine dalna zaroori hai!");
+      alert("Minimum one medicine id required");
     }
   }
 
   onSubmit(): void {
     if (this.prescriptionForm.invalid) {
-      this.errorMessage = "Kripya form ki sabhi details sahi se bharein.";
+      this.errorMessage = "Please fill up all the details.";
       return;
     }
 
@@ -92,10 +110,9 @@ export class AddPrescription implements OnInit, OnChanges {
 
     this.prescriptionService.savePrescription(this.prescriptionForm.value).subscribe({
       next: (res) => {
-        this.successMessage = "Prescription successfully save ho gaya hai!";
+        this.successMessage = "Prescription successfully saved";
         this.isSubmitting = false;
         
-        // ✅ FIX: Clear and rebuild initial group instead of full broken reset
         this.prescriptions.clear();
         this.prescriptionForm.get('notes')?.reset();
         this.addMedicine();
@@ -105,8 +122,8 @@ export class AddPrescription implements OnInit, OnChanges {
         }, 1500);
       },
       error: (err) => {
-        console.error("API Error:", err);
-        this.errorMessage = err.error?.message || "Server par data save nahi ho paya.";
+        console.error("API Error during save transaction flow:", err);
+        this.errorMessage = err.error?.message || "Error while saving data";
         this.isSubmitting = false;
       }
     });

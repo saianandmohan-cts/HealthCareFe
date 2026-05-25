@@ -72,8 +72,8 @@
           <th>Frequency</th>
         </tr>
       </thead>
-<tbody>
-        @for (med of prescriptionDetails.medications; track med.medicineName || med.name) {
+      <tbody>
+        @for (med of prescriptionDetails.medications; track med.name) {
           <tr>
             <td>{{ med.medicineName || med.name }}</td>
             <td>{{ med.dosage }}</td>

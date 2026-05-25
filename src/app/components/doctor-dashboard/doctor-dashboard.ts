@@ -81,4 +81,28 @@ export class DoctorDashboard implements OnInit {
       });
     }
   }
+
+  markAsCompleted(id: string): void {
+    if (!id) return;
+    
+    if (confirm('Are you sure you want to mark this active appointment session as completed?')) {
+      this.docService.markAppointmentAsCompleted(id).subscribe({
+        next: (res: any) => {
+          console.log('🎉 Status synced completed successfully on cluster pipeline:', res);
+          
+          // ✅ FORCE RE-FETCH UPCOMING IMMEDIATELY
+          this.upcomingAppointments$ = this.docService.getUpcomingAppointments().pipe(
+            map((res: any) => res.data)
+          );
+
+          // ✅ NEW LINE: Child past consultation component ko automatic silent message pass kiya!
+          this.docService.triggerPastRefresh();
+        },
+        error: (err) => {
+          console.error('❌ Error updating state status context:', err);
+          alert('Status completion transition update issue.');
+        }
+      });
+    }
+  }
 }
