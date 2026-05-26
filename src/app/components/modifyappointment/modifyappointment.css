@@ -459,7 +459,16 @@ textarea.ng-invalid.ng-touched {
     align-items: stretch;
   }
 
-
-
+button.primary-btn.sm:disabled,
+button.primary-btn[disabled],
+.form-footer button:disabled {
+  background-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+  cursor: not-allowed !important;
+  opacity: 0.8 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
 
 }

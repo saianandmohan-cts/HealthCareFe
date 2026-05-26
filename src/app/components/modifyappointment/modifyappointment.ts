@@ -30,8 +30,10 @@ export class Modifyappointment implements OnInit {
 
   availableDates: string[] = [];
   timeSlots: TimeSlot[] = [];
-  
   isDialogOpen: boolean = false;
+
+  originalDate: string = '';
+  originalTime: string = '';
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -61,20 +63,25 @@ export class Modifyappointment implements OnInit {
 
   private loadComponentData(): void {
     const id = this.route.snapshot.paramMap.get('appointmentId') || '';
-    console.log("Fetching Appointment ID for modification:", id);
     
     this.appointmentService.getById(id).subscribe({
       next: (res: any) => {
-        console.log("Raw Appointment data received:", res);
         const apptData = res.appointment || res.data || res;
         
         if (!apptData) {
-          console.error("No valid appointment body found!");
           this.router.navigate(['/patient']);
           return;
         }
 
         this.appointment = { ...apptData };
+
+        if (this.appointment.date) {
+          this.appointment.date = new Date(this.appointment.date).toISOString().split('T')[0];
+        }
+
+        this.originalDate = this.appointment.date;
+        this.originalTime = this.appointment.time;
+
         this.doctorService.getDoctorById(this.appointment.doctorId).subscribe({
           next: (data: any) => {
             const doctorData = data?.data || data?.doctor || data;
@@ -83,11 +90,10 @@ export class Modifyappointment implements OnInit {
               this.generateTimeSlots(); 
             }
           },
-          error: (err: any) => console.error('Error fetching doctor detail:', err)
+          error: (err: any) => console.error(err)
         });
       },
       error: (err: any) => {
-        console.error('Error fetching appointment:', err);
         this.router.navigate(['/patient']);
       }
     });
@@ -125,18 +131,47 @@ export class Modifyappointment implements OnInit {
     this.http.get<any>(url).subscribe({
       next: (res: any) => {
         const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
+        
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const isToday = date === todayStr;
+
         if (slotsArray.length > 0) {
-          this.timeSlots = slotsArray.map((s: any) => ({
-            time: s.time,
-            disabled: (s.isAvailable === false || s.isBooked === true) && s.time !== this.appointment.time
-          }));
+          this.timeSlots = slotsArray.map((s: any) => {
+            let isPastTime = false;
+
+            if (isToday) {
+              const timeMatch = s.time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+              if (timeMatch) {
+                let hours = parseInt(timeMatch[1], 10);
+                const minutes = parseInt(timeMatch[2], 10);
+                const ampm = timeMatch[3].toUpperCase();
+
+                if (ampm === 'PM' && hours < 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+
+                const slotDateTime = new Date(now);
+                slotDateTime.setHours(hours, minutes, 0, 0);
+
+                if (slotDateTime.getTime() < now.getTime()) {
+                  isPastTime = true;
+                }
+              }
+            }
+
+            const backendDisabled = s.isAvailable === false || s.isBooked === true;
+
+            return {
+              time: s.time,
+              disabled: (backendDisabled || isPastTime) && s.time !== this.originalTime
+            };
+          });
         } else {
           this.timeSlots = [];
         }
         this.cdr.detectChanges(); 
       },
       error: (err: any) => {
-        console.error('Error fetching slots for modification:', err);
         this.timeSlots = [];
         this.cdr.detectChanges();
       }
@@ -158,10 +193,9 @@ export class Modifyappointment implements OnInit {
       next: (res: any) => {
         this.router.navigate(['/patient']);
       },
-      error: (err: any) => console.error('Update operation failed:', err)
+      error: (err: any) => console.error(err)
     });
   }
-
 
   openConfirmationDialog(): void {
     this.isDialogOpen = true;
@@ -176,14 +210,14 @@ export class Modifyappointment implements OnInit {
   confirmAndExecuteCancel(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
     
-    this.isDialogOpen = false; // Close dialog card layout
+    this.isDialogOpen = false; 
     const cancelPayload = { status: 'Cancelled' };
 
     this.appointmentService.update(this.appointment.appointmentId, cancelPayload).subscribe({
       next: (res: any) => {
         this.router.navigate(['/patient']);
       },
-      error: (err: any) => console.error('Cancellation failed:', err)
+      error: (err: any) => console.error(err)
     });
   }
 }

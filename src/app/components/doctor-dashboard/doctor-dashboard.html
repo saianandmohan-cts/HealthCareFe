@@ -41,7 +41,7 @@
       Edit Availability
     </button>
     <button class="ghost-btn" (click)="onLogout()">
-      <span class="me-1">🚪</span> Logout
+      <span class="me-1">📤</span> Logout
     </button>
   </div>
 
@@ -55,27 +55,22 @@
           <div>
             <p class="mb-1 fw-bold text-dark fs-5">Patient Name: {{ val.patient.name || 'Unknown Patient' }}</p>
             <p class="mb-1 text-secondary small">Patient ID: {{ val.patient.patientId || 'N/A' }}</p>
-            <p class="mb-1 text-muted small">📅 Date: {{ val.date }} | 🕒 Time: {{ val.time }}</p>
+            <p class="mb-1 text-muted small">📅 Date: {{ val.date }} | ⏰ Time: {{ val.time }}</p>
 
             <button class="btn btn-sm btn-link text-decoration-none p-0 mt-2" (click)="toggleConsultation($any(val).appointmentId)">
-              {{ selectedConsultation === $any(val).appointmentId ? '📖 View Less' : '📘 View More Details' }}
+              {{ selectedConsultation === $any(val).appointmentId ? '🔼 View Less' : '🔽 View More Details' }}
             </button>
 
             @if (selectedConsultation === $any(val).appointmentId) {
               <div class="expanded-details mt-3 p-3 bg-light rounded-3 border">
                 <p class="mb-2 text-dark"><strong>Medical History:</strong> {{ val.patient.medicalHistory || 'None' }}</p>
                 <p class="mb-0 text-dark"><strong>Allergy History:</strong> {{ val.patient.allergy || 'No known allergies' }}</p>
+                <p class="mb-0 mt-2 text-dark"><strong>Reason:</strong> {{ val.reason || 'General Health Checkup' }}</p>
               </div>
             }
           </div>
           
           <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-success btn-sm rounded-pill px-3 fw-medium d-inline-flex align-items-center shadow-sm text-white" 
-                    (click)="markAsCompleted($any(val).appointmentId)" 
-                    style="background: #10b981; border: none; font-size: 0.85rem; height: 32px; letter-spacing: 0.02em;">
-              <span class="me-1" style="font-size: 0.95rem;">✓</span> Mark as Complete
-            </button>
-
             <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-medium d-inline-flex align-items-center" 
                     (click)="cancelAppointment($any(val).appointmentId)"
                     style="font-size: 0.85rem; height: 32px; letter-spacing: 0.02em;">

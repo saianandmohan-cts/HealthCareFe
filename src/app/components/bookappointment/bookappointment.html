@@ -26,15 +26,37 @@
       <div class="form-grid">
 
         <label>
+          <span>Specialisation</span>
+          <select
+            name="specialisation"
+            [(ngModel)]="selectedSpecialisation"
+            (change)="onSpecialisationChange()"
+            required
+            #spec="ngModel">
+            <option value="" disabled selected>Select Specialisation</option>
+            <option *ngFor="let dept of uniqueDepartments" [value]="dept">
+              {{ dept }}
+            </option>
+          </select>
+          <small class="error" *ngIf="spec.invalid && spec.touched">
+            Specialisation is required
+          </small>
+        </label>
+
+        <label>
           <span>Doctor</span>
           <select
             name="doctorId"
             [(ngModel)]="appointment.doctorId"
-            (change)="generateTimeSlots()" required
+            (change)="generateTimeSlots()" 
+            [disabled]="!selectedSpecialisation"
+            required
             #doctorId="ngModel">
-            <option value="" disabled selected>Select doctor</option>
-            <option *ngFor="let d of doctors" [value]="d.doctorId">
-              {{ d.name }} ({{ d.department }})
+            <option value="" disabled selected>
+              {{ !selectedSpecialisation ? 'Choose specialisation first' : 'Select doctor' }}
+            </option>
+            <option *ngFor="let d of filteredDoctors" [value]="d.doctorId">
+              {{ d.name }}
             </option>
           </select>
 
@@ -139,7 +161,7 @@
 
         <button
           type="button" class="ghost-btn sm"
-          (click)="apptForm.resetForm()">
+          (click)="clearFormReset()">
           Clear
         </button>
       </div>

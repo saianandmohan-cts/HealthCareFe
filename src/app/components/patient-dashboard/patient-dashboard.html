@@ -58,7 +58,7 @@
   <section class="content-card">
     
     @if (activeTab === 'appointments') {
-      <app-patient-appointments [appointments]="appointments"></app-patient-appointments>
+      <app-patient-appointments [appointments]="appointments" [doctors]="doctors"></app-patient-appointments>
     }
 
     @if (activeTab === 'history') {

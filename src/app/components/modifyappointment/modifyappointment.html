@@ -79,7 +79,13 @@
         <button
           type="submit"
           class="primary-btn sm"
-          [disabled]="modifyForm.invalid">
+          [disabled]="modifyForm.invalid || (appointment.date === originalDate && appointment.time === originalTime)"
+          [style.background-color]="(appointment.date === originalDate && appointment.time === originalTime) ? '#d1d5db' : ''"
+          [style.color]="(appointment.date === originalDate && appointment.time === originalTime) ? '#9ca3af' : ''"
+          [style.border-color]="(appointment.date === originalDate && appointment.time === originalTime) ? '#d1d5db' : ''"
+          [style.cursor]="(appointment.date === originalDate && appointment.time === originalTime) ? 'not-allowed' : 'pointer'"
+          [style.opacity]="(appointment.date === originalDate && appointment.time === originalTime) ? '1' : '1'"
+          [style.box-shadow]="(appointment.date === originalDate && appointment.time === originalTime) ? 'none' : ''">
           Update Appointment
         </button>
 

@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 })
 export class PatientAppointments implements OnChanges {
   @Input() appointments: any[] = []; 
-  
+  @Input() doctors: any[] = []; 
   appointmentView: 'upcoming' | 'past' = 'upcoming';
 
   upcomingAppointments: any[] = [];
@@ -19,30 +19,94 @@ export class PatientAppointments implements OnChanges {
   nextAppointment: any | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['appointments']) {
+    if (changes['appointments'] || changes['doctors']) {
       this.updateAppointmentsView();
     }
   }
 
+
+  private parseDateTime(dateStr: string, timeStr: string): Date {
+    const baseDate = new Date(dateStr);
+    if (!timeStr) return baseDate;
+
+    const timeMatch = timeStr.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+    if (!timeMatch) return baseDate;
+
+    let hours = parseInt(timeMatch[1], 10);
+    const minutes = parseInt(timeMatch[2], 10);
+    const ampm = timeMatch[3].toUpperCase();
+
+    if (ampm === 'PM' && hours < 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+
+    baseDate.setHours(hours, minutes, 0, 0);
+    return baseDate;
+  }
+
   private updateAppointmentsView(): void {
     const rawData = this.appointments || [];
-    this.upcomingAppointments = rawData
-      .filter(a => a.status && a.status.toLowerCase() === 'scheduled')
-      .sort((a, b) => {
-        const dateA = a.date ? new Date(a.date).getTime() : 0;
-        const dateB = b.date ? new Date(b.date).getTime() : 0;
-        return dateA - dateB; 
-      });
-    this.pastAppointments = rawData
-      .filter(a => a.status && a.status.toLowerCase() !== 'scheduled')
-      .sort((a, b) => {
-        const dateA = a.date ? new Date(a.date).getTime() : 0;
-        const dateB = b.date ? new Date(b.date).getTime() : 0;
-        return dateB - dateA; 
-      });
-    this.nextAppointment = this.upcomingAppointments.length > 0 ? this.upcomingAppointments[0] : null;
+    const masterDoctors = this.doctors || [];
+    
+    const now = new Date();
 
-    console.log("=== PROCESSED UPCOMING ===", this.upcomingAppointments);
-    console.log("=== PROCESSED PAST ===", this.pastAppointments);
+    const mappedPool = rawData.map(a => {
+      let resolvedDoctorName = 'Unknown Doctor';
+
+      if (a.doctorName) {
+        resolvedDoctorName = a.doctorName;
+      } 
+      else if (a.doctorId && typeof a.doctorId === 'object') {
+        resolvedDoctorName = a.doctorId.name || 'Doctor';
+      } 
+      else if (a.doctorId && typeof a.doctorId === 'string') {
+        const foundDoc = masterDoctors.find((d: any) => String(d.doctorId) === String(a.doctorId));
+        if (foundDoc) {
+          resolvedDoctorName = foundDoc.name;
+        } else {
+          resolvedDoctorName = `Doctor (${a.doctorId})`;
+        }
+      }
+
+      return {
+        ...a,
+        doctorName: resolvedDoctorName, 
+        _computedTimestamp: this.parseDateTime(a.date, a.time).getTime()
+      };
+    });
+
+    const activeScheduledPool = mappedPool
+      .filter(a => a.status && a.status.toLowerCase() === 'scheduled')
+      .sort((a, b) => a._computedTimestamp - b._computedTimestamp);
+
+    const strictUpcoming = activeScheduledPool.filter(a => {
+      const apptDate = new Date(a.date);
+      const isToday = apptDate.getDate() === now.getDate() &&
+                      apptDate.getMonth() === now.getMonth() &&
+                      apptDate.getFullYear() === now.getFullYear();
+
+      if (isToday) {
+        return true; 
+      }
+      return a._computedTimestamp >= now.getTime();
+    });
+
+    const pastDueScheduled = activeScheduledPool.filter(a => {
+      const apptDate = new Date(a.date);
+      const isToday = apptDate.getDate() === now.getDate() &&
+                      apptDate.getMonth() === now.getMonth() &&
+                      apptDate.getFullYear() === now.getFullYear();
+                      
+      return !isToday && a._computedTimestamp < now.getTime();
+    });
+
+    this.nextAppointment = strictUpcoming.length > 0 ? strictUpcoming[0] : null;
+
+    this.upcomingAppointments = strictUpcoming.length > 1 ? strictUpcoming.slice(1) : [];
+
+    const baselinePast = mappedPool
+      .filter(a => a.status && a.status.toLowerCase() !== 'scheduled');
+
+    this.pastAppointments = [...pastDueScheduled, ...baselinePast]
+      .sort((a, b) => b._computedTimestamp - a._computedTimestamp);
   }
 }

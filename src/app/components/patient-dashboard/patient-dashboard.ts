@@ -24,6 +24,7 @@ export class PatientDashboard implements OnInit {
   patientDetails: Patient | null = null;
   appointments: any[] = []; 
   medicalHistory: string[] = [];
+  doctors: any[] = []; 
 
   private authService = inject(Auth); 
   private doctorService = inject(DoctorService); 
@@ -44,6 +45,8 @@ export class PatientDashboard implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadDoctorsPool();
+
     const routeId = this.route.snapshot.paramMap.get('patientId');
     if (routeId) {
       this.loadDashboardData(routeId);
@@ -65,6 +68,17 @@ export class PatientDashboard implements OnInit {
     this.cdr.detectChanges();
   }
 
+
+  private loadDoctorsPool(): void {
+    this.doctorService.getAllDoctors().subscribe({
+      next: (res: any) => {
+        this.doctors = res && Array.isArray(res.data) ? res.data : (res || []);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error fetching master registry:', err)
+    });
+  }
+
   private loadDashboardData(patientId: string): void {
     this.pastService.listAll().subscribe({
       next: (res) => {
@@ -76,7 +90,8 @@ export class PatientDashboard implements OnInit {
           
           const rawAppointments = res.appointments || [];
           if (rawAppointments.length > 0) {
-            this.processAppointmentsWithDoctors(rawAppointments);
+            this.appointments = [...rawAppointments];
+            this.cdr.detectChanges();
           } else {
             this.appointments = [];
             this.cdr.detectChanges();
@@ -85,34 +100,6 @@ export class PatientDashboard implements OnInit {
       },
       error: (err) => console.error('Dashboard Fetch Error:', err)
     });
-  }
-
-  private processAppointmentsWithDoctors(rawAppointments: any[]): void {
-    this.appointments = rawAppointments.map(app => {
-      const appObj = { ...app, doctorName: 'Loading Doctor...' };
-
-      if (app.doctorId) {
-        this.doctorService.getDoctorById(app.doctorId).subscribe({
-          next: (docRes: any) => {
-            const docData = docRes?.data || docRes?.doctor || docRes;
-            if (docData && docData.name) {
-              appObj.doctorName = docData.name;
-            } else {
-              appObj.doctorName = 'Hospital Doctor';
-            }
-            this.cdr.detectChanges();
-          },
-          error: () => {
-            appObj.doctorName = 'Hospital Doctor';
-            this.cdr.detectChanges();
-          }
-        });
-      } else {
-        appObj.doctorName = 'General Physician';
-      }
-      return appObj;
-    });
-    this.cdr.detectChanges();
   }
 
   get patientInitials(): string {

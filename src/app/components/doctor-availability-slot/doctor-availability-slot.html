@@ -8,7 +8,7 @@
     </select>
   </div>
 
-  <div *ngIf="selectedDate">
+  <div *ngIf="selectedDate" class="ms-5 flex-grow-1">
     <h6>Slots for {{ selectedDate | date:'fullDate' }}</h6>
     <hr>
 
@@ -23,6 +23,10 @@
         <span [class.text-success]="slot.isAvailable"
               [class.text-danger]="!slot.isAvailable">
           ({{ slot.isAvailable ? 'Available' : 'Unavailable' }})
+        </span>
+        
+        <span *ngIf="slot.isBooked" class="badge bg-warning text-dark ms-2" style="font-size: 0.75rem;">
+          ⚠️ Booked
         </span>
       </label>
     </div>

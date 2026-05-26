@@ -39,9 +39,12 @@ export class BookAppointment implements OnInit, OnDestroy {
     reason: ''
   };
 
-  doctors: Doctor[] = [];
-  availableDates: string[] = [];
-  timeSlots: TimeSlot[] = [];
+  doctors: Doctor[] = [];             
+  filteredDoctors: Doctor[] = [];     
+  uniqueDepartments: string[] = [];  
+  selectedSpecialisation: string = ''; 
+  availableDates: string[] = [];       
+  timeSlots: TimeSlot[] = [];          
 
   private doctorService = inject(DoctorService);
   private appointmentService = inject(AppointmentService);
@@ -66,6 +69,12 @@ export class BookAppointment implements OnInit, OnDestroy {
     this.doctorService.getAllDoctors().subscribe({
       next: (res: any) => {
         this.doctors = res && Array.isArray(res.data) ? res.data : [];
+        
+        const depts = this.doctors
+          .map(doc => doc.department)
+          .filter((value, index, self) => value && self.indexOf(value) === index);
+          
+        this.uniqueDepartments = depts.sort();
         this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error fetching doctors:', err)
@@ -73,6 +82,21 @@ export class BookAppointment implements OnInit, OnDestroy {
     
     this.generateNextFiveDays();
     this.setupActiveSlotPolling(); 
+  }
+
+  onSpecialisationChange(): void {
+    this.appointment.doctorId = '';
+    this.appointment.time = '';
+    this.timeSlots = [];
+    
+    if (this.selectedSpecialisation) {
+      this.filteredDoctors = this.doctors.filter(
+        doc => doc.department === this.selectedSpecialisation
+      );
+    } else {
+      this.filteredDoctors = [];
+    }
+    this.cdr.detectChanges();
   }
 
   private setupActiveSlotPolling(): void {
@@ -93,11 +117,38 @@ export class BookAppointment implements OnInit, OnDestroy {
           if (!res) return;
           const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
           
+          const now = new Date();
+          const todayStr = now.toISOString().split('T')[0];
+          const isToday = this.appointment.date === todayStr;
+
           if (slotsArray.length > 0) {
-            const updatedSlots = slotsArray.map((s: any) => ({
-              time: s.time,
-              disabled: s.isAvailable === false || s.isBooked === true
-            }));
+            const updatedSlots = slotsArray.map((s: any) => {
+              let isPastTime = false;
+
+              if (isToday) {
+                const timeMatch = s.time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+                if (timeMatch) {
+                  let hours = parseInt(timeMatch[1], 10);
+                  const minutes = parseInt(timeMatch[2], 10);
+                  const ampm = timeMatch[3].toUpperCase();
+
+                  if (ampm === 'PM' && hours < 12) hours += 12;
+                  if (ampm === 'AM' && hours === 12) hours = 0;
+
+                  const slotDateTime = new Date(now);
+                  slotDateTime.setHours(hours, minutes, 0, 0);
+
+                  if (slotDateTime.getTime() < now.getTime()) {
+                    isPastTime = true;
+                  }
+                }
+              }
+
+              return {
+                time: s.time,
+                disabled: s.isAvailable === false || s.isBooked === true || isPastTime
+              };
+            });
 
             const currentlySelected = this.appointment.time;
             const matchSlot = updatedSlots.find((x: any) => x.time === currentlySelected);
@@ -142,11 +193,39 @@ export class BookAppointment implements OnInit, OnDestroy {
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
+        
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const isToday = date === todayStr;
+
         if (slotsArray.length > 0) {
-          this.timeSlots = slotsArray.map((s: any) => ({
-            time: s.time,
-            disabled: s.isAvailable === false || s.isBooked === true
-          }));
+          this.timeSlots = slotsArray.map((s: any) => {
+            let isPastTime = false;
+
+            if (isToday) {
+              const timeMatch = s.time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+              if (timeMatch) {
+                let hours = parseInt(timeMatch[1], 10);
+                const minutes = parseInt(timeMatch[2], 10);
+                const ampm = timeMatch[3].toUpperCase();
+
+                if (ampm === 'PM' && hours < 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+
+                const slotDateTime = new Date(now);
+                slotDateTime.setHours(hours, minutes, 0, 0);
+
+                if (slotDateTime.getTime() < now.getTime()) {
+                  isPastTime = true;
+                }
+              }
+            }
+
+            return {
+              time: s.time,
+              disabled: s.isAvailable === false || s.isBooked === true || isPastTime
+            };
+          });
         } else {
           this.timeSlots = []; 
         }
@@ -155,7 +234,16 @@ export class BookAppointment implements OnInit, OnDestroy {
     });
   }
 
- submitAppointment(): void {
+  clearFormReset(): void {
+    this.apptForm.resetForm();
+    this.selectedSpecialisation = '';
+    this.filteredDoctors = [];
+    this.appointment = { doctorId: '', date: '', time: '', mode: '', reason: '' };
+    this.timeSlots = [];
+    this.cdr.detectChanges();
+  }
+
+  submitAppointment(): void {
     if (this.apptForm.invalid) {
       this.apptForm.form.markAllAsTouched();
       return;
@@ -185,20 +273,14 @@ export class BookAppointment implements OnInit, OnDestroy {
         
         setTimeout(() => {
           this.booked = false;
-          this.apptForm.resetForm();
-          this.appointment = { doctorId: '', date: '', time: '', mode: '', reason: '' };
-          this.timeSlots = [];
-          this.cdr.detectChanges();
+          this.clearFormReset();
           this.router.navigate(['/patient']);
         }, 2000);
       },
       error: (err: any) => {
         console.error('BACKEND REJECTED REQ:', err);
-        
         const backendErrorMsg = err.error?.message || "This slot is unavailable.";
-        
         this.appointment.time = ''; 
-        
         this.generateTimeSlots();
         
         setTimeout(() => {
