@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient , HttpErrorResponse} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, map, switchMap } from 'rxjs'; 
 import { Patient } from '../models/patient.model'; 
 import { Doctor } from '../models/doctor.model';
 
@@ -25,10 +25,37 @@ export class Auth {
   readonly authenticated = computed(() => this.isAuthenticatedSignal());
 
   constructor() {
-    this.checkSession().subscribe();
+    this.enforceSingleTabSession();
   }
 
-  
+  private enforceSingleTabSession(): void {
+    const isTabActive = sessionStorage.getItem('1c_tab_active');
+    
+    if (!isTabActive) {
+      console.warn('🚨 1C Security: New tab detection triggered via URL copy-paste. Logging out safely...');
+      
+      sessionStorage.setItem('1c_tab_active', 'true');
+      this.executeTabLogoutCleanup();
+    }
+  }
+
+  private executeTabLogoutCleanup(): void {
+    this.http.post<any>(`${this.API_BASE_URL}/login/logout`, {}, { withCredentials: true }).subscribe({
+      next: (res) => {
+        console.log("🔒 Tab security breach cleared. Session terminated:", res.message);
+        this.clearAuthState();
+
+        this.router.navigate(['/']); 
+      },
+      error: (err) => {
+        this.clearAuthState();
+        
+
+        this.router.navigate(['/']); 
+      }
+    });
+  }
+
   checkSession(): Observable<any> {
     return this.http.get<any>(`${this.API_BASE_URL}/login/me`, { withCredentials: true }).pipe(
       tap((response) => {
@@ -42,13 +69,11 @@ export class Auth {
       }),
       catchError((error: HttpErrorResponse) => {
         this.clearAuthState();
-       if (error.status === 401 || error.status === 400) {
+        if (error.status === 401 || error.status === 400) {
           console.log('ℹ️ 1C Hospital Engine: No active session found. User is in Guest Mode.');
         } else {
           console.warn('⚠️ Server Connectivity Issue:', error.message);
         }
-
-
         return of({ success: false, message: 'No active session' }); 
       })
     );
@@ -58,37 +83,42 @@ export class Auth {
     return this.http.post<any>(`${this.API_BASE_URL}/login/register`, patientData);
   }
 
-
   loginPatient(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.API_BASE_URL}/login`, credentials, { withCredentials: true }).pipe(
-      tap((response) => {
+      switchMap((response: any) => {
         if (response && (response.success === true || response.message === "Login successful")) {
-          console.log("🔒 Patient login successful. Syncing profile...");
-          this.checkSession().subscribe({
-            next: () => {
-              response.success = true; 
-            }
-          });
+          console.log("🔒 Patient identity verified on core backend. Synchronizing signals...");
+          return this.checkSession().pipe(
+            map(() => {
+              response.success = true;
+              return response;
+            })
+          );
         }
+        return of(response);
       })
     );
   }
-
 
   loginDoctor(credentials: { doctorId: string; password: string }): Observable<any> {
     console.log("Doctor credentials sent:", credentials);
     return this.http.post<any>(`${this.API_BASE_URL}/login/doctor`, credentials, { withCredentials: true }).pipe(
-      tap((response) => {
-        if (response && response.success === true) {
-          console.log("🔒 Doctor login verified successfully. Securing state...");
-          this.checkSession().subscribe();
+      switchMap((response: any) => {
+        if (response && (response.success === true || response.message === "Doctor login successful")) {
+          console.log("🔒 Doctor identity verified on core backend. Hydrating signals...");
+          return this.checkSession().pipe(
+            map(() => {
+              response.success = true;
+              return response;
+            })
+          );
         }
+        return of(response);
       })
     );
   }
 
-
-  private clearAuthState(): void {
+  public clearAuthState(): void {
     this.currentUserSignal.set(null);
     this.roleSignal.set(null);
     this.isAuthenticatedSignal.set(false);
@@ -130,7 +160,7 @@ export class Auth {
         ...this.currentUser(),
         ...updatedPatient
       } as any);
-      console.log("✏️ Local patient profile signal updated:", this.currentUser());
+      console.log("Local patient profile signal updated:", this.currentUser());
     }
   }
 }

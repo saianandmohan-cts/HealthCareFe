@@ -82,6 +82,7 @@ export class LoginUser implements OnInit {
         this.isSubmitted = false;
         
         if (response && (response.success === true || response.message === 'Login successful')) {
+          sessionStorage.setItem('1c_tab_active', 'true');
           this.router.navigate(['/patient']);
         } else {
           this.loginError = response.message || 'Invalid response from server.';
@@ -91,9 +92,7 @@ export class LoginUser implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.isSubmitted = false;
-        
         this.loginError = err.error?.message || err.message || 'Incorrect Gmail or Password. Please try again.';
-        
         this.cdr.detectChanges(); 
       }
     });

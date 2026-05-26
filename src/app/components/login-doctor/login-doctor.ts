@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; // ✅ ChangeDetectorRef inject kiya
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
@@ -81,6 +81,7 @@ export class LoginDoctor implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response && response.success) {
+          sessionStorage.setItem('1c_tab_active', 'true');
           this.router.navigate(['/doctor']);
         } else {
           this.loginError = response.message || "Invalid Doctor ID or Password";
@@ -90,7 +91,6 @@ export class LoginDoctor implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.loginError = err.error?.message || err.message || "Incorrect Doctor ID or Password.";
-        
         this.cdr.detectChanges(); 
       }
     });
