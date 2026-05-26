@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AddPrescription as PrescriptionService } from '../../services/add-prescription';
+import { DoctorService } from '../../services/doctor.service'; 
 
 @Component({
   selector: 'app-add-prescription',
@@ -16,6 +17,7 @@ export class AddPrescription implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private prescriptionService = inject(PrescriptionService);
+  private doctorService = inject(DoctorService); 
 
   @Input() appointmentData: any = null;
   @Output() prescriptionSaved = new EventEmitter<void>(); 
@@ -54,7 +56,6 @@ export class AddPrescription implements OnInit, OnChanges {
     console.log("📥 [FORM ENGINE] MAPPING RECEIVED CONTEXT OBJECT:", this.appointmentData);
 
     const secureMongoId = this.appointmentData._id || this.appointmentData.appointmentId;
-
 
     this.prescriptionForm.patchValue({
       appointmentId: secureMongoId, 
@@ -119,6 +120,14 @@ export class AddPrescription implements OnInit, OnChanges {
 
         setTimeout(() => {
           this.prescriptionSaved.emit();
+
+        if (this.doctorService.refreshPastConsultations$) {
+            this.doctorService.refreshPastConsultations$.next(true); 
+          } else if (this.doctorService.triggerPastRefresh) {
+            this.doctorService.triggerPastRefresh();
+          }
+
+          console.log("🔄 [1C ENGINE] Past consultations state updated dynamically!");
         }, 1500);
       },
       error: (err) => {

@@ -42,4 +42,5 @@ export class PastConsultation implements OnInit {
   closePrescriptionModal() {
     this.activePrescriptionAppointment = null;
   }
+  
 }

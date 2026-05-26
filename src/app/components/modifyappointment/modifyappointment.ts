@@ -30,6 +30,8 @@ export class Modifyappointment implements OnInit {
 
   availableDates: string[] = [];
   timeSlots: TimeSlot[] = [];
+  
+  isDialogOpen: boolean = false;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -64,7 +66,6 @@ export class Modifyappointment implements OnInit {
     this.appointmentService.getById(id).subscribe({
       next: (res: any) => {
         console.log("Raw Appointment data received:", res);
-        
         const apptData = res.appointment || res.data || res;
         
         if (!apptData) {
@@ -123,10 +124,7 @@ export class Modifyappointment implements OnInit {
     
     this.http.get<any>(url).subscribe({
       next: (res: any) => {
-        console.log("Backend response for modification slots:", res);
-        
         const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
-        
         if (slotsArray.length > 0) {
           this.timeSlots = slotsArray.map((s: any) => ({
             time: s.time,
@@ -144,6 +142,7 @@ export class Modifyappointment implements OnInit {
       }
     });
   }
+
   updateAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
@@ -155,8 +154,6 @@ export class Modifyappointment implements OnInit {
       status: 'Scheduled'
     };
 
-    console.log("SENDING MODIFICATION PAYLOAD:", updatePayload);
-
     this.appointmentService.update(this.appointment.appointmentId, updatePayload).subscribe({
       next: (res: any) => {
         this.router.navigate(['/patient']);
@@ -164,14 +161,23 @@ export class Modifyappointment implements OnInit {
       error: (err: any) => console.error('Update operation failed:', err)
     });
   }
-  cancelAppointment(): void {
+
+
+  openConfirmationDialog(): void {
+    this.isDialogOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  closeConfirmationDialog(): void {
+    this.isDialogOpen = false;
+    this.cdr.detectChanges();
+  }
+
+  confirmAndExecuteCancel(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
-
-    const cancelPayload = { 
-      status: 'Cancelled' 
-    };
-
-    console.log("SENDING CANCELLATION PAYLOAD:", cancelPayload);
+    
+    this.isDialogOpen = false; // Close dialog card layout
+    const cancelPayload = { status: 'Cancelled' };
 
     this.appointmentService.update(this.appointment.appointmentId, cancelPayload).subscribe({
       next: (res: any) => {

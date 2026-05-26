@@ -4,7 +4,6 @@
 
     <div class="card-header">
       <h2>Appointment Details</h2>
-
       <a routerLink="/patient" class="ghost-btn back-btn">
         Back to Dashboard
       </a>
@@ -45,7 +44,6 @@
       (ngSubmit)="updateAppointment()">
 
       <div class="form-grid">
-
         <label>
           <span>New Date</span>
           <select
@@ -75,7 +73,6 @@
             </option>
           </select>
         </label>
-
       </div>
 
       <div class="form-footer">
@@ -89,12 +86,30 @@
         <button
           type="button"
           class="danger-btn sm"
-          (click)="cancelAppointment()">
+          (click)="openConfirmationDialog()">
           Cancel Appointment
         </button>
       </div>
-
     </form>
-
   </section>
+
+  <div class="custom-modal-backdrop" *ngIf="isDialogOpen">
+    <div class="custom-dialog-card animate-popup">
+      <div class="dialog-icon-wrapper">⚠️</div>
+      <h3 class="dialog-title">Confirm Cancellation</h3>
+      <p class="dialog-message">
+        Are you sure you want to cancel this appointment? This action cannot be undone and your slot will be released.
+      </p>
+      
+      <div class="dialog-action-buttons">
+        <button type="button" class="btn-secondary-cancel" (click)="closeConfirmationDialog()">
+          No, Keep It
+        </button>
+        <button type="button" class="btn-danger-confirm" (click)="confirmAndExecuteCancel()">
+          Yes, Cancel Appointment
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>
