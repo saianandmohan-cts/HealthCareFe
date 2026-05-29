@@ -17,19 +17,19 @@
           type="email"
           formControlName="email"
           placeholder="patient@example.com"
-          [class.is-invalid]="(email.invalid && (email.dirty || email.touched)) || loginError.includes('User')"
+          [class.is-invalid]="(email?.invalid && (email?.dirty || email?.touched)) || loginError().includes('User')"
         />
 
-        @if (email.invalid && (email.dirty || email.touched)) {
+        @if (email?.invalid && (email?.dirty || email?.touched)) {
           <div class="error">
-            @for (error of getEmailErrors(); track error) {
-              <span>⚠ {{ error }}</span>
-            }
+            @if (email?.errors?.['required']) { <span>⚠ Email is required</span> }
+            @if (email?.errors?.['email']) { <span>⚠ Invalid email format</span> }
           </div>
         }
-        @if (loginError && loginError.includes('User')) {
+        
+        @if (loginError() && loginError().includes('User')) {
           <div class="error">
-            <span>⚠ {{ loginError }}</span>
+            <span>⚠ {{ loginError() }}</span>
           </div>
         }
       </div>
@@ -41,25 +41,25 @@
           type="password"
           formControlName="password"
           placeholder="Enter your password"
-          [class.is-invalid]="(password.invalid && (password.dirty || password.touched)) || loginError.includes('password')"
+          [class.is-invalid]="(password?.invalid && (password?.dirty || password?.touched)) || loginError().includes('password')"
         />
 
-        @if (password.invalid && (password.dirty || password.touched)) {
+        @if (password?.invalid && (password?.dirty || password?.touched)) {
           <div class="error">
-            @for (error of getPasswordErrors(); track error) {
-              <span>⚠ {{ error }}</span>
-            }
+            @if (password?.errors?.['required']) { <span>⚠ Password is required</span> }
+            @if (password?.errors?.['minlength']) { <span>⚠ Password must be at least 8 characters</span> }
           </div>
         }
-        @if (loginError && loginError.includes('password')) {
+        
+        @if (loginError() && loginError().includes('password')) {
           <div class="error">
-            <span>⚠ {{ loginError }}</span>
+            <span>⚠ {{ loginError() }}</span>
           </div>
         }
       </div>
 
-      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading">
-        @if (isLoading) {
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading()">
+        @if (isLoading()) {
           <span>Logging in...</span>
         } @else {
           Login

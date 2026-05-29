@@ -30,17 +30,26 @@
     </div>
   </div>
 
-  <div class="d-flex gap-3 mb-4">
-    <button (click)="viewUpcoming()" [class.btn-primary]="flag === 1" [class.btn-success]="flag !== 1" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+  <div class="d-flex gap-3 mb-4 flex-wrap">
+    <button (click)="viewUpcoming()" 
+            [style.background-color]="flag === 1 ? '#8b5cf6' : '#ffffff'"
+            [style.color]="flag === 1 ? '#ffffff' : '#4b5563'"
+            class="button btn border rounded-pill px-4 py-2 shadow-sm fw-medium transition-all">
       Upcoming Appointments
     </button>
-    <button (click)="viewPast()" [class.btn-primary]="flag === 2" [class.btn-success]="flag !== 2" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+    <button (click)="viewPast()" 
+            [style.background-color]="flag === 2 ? '#8b5cf6' : '#ffffff'"
+            [style.color]="flag === 2 ? '#ffffff' : '#4b5563'"
+            class="button btn border rounded-pill px-4 py-2 shadow-sm fw-medium transition-all">
       Past Consultations
     </button>
-    <button (click)="editAvailability()" [class.btn-primary]="flag === 3" [class.btn-success]="flag !== 3" class="button btn text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+    <button (click)="editAvailability()" 
+            [style.background-color]="flag === 3 ? '#8b5cf6' : '#ffffff'"
+            [style.color]="flag === 3 ? '#ffffff' : '#4b5563'"
+            class="button btn border rounded-pill px-4 py-2 shadow-sm fw-medium transition-all">
       Edit Availability
     </button>
-    <button class="ghost-btn" (click)="onLogout()">
+    <button class="btn btn-outline-danger rounded-pill px-4 py-2 fw-medium shadow-sm" (click)="onLogout()">
       <span class="me-1">📤</span> Logout
     </button>
   </div>
@@ -96,7 +105,8 @@
 
     } @else if(flag === 3){
       <h5 class="mb-3 text-dark fw-bold">Edit Schedule Settings</h5>
-      <app-doctor-availability-slot></app-doctor-availability-slot>
+      
+      <app-doctor-availability-slot [doctorId]="currentDoctorId"></app-doctor-availability-slot>
     }
   </div>
 </div>

@@ -12,32 +12,31 @@
       Register to book appointments and manage health records
     </p>
 
-    <form [formGroup]="registerForm" (ngSubmit) = "onSubmit()">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" formControlName="name" placeholder="Enter full name" />
       </div>
-      @if (name.invalid && (name.touched || isSubmitted)) {
+      @if (name?.invalid && (name?.touched || isSubmitted())) {
         <div class="error">
-          @if (name.errors?.['required']) {
+          @if (name?.errors?.['required']) {
             <span>Name is required</span>
           }
-          @if (name.errors?.['pattern']) {
+          @if (name?.errors?.['pattern']) {
             <span>Name must start with a capital letter and be at least 3 characters</span>
           }
         </div>
       }
 
-
       <div class="form-group">
         <label>Age</label>
         <input type="number" formControlName="age" placeholder="Enter age" />
       </div>
-      @if (age.invalid && (age.touched || isSubmitted)) {
+      @if (age?.invalid && (age?.touched || isSubmitted())) {
         <div class="error">
-          @if (age.errors?.['required']) { <span>Age is required</span> }
-          @if (age.errors?.['min'] || age.errors?.['max']) { <span>Enter valid age (1–120)</span> }
+          @if (age?.errors?.['required']) { <span>Age is required</span> }
+          @if (age?.errors?.['min'] || age?.errors?.['max']) { <span>Enter valid age (1–120)</span> }
         </div>
       }
 
@@ -50,7 +49,7 @@
           }
         </select>
       </div>
-      @if (gender.invalid && (gender.touched || isSubmitted)) {
+      @if (gender?.invalid && (gender?.touched || isSubmitted())) {
         <div class="error">Gender is required</div>
       }
 
@@ -63,10 +62,10 @@
           maxlength="10"
         />
       </div>
-      @if (contactNumber.invalid && (contactNumber.touched || isSubmitted)) {
+      @if (contactNumber?.invalid && (contactNumber?.touched || isSubmitted())) {
         <div class="error">
-          @if (contactNumber.errors?.['required']) { <span>Phone number is required</span> }
-          @if (contactNumber.errors?.['pattern']) { <span>Enter a valid 10-digit mobile number</span> }
+          @if (contactNumber?.errors?.['required']) { <span>Phone number is required</span> }
+          @if (contactNumber?.errors?.['pattern']) { <span>Enter a valid 10-digit mobile number</span> }
         </div>
       }
 
@@ -74,10 +73,10 @@
         <label>Email</label>
         <input type="email" formControlName="email" placeholder="example@email.com" />
       </div>
-      @if (email.invalid && (email.touched || isSubmitted)) {
+      @if (email?.invalid && (email?.touched || isSubmitted())) {
         <div class="error">
-          @if (email.errors?.['required']) { <span>Email is required</span> }
-          @if (email.errors?.['email']) { <span>Invalid email format</span> }
+          @if (email?.errors?.['required']) { <span>Email is required</span> }
+          @if (email?.errors?.['email']) { <span>Invalid email format</span> }
         </div>
       }
 
@@ -85,10 +84,10 @@
         <label>Password</label>
         <input type="password" formControlName="password" placeholder="Minimum 8 characters" />
       </div>
-      @if (password.invalid && (password.touched || isSubmitted)) {
+      @if (password?.invalid && (password?.touched || isSubmitted())) {
         <div class="error">
-          @if (password.errors?.['required']) { <span>Password is required</span> }
-          @if (password.errors?.['minlength']) { <span>Password must be at least 8 characters</span> }
+          @if (password?.errors?.['required']) { <span>Password is required</span> }
+          @if (password?.errors?.['minlength']) { <span>Password must be at least 8 characters</span> }
         </div>
       }
 
@@ -96,7 +95,7 @@
         <label>Address</label>
         <textarea formControlName="address" rows="3" placeholder="Enter your full address"></textarea>
       </div>
-      @if (address.invalid && (address.touched || isSubmitted)) {
+      @if (address?.invalid && (address?.touched || isSubmitted())) {
         <div class="error">Address is required</div>
       }
 
@@ -116,11 +115,11 @@
           </label>
         </div>
       </div>
-      @if (allergic.invalid && (allergic.touched || isSubmitted)) {
+      @if (allergic?.invalid && (allergic?.touched || isSubmitted())) {
         <div class="error">Please select allergy status</div>
       }
 
-      @if (allergic.value === 'Yes') {
+      @if (allergic?.value === 'Yes') {
         <div class="form-group allergy-details-container">
           <label style="color: #dc2626; font-weight: 600;">Please specify your allergies</label>
           <textarea
@@ -131,12 +130,12 @@
         </div>
       }
 
-      @if (submitError) {
-        <div class="submit-error">{{ submitError }}</div>
+      @if (submitError()) {
+        <div class="submit-error">{{ submitError() }}</div>
       }
 
-      <button type="submit" class="submit-btn" [disabled]="isLoading">
-        {{ isLoading ? 'Registering Patient...' : 'Register' }}
+      <button type="submit" class="submit-btn" [disabled]="isLoading()">
+        {{ isLoading() ? 'Registering Patient...' : 'Register' }}
       </button>
     </form>
 

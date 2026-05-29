@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
@@ -11,89 +11,56 @@ import { Auth } from '../../services/auth';
   templateUrl: './login-user.html',
   styleUrl: './login-user.css',
 })
-export class LoginUser implements OnInit { 
+export class LoginUser { 
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(Auth);
-  private cdr = inject(ChangeDetectorRef); 
 
-  loginForm: FormGroup;
-  isSubmitted = false;
-  loginError = '';
-  isLoading = false; 
+  loginError = signal<string>('');
+  isSubmitted = signal<boolean>(false);
+  isLoading = signal<boolean>(false); 
+
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]]
+  });
+
+  get email() { return this.loginForm.get('email'); }
+  get password() { return this.loginForm.get('password'); }
 
   constructor() {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    });
-  }
-
-  ngOnInit(): void {
     this.loginForm.valueChanges.subscribe(() => {
-      if (this.loginError) {
-        this.loginError = ''; 
-        this.cdr.detectChanges(); 
+      if (this.loginError()) {
+        this.loginError.set(''); 
       }
     });
   }
 
-  get email() {
-    return this.loginForm.controls['email'];
-  }
-
-  get password() {
-    return this.loginForm.controls['password'];
-  }
-
-  getEmailErrors(): string[] {
-    const error: string[] = [];
-    if (this.email.errors?.['required']) {
-      error.push('Email is required');
-    }
-    if (this.email.errors?.['email']) {
-      error.push('Invalid email format');
-    }
-    return error;
-  }
-
-  getPasswordErrors(): string[] {
-    const error: string[] = [];
-    if (this.password.errors?.['required']) {
-      error.push('Password is required');
-    }
-    return error;
-  }
-
   onSubmit(): void {
-    this.loginError = '';
-    
+    this.loginError.set('');
+  
     if (this.loginForm.invalid) return;
-
-    this.isSubmitted = true;
-    this.isLoading = true; 
-    this.cdr.detectChanges(); 
-
+    this.isSubmitted.set(true);
+    this.isLoading.set(true); 
+    
     const credentials = this.loginForm.value;
 
     this.authService.loginPatient(credentials).subscribe({
       next: (response) => {
-        this.isLoading = false;
-        this.isSubmitted = false;
+        this.isLoading.set(false);
+        this.isSubmitted.set(false);
         
         if (response && (response.success === true || response.message === 'Login successful')) {
           sessionStorage.setItem('1c_tab_active', 'true');
           this.router.navigate(['/patient']);
         } else {
-          this.loginError = response.message || 'Invalid response from server.';
-          this.cdr.detectChanges();
+          this.loginError.set(response.message || 'Invalid response from server.');
         }
       },
       error: (err) => {
-        this.isLoading = false;
-        this.isSubmitted = false;
-        this.loginError = err.error?.message || err.message || 'Incorrect Gmail or Password. Please try again.';
-        this.cdr.detectChanges(); 
+        this.isLoading.set(false);
+        this.isSubmitted.set(false);
+        this.loginError.set(err.error?.message || err.message || 'Incorrect Gmail or Password. Please try again.');
       }
     });
   }

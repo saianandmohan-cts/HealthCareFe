@@ -60,7 +60,7 @@ export class Auth {
     return this.http.get<any>(`${this.API_BASE_URL}/login/me`, { withCredentials: true }).pipe(
       tap((response) => {
         if (response && response.success && response.user) {
-          console.log(`🔄 Session restored via HttpOnly Cookie for role [${response.role}]:`, response.user);
+          console.log(`Session restored via HttpOnly Cookie for role [${response.role}]:`, response.user);
           
           this.currentUserSignal.set(response.user);
           this.roleSignal.set(response.role as UserRole);
@@ -70,9 +70,9 @@ export class Auth {
       catchError((error: HttpErrorResponse) => {
         this.clearAuthState();
         if (error.status === 401 || error.status === 400) {
-          console.log('ℹ️ 1C Hospital Engine: No active session found. User is in Guest Mode.');
+          console.log('1C Hospital Engine: No active session found. User is in Guest Mode.');
         } else {
-          console.warn('⚠️ Server Connectivity Issue:', error.message);
+          console.warn('Server Connectivity Issue:', error.message);
         }
         return of({ success: false, message: 'No active session' }); 
       })
@@ -87,7 +87,7 @@ export class Auth {
     return this.http.post<any>(`${this.API_BASE_URL}/login`, credentials, { withCredentials: true }).pipe(
       switchMap((response: any) => {
         if (response && (response.success === true || response.message === "Login successful")) {
-          console.log("🔒 Patient identity verified on core backend. Synchronizing signals...");
+          console.log("Patient identity verified...");
           return this.checkSession().pipe(
             map(() => {
               response.success = true;

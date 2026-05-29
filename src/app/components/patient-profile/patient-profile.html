@@ -2,14 +2,14 @@
 
   <div class="header-row">
     <h2>Personal Details</h2>
-    @if (!isEditingPersonal) {
+    @if (!isEditingPersonal()) {
       <button type="button" class="primary-btn sm" (click)="beginEditPersonal()">
         Update
       </button>
     }
   </div>
 
-  @if (showSavedBanner) {
+  @if (showSavedBanner()) {
     <div class="saved-banner">
       ✔ Personal details updated successfully
     </div>
@@ -18,37 +18,38 @@
   <div class="details-view">
     <div>
       <label>Full Name</label>
-      <strong>{{ patientDetails?.name }}</strong>
+      <strong>{{ patientDetails()?.name }}</strong>
     </div>
 
     <div>
       <label>Patient ID</label>
-      <strong>{{ patientDetails?.patientId }}</strong>
+      <strong>{{ patientDetails()?.patientId }}</strong>
     </div>
 
     <div>
       <label>Gender</label>
-      <strong>{{ patientDetails?.gender }}</strong>
+      <strong>{{ patientDetails()?.gender }}</strong>
     </div>
 
     <div>
       <label>Age</label>
-      <strong>{{ patientDetails?.age }}</strong>
+      <strong>{{ patientDetails()?.age }}</strong>
     </div>
 
     <div>
       <label>Phone</label>
-      @if (!isEditingPersonal) {
-        <strong>{{ patientDetails?.contactNumber }}</strong>
+      @if (!isEditingPersonal()) {
+        <strong>{{ patientDetails()?.contactNumber }}</strong>
       }
       
-      @if (isEditingPersonal) {
+      @if (isEditingPersonal()) {
         <ng-container>
           <div class="field-box">
             <input
               type="text"
               name="contact"
               [(ngModel)]="editableDetails.contactNumber"
+              (ngModelChange)="onInputChange()"
               required
               minlength="10"
               maxlength="10"
@@ -67,17 +68,18 @@
 
     <div>
       <label>Email</label>
-      @if (!isEditingPersonal) {
-        <strong>{{ patientDetails?.email }}</strong>
+      @if (!isEditingPersonal()) {
+        <strong>{{ patientDetails()?.email }}</strong>
       }
 
-      @if (isEditingPersonal) {
+      @if (isEditingPersonal()) {
         <ng-container>
           <div class="field-box">
             <input
               type="email"
               name="email"
               [(ngModel)]="editableDetails.email"
+              (ngModelChange)="onInputChange()"
               required
               email
               #email="ngModel" />
@@ -94,17 +96,18 @@
 
     <div class="wide">
       <label>Address</label>
-      @if (!isEditingPersonal) {
-        <strong>{{ patientDetails?.address }}</strong>
+      @if (!isEditingPersonal()) {
+        <strong>{{ patientDetails()?.address }}</strong>
       }
 
-      @if (isEditingPersonal) {
+      @if (isEditingPersonal()) {
         <ng-container>
           <div class="field-box">
             <input
               type="text"
               name="address"
               [(ngModel)]="editableDetails.address"
+              (ngModelChange)="onInputChange()"
               required
               #address="ngModel" />
           </div>
@@ -117,28 +120,29 @@
 
     <div class="wide"> 
       <label>Allergies</label>
-      @if (!isEditingPersonal) {
-        <strong>{{ patientDetails?.allergy?.join(', ') || 'None' }}</strong>
+      @if (!isEditingPersonal()) {
+        <strong>{{ patientDetails()?.allergy?.join(', ') || 'None' }}</strong>
       }
 
-      @if (isEditingPersonal) {
+      @if (isEditingPersonal()) {
         <div class="field-box">
           <input
             type="text"
             name="allergyStr"
             placeholder="e.g. Peanuts, Penicillin"
-            [(ngModel)]="editableDetails.allergyStr" />
+            [(ngModel)]="editableDetails.allergyStr"
+            (ngModelChange)="onInputChange()" />
         </div>
       }
     </div>
   </div>
 
-  @if (isEditingPersonal) {
+  @if (isEditingPersonal()) {
     <div class="form-actions right-align">
       <button
         type="submit"
         class="primary-btn sm"
-        [disabled]="!isPersonalDetailsChanged || personalForm.invalid">
+        [disabled]="!isPersonalDetailsChanged() || personalForm.invalid">
         Save
       </button>
 

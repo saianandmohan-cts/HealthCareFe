@@ -1,24 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Patient } from '../../models/patient.model';
+import { DashboardService } from '../../services/dashboard.service'; 
 
 @Component({
   selector: 'app-patient-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './patient-profile.html',
-  styleUrl: './patient-profile.css',})
-export class PatientProfile implements OnChanges {
-  @Input() patientDetails!: Patient | null;
-  @Output() profileSaved = new EventEmitter<Patient>();
+  styleUrl: './patient-profile.css',
+})
+export class PatientProfile {
+  patientDetails = input<Patient | null>(null);
+  profileSaved = output<Patient>(); 
 
-  private http = inject(HttpClient);
-  private cdr = inject(ChangeDetectorRef);
+  private dashboardService = inject(DashboardService);
 
-  isEditingPersonal = false;
-  showSavedBanner = false;
+  isEditingPersonal = signal<boolean>(false);
+  showSavedBanner = signal<boolean>(false);
+  
+  private formTracker = signal<number>(0);
 
   editableDetails = {
     email: '',
@@ -27,74 +29,83 @@ export class PatientProfile implements OnChanges {
     allergyStr: '' 
   };
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['patientDetails'] && this.patientDetails) {
-      this.resetForm();
-    }
+  constructor() {
+    effect(() => {
+      const patient = this.patientDetails();
+      if (patient) {
+        this.resetForm(patient);
+      }
+    });
   }
 
-  resetForm(): void {
-    if (!this.patientDetails) return;
+  resetForm(patient: Patient | null = this.patientDetails()): void {
+    if (!patient) return;
     this.editableDetails = {
-      email: this.patientDetails.email ?? '',
-      contactNumber: this.patientDetails.contactNumber ?? '', 
-      address: this.patientDetails.address ?? '',
-      allergyStr: Array.isArray(this.patientDetails.allergy) ? this.patientDetails.allergy.join(', ') : ''
+      email: patient.email ?? '',
+      contactNumber: patient.contactNumber ?? '', 
+      address: patient.address ?? '',
+      allergyStr: Array.isArray(patient.allergy) ? patient.allergy.join(', ') : ''
     };
+    this.formTracker.set(0); 
   }
 
   beginEditPersonal(): void {
     this.resetForm();
-    this.isEditingPersonal = true;
-    this.cdr.detectChanges();
+    this.isEditingPersonal.set(true);
   }
 
   cancelPersonalEdit(): void {
-    this.isEditingPersonal = false;
-    this.cdr.detectChanges();
+    this.isEditingPersonal.set(false);
   }
- // Need to See In Detail
-  get isPersonalDetailsChanged(): boolean {
-    if (!this.patientDetails) return false;
-    const currentAllergyStr = Array.isArray(this.patientDetails.allergy) ? this.patientDetails.allergy.join(', ') : '';
+
+  onInputChange(): void {
+    this.formTracker.update(v => v + 1);
+  }
+
+  isPersonalDetailsChanged = computed(() => {
+    this.formTracker(); 
+    const originalPatient = this.patientDetails();
+    if (!originalPatient) return false;
+
+    const currentAllergyStr = Array.isArray(originalPatient.allergy) ? originalPatient.allergy.join(', ') : '';
 
     return (
-      this.editableDetails.email !== this.patientDetails.email ||
-      this.editableDetails.contactNumber !== this.patientDetails.contactNumber ||
-      this.editableDetails.address !== this.patientDetails.address ||
+      this.editableDetails.email !== originalPatient.email ||
+      this.editableDetails.contactNumber !== originalPatient.contactNumber ||
+      this.editableDetails.address !== originalPatient.address ||
       this.editableDetails.allergyStr !== currentAllergyStr
     );
-  }
+  });
 
   savePersonalDetails(): void {
-    if (!this.patientDetails) return;
+    const currentPatient = this.patientDetails();
+    if (!currentPatient) return;
 
     const allergyArray = this.editableDetails.allergyStr
       ? this.editableDetails.allergyStr.split(',').map(item => item.trim())
       : [];
 
     const profilePayload = {
-      name: this.patientDetails.name, 
+      name: currentPatient.name, 
       contactNumber: this.editableDetails.contactNumber,
       email: this.editableDetails.email,
       address: this.editableDetails.address,
       allergy: allergyArray
     };
 
-    const pId = this.patientDetails.patientId;
+    const pId = String(currentPatient.patientId);
 
-    this.http.patch<any>(`http://localhost:5000/patient/updatePatient/${pId}`, profilePayload).subscribe({
+    this.dashboardService.updatePatientProfile(pId, profilePayload).subscribe({
       next: (res: any) => {
-        const updatedData = res.patient || { ...this.patientDetails, ...profilePayload };
-        this.profileSaved.emit(updatedData);
+        const updatedData = res.patient || { ...currentPatient, ...profilePayload };
+        
+        this.profileSaved.emit(updatedData); 
 
-        this.isEditingPersonal = false;
-        this.showSavedBanner = true;
-        this.cdr.detectChanges();
+        this.isEditingPersonal.set(false);
+        this.showSavedBanner.set(true);
 
         setTimeout(() => {
-          this.showSavedBanner = false;
-          this.cdr.detectChanges();
+          this.showSavedBanner.set(false);
         }, 2500);
       },
       error: (err) => console.error('Profile Update Error:', err)

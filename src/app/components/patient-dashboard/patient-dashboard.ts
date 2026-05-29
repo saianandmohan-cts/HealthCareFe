@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, effect, inject } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
 import { DoctorService } from '../../services/doctor.service';
@@ -17,61 +17,68 @@ import { PatientProfile } from '../patient-profile/patient-profile';
   styleUrls: ['./patient-dashboard.css']
 })
 export class PatientDashboard implements OnInit {
-
-  activeTab: 'appointments' | 'history' | 'personal' = 'appointments';
-  patientDetails: Patient | null = null;
-  appointments: any[] = []; 
-  medicalHistory: string[] = [];
-  doctors: any[] = []; 
-
   private authService = inject(Auth); 
   private doctorService = inject(DoctorService); 
   private pastService = inject(PastConsultations);
   private route = inject(ActivatedRoute); 
-  private cdr = inject(ChangeDetectorRef);
+
+  activeTab = signal<'appointments' | 'history' | 'personal'>('appointments');
+  patientDetails = signal<Patient | null>(null);
+  appointments = signal<any[]>([]); 
+  medicalHistory = signal<string[]>([]);
+  doctors = signal<any[]>([]); 
+
+  patientInitials = computed(() => {
+    const name = this.patientDetails()?.name
+    return name ? name.split(' ').map(n => n[0]).join('') : null;
+  });
+
+  upcomingCount = computed(() => 
+    this.appointments().filter(a => a.status?.toLowerCase() === 'scheduled').length
+  );
+
+  completedCount = computed(() => 
+    this.appointments().filter(a => a.status?.toLowerCase() === 'completed').length
+  );
 
   constructor() {
-    effect(() => {
-      const user = this.authService.currentUser() as any;
-      if (user && !this.patientDetails) {
-        const finalId = user.id || user.patientId;
-        if (finalId) {
-          this.loadDashboardData(finalId.toString());
-        }
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    this.loadDoctorsPool();
-
+ 
+  effect(() => {
+    const user = this.authService.currentUser() as any;
     const routeId = this.route.snapshot.paramMap.get('patientId');
+
+ 
     if (routeId) {
       this.loadDashboardData(routeId);
-    } else {
-      this.authService.checkSession().subscribe({
-        next: () => {
-          const user = this.authService.currentUser() as any;
-          const finalId = user?.id || user?.patientId;
-          if (finalId && !this.patientDetails) {
-            this.loadDashboardData(finalId.toString());
-          }
-        }
-      });
+    } 
+  
+    else if (user && !this.patientDetails()) {
+      const finalId = user.id || user.patientId;
+      if (finalId) {
+        this.loadDashboardData(finalId.toString());
+      }
     }
+  });
+}
+
+ngOnInit(): void {
+  this.loadDoctorsPool(); 
+  const routeId = this.route.snapshot.paramMap.get('patientId');
+  if (!routeId && !this.authService.currentUser()) {
+  
+    this.authService.checkSession().subscribe(); 
   }
+}
 
   setActiveTab(tab: 'appointments' | 'history' | 'personal'): void {
-    this.activeTab = tab;
-    this.cdr.detectChanges();
+    this.activeTab.set(tab); 
   }
-
 
   private loadDoctorsPool(): void {
     this.doctorService.getAllDoctors().subscribe({
       next: (res: any) => {
-        this.doctors = res && Array.isArray(res.data) ? res.data : (res || []);
-        this.cdr.detectChanges();
+        const doctorsData = res && Array.isArray(res.data) ? res.data : (res || []);
+        this.doctors.set(doctorsData);
       },
       error: (err) => console.error('Error fetching master registry:', err)
     });
@@ -80,41 +87,23 @@ export class PatientDashboard implements OnInit {
   private loadDashboardData(patientId: string): void {
     this.pastService.listAll().subscribe({
       next: (res) => {
-        console.log("📥 Dashboard Data Fetched Successfully:", res);
         
-        if (res && res.patientList) {
-          this.patientDetails = res.patientList;
-          this.medicalHistory = res.patientList.medicalHistory || [];
-          
-          const rawAppointments = res.appointments || [];
-          if (rawAppointments.length > 0) {
-            this.appointments = [...rawAppointments];
-            this.cdr.detectChanges();
-          } else {
-            this.appointments = [];
-            this.cdr.detectChanges();
-          }
+        if (res && res.patient) { 
+          this.patientDetails.set(res.patient);
+          this.medicalHistory.set(res.patient.medicalHistory || []);
+          this.appointments.set(res.appointments || []);
+        } else if (res && res.patientList) { 
+          this.patientDetails.set(res.patientList);
+          this.medicalHistory.set(res.patientList.medicalHistory || []);
+          this.appointments.set(res.appointments || []);
         }
       },
       error: (err) => console.error('Dashboard Fetch Error:', err)
     });
   }
 
-  get patientInitials(): string {
-    return this.patientDetails?.name?.split(' ')?.map(n => n[0])?.join('') || 'P';
-  }
-
-  get upcomingCount(): number {
-    return this.appointments.filter(a => a.status && a.status.toLowerCase() === 'scheduled').length;
-  }
-
-  get completedCount(): number {
-    return this.appointments.filter(a => a.status && a.status.toLowerCase() === 'completed').length;
-  }
-
   handleProfileSave(updatedPatient: Patient): void {
-    this.patientDetails = updatedPatient;
-    this.cdr.detectChanges();
+    this.patientDetails.set(updatedPatient);
   }
 
   onLogout(): void {

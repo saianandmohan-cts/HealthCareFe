@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
 import { Auth } from '../../services/auth';
@@ -25,6 +25,8 @@ export class DoctorDashboard implements OnInit {
 
   flag: number = 1; 
   selectedConsultation: string | null = null;
+  
+  currentDoctorId: string = '';
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -52,7 +54,12 @@ export class DoctorDashboard implements OnInit {
 
   private loadDashboardData(): void {
     this.DoctorInfo$ = this.docService.getDoctor().pipe(
-      map((res: any) => res.data) 
+      map((res: any) => res.data),
+      tap((doc: Doctor) => {
+        if (doc) {
+          this.currentDoctorId = (doc as any).doctorId || (doc as any)._id || (doc as any).id || '';          console.log("🏥 Doctor Session Identity Connected:", this.currentDoctorId);
+        }
+      })
     );
     
     const now = new Date();

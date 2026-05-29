@@ -17,7 +17,7 @@ export class PastConsultations {
     const currentPatient = this.authService.currentUser() as any;
     const patientId = currentPatient?.patientId || 'session';
     
-    return this.http.get<any>(`${this.baseUrl}/dashboard/${patientId}`, { withCredentials: true });
+    return this.http.get<any>(`${this.baseUrl}/dashboard/${patientId}`);
   }
 
   getPrescriptionById(consultationId: string | number): Observable<any> {

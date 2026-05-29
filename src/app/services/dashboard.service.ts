@@ -27,6 +27,10 @@ export class DashboardService {
     return this.http.get<any>(`${this.baseUrl}/dashboard/${pId}`, { withCredentials: true });
   }
 
+  updatePatientProfile(pId: string, payload: any): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/updatePatient/${pId}`, payload);
+  }
+
   getAppointmentSummary(): Observable<{ total: number; upcoming: number }> {
     return this.getDashboardDataFromBackend().pipe(
       map((res: any) => {

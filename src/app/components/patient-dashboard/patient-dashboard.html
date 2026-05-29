@@ -2,15 +2,15 @@
   <section class="profile-hero">
     <div class="profile-left">
       <div class="avatar">
-        <div class="avatar-inner">{{ patientInitials }}</div>
+        <div class="avatar-inner">{{ patientInitials() }}</div>
       </div>
       <div>
         <p class="hero-eyebrow">Patient Profile</p>
-        <h1>{{ patientDetails?.name }}</h1>
+        <h1>{{ patientDetails()?.name }}</h1>
         <div class="profile-meta">
-          <span>Patient ID : {{ patientDetails?.patientId }}</span>
+          <span>Patient ID : {{ patientDetails()?.patientId }}</span>
           <br>
-          <span>{{ patientDetails?.address }}</span>
+          <span>{{ patientDetails()?.address }}</span>
         </div>
       </div>
     </div>
@@ -18,11 +18,11 @@
     <div class="profile-right">
       <div class="stat-box">
         <label>Upcoming</label>
-        <strong>{{ upcomingCount }}</strong>
+        <strong>{{ upcomingCount() }}</strong>
       </div>
       <div class="stat-box">
         <label>Completed</label>
-        <strong>{{ completedCount }}</strong>
+        <strong>{{ completedCount() }}</strong>
       </div>
       <a routerLink="/book" class="primary-btn">Book Appointment</a>
       <button class="ghost-btn" (click)="onLogout()">
@@ -30,48 +30,50 @@
       </button>
     </div>
   </section>
+
   <section class="snapshot">
     <div>
       <span>Gender</span>
-      <strong>{{ patientDetails?.gender }}</strong>
+      <strong>{{ patientDetails()?.gender }}</strong>
     </div>
     <div>
       <span>Phone</span>
-      <strong>{{ patientDetails?.contactNumber }}</strong>    
+      <strong>{{ patientDetails()?.contactNumber }}</strong>    
     </div>
     <div>
       <span>Email</span>
-      <strong>{{ patientDetails?.email }}</strong>
+      <strong>{{ patientDetails()?.email }}</strong>
     </div>
   </section>
+
   <div class="tab-buttons">
-    <button class="tab-btn" [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">
+    <button class="tab-btn" [class.active]="activeTab() === 'appointments'" (click)="setActiveTab('appointments')">
       Appointments
     </button>
-    <button class="tab-btn" [class.active]="activeTab === 'history'" (click)="setActiveTab('history')">
+    <button class="tab-btn" [class.active]="activeTab() === 'history'" (click)="setActiveTab('history')">
       Medical History
     </button>
-    <button class="tab-btn" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
+    <button class="tab-btn" [class.active]="activeTab() === 'personal'" (click)="setActiveTab('personal')">
       Personal Details
     </button>
   </div>
+
   <section class="content-card">
     
-    @if (activeTab === 'appointments') {
-      <app-patient-appointments [appointments]="appointments" [doctors]="doctors"></app-patient-appointments>
+    @if (activeTab() === 'appointments') {
+      <app-patient-appointments [appointments]="appointments()" [doctors]="doctors()"></app-patient-appointments>
     }
 
-    @if (activeTab === 'history') {
+    @if (activeTab() === 'history') {
       <app-past-consultation-list></app-past-consultation-list>
     }
 
-    @if (activeTab === 'personal') {
+    @if (activeTab() === 'personal') {
       <app-patient-profile 
-        [patientDetails]="patientDetails" 
+        [patientDetails]="patientDetails()" 
         (profileSaved)="handleProfileSave($event)">
       </app-patient-profile>
     }
 
   </section>
-
 </div>

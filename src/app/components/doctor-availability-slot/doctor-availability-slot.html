@@ -1,9 +1,10 @@
 <div class="p-4 border rounded shadow-sm bg-white d-flex" id="date-container">
+  
   <div class="mb-4">
-    <label class="form-label">Select Date: </label><br>
-    <select [(ngModel)]="selectedDate" (change)="onDateChange()">
+    <label class="form-label fw-bold text-dark">Select Date: </label><br>
+    <select [(ngModel)]="selectedDate" (change)="onDateChange()" class="form-select w-auto">
       @for (val of dateRange; track val) {
-        <option [ngValue]="val">
+        <option [value]="val">
           {{ val | date:'mediumDate' }}
         </option>
       }
@@ -12,34 +13,39 @@
 
   @if (selectedDate) {
     <div class="ms-5 flex-grow-1">
-      <h6>Slots for {{ selectedDate | date:'fullDate' }}</h6>
+      <h6 class="fw-bold text-dark">Slots for {{ selectedDate | date:'fullDate' }}</h6>
       <hr>
 
       @for (slot of filteredSlots; track slot.time) {
-        <div class="form-check mb-2">
+        <div class="form-check mb-2 d-flex align-items-center gap-2">
+          
           <input class="form-check-input"
                  type="checkbox"
-                 [(ngModel)]="slot.isAvailable"
-                 [id]="slot.time">
-          <label class="form-check-label" [for]="slot.time">
-            {{ slot.time }}
+                 [checked]="slot.isAvailable"
+                 (change)="toggleLocalSlot(slot, $event)"
+                 [id]="slot.time"
+                 [name]="'slot_' + slot.time"
+                 style="cursor: pointer;">
+                 
+          <label class="form-check-label" [for]="slot.time" style="cursor: pointer; user-select: none;">
+            <span class="fw-medium text-dark me-2">{{ slot.time }}</span>
 
             <span [class.text-success]="slot.isAvailable"
-                  [class.text-danger]="!slot.isAvailable">
+                  [class.text-danger]="!slot.isAvailable"
+                  class="small fw-bold">
               ({{ slot.isAvailable ? 'Available' : 'Unavailable' }})
             </span>
-            
-         
           </label>
+          
         </div>
       } @empty {
-        <div class="text-muted">
-          No slots found for this date.
+        <div class="text-muted p-2 bg-light rounded text-center small border">
+          No availability slots template mapped for this specific index.
         </div>
       }
 
       @if (filteredSlots.length > 0) {
-        <button (click)="updateAvailability()" class="btn btn-primary mt-3">
+        <button (click)="updateAvailability()" class="btn btn-primary mt-3 px-4 rounded-pill shadow-sm fw-medium">
           Save Changes
         </button>
       }

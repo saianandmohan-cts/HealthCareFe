@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -11,17 +11,21 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './doctor-availability-slot.css',
 })
 export class DoctorAvailabilitySlot implements OnInit {
+  @Input() doctorId: string = '';
 
   allData: any[] = [];
-  selectedDate: string | null = null;
+  selectedDate: string = ''; 
   filteredSlots: any[] = [];
   doctorRecord: any;
 
   date!: Date;
   endDate!: Date;
-  dateRange: Date[] = [];
+  dateRange: string[] = []; 
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {}
 
   ngOnInit() {
     this.setDateFunction();
@@ -36,47 +40,106 @@ export class DoctorAvailabilitySlot implements OnInit {
   }
 
   generateRange() {
-    const range: Date[] = [];
+    const range: string[] = [];
     for (let i = 0; i <= 4; i++) {
-      const d = new Date(this.date);
-      d.setDate(this.date.getDate() + i);
-      range.push(d);
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      
+      range.push(`${year}-${month}-${day}`);
     }
     this.dateRange = range;
+    if(this.dateRange.length > 0) {
+      this.selectedDate = this.dateRange[0];
+    }
   }
 
   fetchAvailability() {
-    this.http.get<any>(`http://localhost:5000/doctor/availability/`)
-      .subscribe(response => {
-        this.allData = response.data || response; 
-        this.onDateChange();
+    const activeDocId = this.doctorId; 
+    
+    this.http.get<any>(`http://localhost:5000/api/availability/slots?doctorId=${activeDocId}`)
+      .subscribe({
+        next: (response) => {
+          console.log("📥 Loaded Availability logs successfully:", response);
+          this.allData = response.data || response;
+          if(!Array.isArray(this.allData)) {
+            this.allData = [this.allData];
+          }
+          this.onDateChange();
+        },
+        error: (err) => console.error("🚨 Fetch slots error:", err)
       });
   }
 
   onDateChange() {
-    if (!this.selectedDate) return;
+    if (!this.selectedDate) {
+      this.filteredSlots = [];
+      return;
+    }
 
-    const targetedDateString = new Date(this.selectedDate).toDateString();
+    console.log("🔍 Filtering slots locally for target selected date:", this.selectedDate);
 
-    const record = this.allData.find(d =>
-      new Date(d.date).toDateString() === targetedDateString
-    );
+    const record = this.allData.find(d => {
+      if (!d.date) return false;
+      const dbDateStr = d.date.split('T')[0]; 
+      return dbDateStr === this.selectedDate;
+    });
 
     this.doctorRecord = record;
-    this.filteredSlots = record ? record.slots : [];
+    
+    if (record && record.slots) {
+      this.filteredSlots = record.slots;
+    } else {
+      this.generateDefaultTestingSlots();
+    }
+    this.cdr.detectChanges();
+  }
+
+  generateDefaultTestingSlots() {
+    const defaultHours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+    this.filteredSlots = defaultHours.map(time => ({
+      time,
+      isAvailable: true,
+      isBooked: false
+    }));
+    
+    this.doctorRecord = {
+      doctorId: this.doctorId || 'D001',
+      date: this.selectedDate,
+      slots: this.filteredSlots
+    };
+  }
+
+  toggleLocalSlot(slot: any, event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    slot.isAvailable = checkbox.checked;
+    this.cdr.detectChanges();
   }
 
   updateAvailability() {
-    if (!this.doctorRecord) return;
-    this.http.put(
-      `http://localhost:5000/doctor/availability/`,
-      this.doctorRecord
-    ).subscribe({
-      next: (res) => {
-        alert("Availability updated & conflict appointments clean cancelled successfully!");
-        this.fetchAvailability(); 
-      },
-      error: (err) => console.error(err)
-    });
+    const activeDocId = this.doctorId || 'D001';
+    
+    const payload = {
+      doctorId: String(activeDocId),
+      date: this.selectedDate,
+      slots: this.filteredSlots
+    };
+
+    console.log("📤 Sending updated availability configuration parameters stream:", payload);
+
+    this.http.post('http://localhost:5000/api/availability/set', payload, { withCredentials: true })
+      .subscribe({
+        next: (res) => {
+          alert("Availability updated & conflict appointments clean cancelled successfully! 🎉");
+          this.fetchAvailability(); 
+        },
+        error: (err) => {
+          console.error("🚨 Controller transaction exception:", err);
+          alert("Failed transaction database level check. Error trace: " + err.message);
+        }
+      });
   }
 }
