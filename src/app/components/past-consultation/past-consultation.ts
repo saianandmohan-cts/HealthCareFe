@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, switchMap } from 'rxjs'; 
+import { Component, OnInit, inject } from '@angular/core';
+import { Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { DoctorService } from '../../services/doctor.service';
 import { Appointment } from '../../models/appointment.model';
-import { AddPrescription } from '../add-prescription/add-prescription'; 
+import { DoctorService } from '../../services/doctor.service';
+import { AddPrescription } from '../add-prescription/add-prescription';
 
 @Component({
   selector: 'app-past-consultation',

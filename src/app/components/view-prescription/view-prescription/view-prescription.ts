@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; // ✅ ChangeDetectorRef import kiya
-import { ActivatedRoute, Params } from '@angular/router'; 
-import { Location, CommonModule } from '@angular/common'; 
+import { CommonModule, Location } from '@angular/common';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core'; // ✅ ChangeDetectorRef import kiya
+import { ActivatedRoute, Params } from '@angular/router';
 import { PastConsultations } from '../../../services/past-consultations';
 
 @Component({

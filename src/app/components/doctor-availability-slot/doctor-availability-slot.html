@@ -2,43 +2,47 @@
   <div class="mb-4">
     <label class="form-label">Select Date: </label><br>
     <select [(ngModel)]="selectedDate" (change)="onDateChange()">
-      <option *ngFor="let val of dateRange" [ngValue]="val">
-        {{ val | date:'mediumDate' }}
-      </option>
+      @for (val of dateRange; track val) {
+        <option [ngValue]="val">
+          {{ val | date:'mediumDate' }}
+        </option>
+      }
     </select>
   </div>
 
-  <div *ngIf="selectedDate" class="ms-5 flex-grow-1">
-    <h6>Slots for {{ selectedDate | date:'fullDate' }}</h6>
-    <hr>
+  @if (selectedDate) {
+    <div class="ms-5 flex-grow-1">
+      <h6>Slots for {{ selectedDate | date:'fullDate' }}</h6>
+      <hr>
 
-    <div *ngFor="let slot of filteredSlots" class="form-check mb-2">
-      <input class="form-check-input"
-             type="checkbox"
-             [(ngModel)]="slot.isAvailable"
-             [id]="slot.time">
-      <label class="form-check-label" [for]="slot.time">
-        {{ slot.time }}
+      @for (slot of filteredSlots; track slot.time) {
+        <div class="form-check mb-2">
+          <input class="form-check-input"
+                 type="checkbox"
+                 [(ngModel)]="slot.isAvailable"
+                 [id]="slot.time">
+          <label class="form-check-label" [for]="slot.time">
+            {{ slot.time }}
 
-        <span [class.text-success]="slot.isAvailable"
-              [class.text-danger]="!slot.isAvailable">
-          ({{ slot.isAvailable ? 'Available' : 'Unavailable' }})
-        </span>
-        
-        <span *ngIf="slot.isBooked" class="badge bg-warning text-dark ms-2" style="font-size: 0.75rem;">
-          ⚠️ Booked
-        </span>
-      </label>
+            <span [class.text-success]="slot.isAvailable"
+                  [class.text-danger]="!slot.isAvailable">
+              ({{ slot.isAvailable ? 'Available' : 'Unavailable' }})
+            </span>
+            
+         
+          </label>
+        </div>
+      } @empty {
+        <div class="text-muted">
+          No slots found for this date.
+        </div>
+      }
+
+      @if (filteredSlots.length > 0) {
+        <button (click)="updateAvailability()" class="btn btn-primary mt-3">
+          Save Changes
+        </button>
+      }
     </div>
-
-    <div *ngIf="filteredSlots.length === 0" class="text-muted">
-      No slots found for this date.
-    </div>
-
-    <button *ngIf="filteredSlots.length > 0"
-            (click)="updateAvailability()"
-            class="btn btn-primary mt-3">
-      Save Changes
-    </button>
-  </div>
+  }
 </div>

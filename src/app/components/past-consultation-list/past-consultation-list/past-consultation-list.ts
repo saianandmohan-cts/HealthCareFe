@@ -1,11 +1,9 @@
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { Observable, map, switchMap, of, catchError } from 'rxjs';
-
-import { PastConsultations } from '../../../services/past-consultations';
+import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { DoctorService } from '../../../services/doctor.service';
+import { PastConsultations } from '../../../services/past-consultations';
 
 @Component({
   selector: 'app-past-consultation-list',

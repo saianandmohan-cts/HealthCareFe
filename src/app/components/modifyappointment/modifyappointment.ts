@@ -1,12 +1,12 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; 
 
 import { AppointmentService } from '../../services/appointment.service';
+import { Auth } from '../../services/auth';
 import { DoctorService } from '../../services/doctor.service';
-import { Auth } from '../../services/auth'; 
 
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';

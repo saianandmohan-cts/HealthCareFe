@@ -1,9 +1,9 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of, map, switchMap } from 'rxjs'; 
-import { Patient } from '../models/patient.model'; 
+import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Doctor } from '../models/doctor.model';
+import { Patient } from '../models/patient.model';
 
 export type UserRole = 'PATIENT' | 'DOCTOR';
 

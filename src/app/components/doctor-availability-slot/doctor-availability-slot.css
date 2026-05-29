@@ -1,5 +1,5 @@
 #date-container{
     display: flex;
     flex-direction: row;
-    gap: 50px;
+    gap: 3.125rem;
 }

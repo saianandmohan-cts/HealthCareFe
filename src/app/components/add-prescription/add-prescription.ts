@@ -1,9 +1,9 @@
-import { Component, inject, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AddPrescription as PrescriptionService } from '../../services/add-prescription';
-import { DoctorService } from '../../services/doctor.service'; 
+import { DoctorService } from '../../services/doctor.service';
 
 @Component({
   selector: 'app-add-prescription',

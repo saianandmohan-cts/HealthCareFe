@@ -1,15 +1,13 @@
-import { Component, OnInit, OnDestroy, ViewChild, inject, ChangeDetectorRef } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router'; 
 import { HttpClient } from '@angular/common/http';
-import { Subscription, interval } from 'rxjs'; 
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { Subscription, interval } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
-
-import { DoctorService } from '../../services/doctor.service';
 import { AppointmentService } from '../../services/appointment.service';
-import { Auth } from '../../services/auth'; 
-
+import { Auth } from '../../services/auth';
+import { DoctorService } from '../../services/doctor.service';
 import { Doctor } from '../../models/doctor.model';
 
 interface TimeSlot {
@@ -108,55 +106,32 @@ export class BookAppointment implements OnInit, OnDestroy {
           const date = this.appointment.date;
           if (!doctorId || !date) return [];
           
-          const url = `http://localhost:5000/doctor/availability?doctorId=${doctorId}&date=${date}`;
-          return this.http.get<any>(url);
+          const dObj = new Date(date);
+          const year = dObj.getFullYear();
+          const month = String(dObj.getMonth() + 1).padStart(2, '0');
+          const day = String(dObj.getDate()).padStart(2, '0');
+          const safeDateString = `${year}-${month}-${day}`;
+
+          const url = `http://localhost:5000/api/availability/slots?doctorId=${doctorId}&date=${safeDateString}`;
+          return this.http.get<any>(url, { withCredentials: true });
         })
       )
       .subscribe({
         next: (res: any) => {
           if (!res) return;
-          const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
           
-          const now = new Date();
-          const todayStr = now.toISOString().split('T')[0];
-          const isToday = this.appointment.date === todayStr;
-
+          const responseData = res.data || res;
+          const record = Array.isArray(responseData) ? responseData[0] : responseData;
+          const slotsArray = record && record.slots ? record.slots : [];
+          
           if (slotsArray.length > 0) {
-            const updatedSlots = slotsArray.map((s: any) => {
-              let isPastTime = false;
-
-              if (isToday) {
-                const timeMatch = s.time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
-                if (timeMatch) {
-                  let hours = parseInt(timeMatch[1], 10);
-                  const minutes = parseInt(timeMatch[2], 10);
-                  const ampm = timeMatch[3].toUpperCase();
-
-                  if (ampm === 'PM' && hours < 12) hours += 12;
-                  if (ampm === 'AM' && hours === 12) hours = 0;
-
-                  const slotDateTime = new Date(now);
-                  slotDateTime.setHours(hours, minutes, 0, 0);
-
-                  if (slotDateTime.getTime() < now.getTime()) {
-                    isPastTime = true;
-                  }
-                }
-              }
-
-              return {
-                time: s.time,
-                disabled: s.isAvailable === false || s.isBooked === true || isPastTime
-              };
-            });
-
+            this.timeSlots = this.processTimeSlots(slotsArray, this.appointment.date);
+            
             const currentlySelected = this.appointment.time;
-            const matchSlot = updatedSlots.find((x: any) => x.time === currentlySelected);
+            const matchSlot = this.timeSlots.find((x: any) => x.time === currentlySelected);
             if (matchSlot && matchSlot.disabled) {
               this.appointment.time = ''; 
             }
-
-            this.timeSlots = updatedSlots;
           } else {
             this.timeSlots = [];
           }
@@ -173,7 +148,12 @@ export class BookAppointment implements OnInit, OnDestroy {
     for (let i = 0; i < 5; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
-      this.availableDates.push(d.toISOString().split('T')[0]);
+      
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      
+      this.availableDates.push(`${year}-${month}-${day}`);
     }
     this.cdr.detectChanges();
   }
@@ -189,48 +169,81 @@ export class BookAppointment implements OnInit, OnDestroy {
     const date = this.appointment.date;
     if (!doctorId || !date) return;
 
-    const url = `http://localhost:5000/doctor/availability?doctorId=${doctorId}&date=${date}`;
-    this.http.get<any>(url).subscribe({
+    const dObj = new Date(date);
+    const year = dObj.getFullYear();
+    const month = String(dObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dObj.getDate()).padStart(2, '0');
+    const safeDateString = `${year}-${month}-${day}`;
+
+    const url = `http://localhost:5000/api/availability/slots?doctorId=${doctorId}&date=${safeDateString}`;
+    
+    this.http.get<any>(url, { withCredentials: true }).subscribe({
       next: (res) => {
-        const slotsArray = res && res.data && res.data.slots ? res.data.slots : (res.slots || []);
+        const responseData = res.data || res;
+        const record = Array.isArray(responseData) ? responseData[0] : responseData;
+        const slotsArray = record && record.slots ? record.slots : [];
         
-        const now = new Date();
-        const todayStr = now.toISOString().split('T')[0];
-        const isToday = date === todayStr;
-
         if (slotsArray.length > 0) {
-          this.timeSlots = slotsArray.map((s: any) => {
-            let isPastTime = false;
-
-            if (isToday) {
-              const timeMatch = s.time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
-              if (timeMatch) {
-                let hours = parseInt(timeMatch[1], 10);
-                const minutes = parseInt(timeMatch[2], 10);
-                const ampm = timeMatch[3].toUpperCase();
-
-                if (ampm === 'PM' && hours < 12) hours += 12;
-                if (ampm === 'AM' && hours === 12) hours = 0;
-
-                const slotDateTime = new Date(now);
-                slotDateTime.setHours(hours, minutes, 0, 0);
-
-                if (slotDateTime.getTime() < now.getTime()) {
-                  isPastTime = true;
-                }
-              }
-            }
-
-            return {
-              time: s.time,
-              disabled: s.isAvailable === false || s.isBooked === true || isPastTime
-            };
-          });
+          this.timeSlots = this.processTimeSlots(slotsArray, date);
         } else {
           this.timeSlots = []; 
         }
         this.cdr.detectChanges(); 
+      },
+      error: (err) => {
+        console.error("Error fetching slots:", err);
+        this.timeSlots = [];
+        this.cdr.detectChanges();
       }
+    });
+  }
+
+  private processTimeSlots(slotsArray: any[], selectedDateStr: string): TimeSlot[] {
+    const now = new Date();
+    
+    const currentYear = now.getFullYear();
+    const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const currentDay = String(now.getDate()).padStart(2, '0');
+    const localTodayStr = `${currentYear}-${currentMonth}-${currentDay}`; 
+
+    const selectedDateTimestamp = new Date(`${selectedDateStr}T00:00:00`).getTime();
+    const todayMidnightTimestamp = new Date(`${localTodayStr}T00:00:00`).getTime();
+
+    const isToday = selectedDateStr === localTodayStr;
+    const isPastDay = selectedDateTimestamp < todayMidnightTimestamp;
+
+    return slotsArray.map((s: any) => {
+      let isPastTime = false;
+
+      if (isPastDay) {
+        isPastTime = true;
+      } 
+      else if (isToday) {
+        const timeMatch = s.time.match(/^(\d+):(\d+)\s*(AM|PM)?$/i);
+        if (timeMatch) {
+          let hours = parseInt(timeMatch[1], 10);
+          const minutes = parseInt(timeMatch[2], 10);
+          const ampm = timeMatch[3];
+
+          if (ampm) {
+            const ampmUpper = ampm.toUpperCase();
+            if (ampmUpper === 'PM' && hours < 12) hours += 12;
+            if (ampmUpper === 'AM' && hours === 12) hours = 0;
+          }
+
+          const slotDateTime = new Date(now);
+          slotDateTime.setHours(hours, minutes, 0, 0);
+
+          if (slotDateTime.getTime() <= now.getTime()) {
+            isPastTime = true;
+          }
+        }
+      }
+
+      return {
+        time: s.time,
+        disabled: s.isAvailable === false || s.isBooked === true || isPastTime
+      };
     });
   }
 

@@ -10,61 +10,61 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
 .hospital-icon {
-  font-size: 42px;
+  font-size: 2.625rem;
 }
 
 .login-header h1 {
-  margin: 8px 0 4px;
+  margin: 0.5rem 0 0.25rem;
   color: #0d47a1;
 }
 
 .tagline {
   color: #546e7a;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .login-card {
   background: #ffffff;
   width: 100%;
-  max-width: 420px;
-  padding: 28px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  max-width: 26.25rem;
+  padding: 1.75rem;
+  border-radius: 0.875rem;
+  box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.12);
 }
 
 .login-card h2 {
-  margin-bottom: 6px;
+  margin-bottom: 0.375rem;
   color: #0d47a1;
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #607d8b;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 1.125rem;
 }
 
 label {
   display: block;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 0.375rem;
   color: #37474f;
 }
 
 input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #cfd8dc;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 0.625rem 0.75rem;
+  border: 0.0625rem solid #cfd8dc;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
 }
 
 input:focus {
@@ -73,8 +73,8 @@ input:focus {
 }
 
 .error {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
   color: #d32f2f;
   display: flex;
   flex-direction: column;
@@ -83,20 +83,20 @@ input:focus {
 .login-error {
   background: #ffebee;
   color: #c62828;
-  padding: 8px;
-  border-radius: 6px;
-  font-size: 13px;
-  margin-bottom: 14px;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.875rem;
 }
 
 .login-btn {
   width: 100%;
-  padding: 12px;
+  padding: 0.75rem;
   background: #1976d2;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 15px;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -112,16 +112,16 @@ input:focus {
 
 .extra-links {
   text-align: center;
-  margin-top: 12px;
+  margin-top: 0.75rem;
 }
 
 .extra-links a {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #1976d2;
   text-decoration: none;
 }
 
 .back-link {
-  margin-top: 18px;
-  font-size: 13px;
+  margin-top: 1.125rem;
+  font-size: 0.8125rem;
 }

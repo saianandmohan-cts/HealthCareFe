@@ -71,10 +71,14 @@
             name="date"
             [(ngModel)]="appointment.date"
             (change)="onDateChange()" required
+            [disabled]="!appointment.doctorId"
             #date="ngModel">
-            <option value="" disabled selected>Select date</option>
+            <option value="" disabled selected>
+              {{ !appointment.doctorId ? 'Choose doctor first' : 'Select date' }}
+            </option>
             <option *ngFor="let d of availableDates" [value]="d">
-              {{ d | date:'mediumDate' }} </option>
+              {{ d | date:'mediumDate' }} 
+            </option>
           </select>
 
           <small class="error" *ngIf="date.invalid && date.touched">
@@ -88,9 +92,11 @@
             name="time"
             [(ngModel)]="appointment.time"
             required
-            [disabled]="timeSlots.length === 0" #time="ngModel">
+            [disabled]="!appointment.date" 
+            #time="ngModel">
+            
             <option value="" disabled selected>
-              {{ timeSlots.length === 0 ? 'No slots available' : 'Select time' }}
+              {{ !appointment.date ? 'Choose date first' : (timeSlots.length === 0 ? 'Loading slots / No slots added' : 'Select time') }}
             </option>
             
             <option
@@ -99,7 +105,7 @@
               [disabled]="slot.disabled"
               [style.color]="slot.disabled ? '#d32f2f' : '#1b5e20'"
               [style.background-color]="slot.disabled ? '#f9fafb' : '#ffffff'">
-              {{ slot.time }} {{ slot.disabled ? 'Unavailable' : 'Available' }}
+              {{ slot.time }} {{ slot.disabled ? '(Booked/Unavailable)' : '(Available)' }}
             </option>
           </select>
 

@@ -1,10 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators'; 
-import { HttpClient } from '@angular/common/http';
-
-import { Doctor } from '../models/doctor.model';
+import { map, switchMap } from 'rxjs/operators';
 import { Appointment } from '../models/appointment.model';
+import { Doctor } from '../models/doctor.model';
 
 const DOCTORS: any[] = [];
 

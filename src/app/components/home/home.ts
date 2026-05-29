@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +8,10 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './home.css',
 })
 export class Home {
+  heroImageUrl: string = 'https://media.vanguardcommunications.net/photo-VCG-HPI-COVID19-Male-Doc-Male-Pt-2000px.jpg';
+  careImageUrl: string = 'https://www.muhealth.org/sites/default/files/2022-05/Child%20with%20doctor-1040x615.jpg';
   constructor(private router: Router) {}
-  go(path: string) { this.router.navigate([path]); }
-
+  go(path: string) { 
+    this.router.navigate([path]); 
+  }
 }

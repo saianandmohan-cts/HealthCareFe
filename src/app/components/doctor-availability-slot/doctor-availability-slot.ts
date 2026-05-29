@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-doctor-availability-slot',
@@ -56,10 +56,8 @@ export class DoctorAvailabilitySlot implements OnInit {
   onDateChange() {
     if (!this.selectedDate) return;
 
-  
     const targetedDateString = new Date(this.selectedDate).toDateString();
 
-  
     const record = this.allData.find(d =>
       new Date(d.date).toDateString() === targetedDateString
     );
@@ -73,10 +71,12 @@ export class DoctorAvailabilitySlot implements OnInit {
     this.http.put(
       `http://localhost:5000/doctor/availability/`,
       this.doctorRecord
-    ).subscribe(res => {
-      alert("Availability Updated Successfully!");
-      
-      this.fetchAvailability(); 
+    ).subscribe({
+      next: (res) => {
+        alert("Availability updated & conflict appointments clean cancelled successfully!");
+        this.fetchAvailability(); 
+      },
+      error: (err) => console.error(err)
     });
   }
 }

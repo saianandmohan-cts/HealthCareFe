@@ -1,13 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PastConsultation } from '../past-consultation/past-consultation';
-import { DoctorAvailabilitySlot } from '../doctor-availability-slot/doctor-availability-slot';
-import { DoctorService } from '../../services/doctor.service';
+import { Component, inject, OnInit } from '@angular/core';
+import { forkJoin, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
-import { Observable, forkJoin, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators'; 
 import { Auth } from '../../services/auth';
+import { DoctorService } from '../../services/doctor.service';
+import { DoctorAvailabilitySlot } from '../doctor-availability-slot/doctor-availability-slot';
+import { PastConsultation } from '../past-consultation/past-consultation';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -83,16 +83,17 @@ export class DoctorDashboard implements OnInit {
       map((appointments: any[]) => {
         return appointments
           .filter((appt: any) => {
-            if (!appt.status || appt.status.toLowerCase() !== 'scheduled') {
+            const statusStr = appt.status ? appt.status.toLowerCase() : '';
+            if (statusStr !== 'scheduled' && statusStr !== 'cancelled') {
               return false;
             }
             const apptDate = new Date(appt.date);
             const apptTimestamp = this.parseDateTime(appt.date, appt.time).getTime();
             
             if (this.isSameDay(apptDate, now)) {
-              return apptTimestamp >= now.getTime();
+              return statusStr === 'cancelled' ? true : apptTimestamp >= now.getTime();
             }
-            return apptDate.getTime() > now.getTime();
+            return apptDate.getTime() > now.getTime() || statusStr === 'cancelled';
           })
           .sort((a: any, b: any) => {
             return this.parseDateTime(a.date, a.time).getTime() - this.parseDateTime(b.date, b.time).getTime();
@@ -108,6 +109,7 @@ export class DoctorDashboard implements OnInit {
 
   viewUpcoming(): void {
     this.flag = 1;
+    this.docService.triggerUpcomingRefresh();
   }
 
   viewPast(): void {
@@ -116,6 +118,7 @@ export class DoctorDashboard implements OnInit {
 
   editAvailability(): void {
     this.flag = 3;
+    this.docService.triggerUpcomingRefresh();
   }
 
   onLogout(): void {
@@ -126,7 +129,7 @@ export class DoctorDashboard implements OnInit {
     if (confirm('Are you sure you want to cancel this appointment?')) { 
       this.docService.deleteAppointment(appointmentId).subscribe({
         next: () => {
-          this.loadDashboardData();
+          this.docService.triggerUpcomingRefresh();
         },
         error: (err) => {
           console.error(err);

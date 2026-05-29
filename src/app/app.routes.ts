@@ -4,9 +4,9 @@ import { Home } from './components/home/home';
 import { LoginDoctor } from './components/login-doctor/login-doctor';
 import { LoginUser } from './components/login-user/login-user';
 import { RegisterUser } from './components/register-user/register-user';
+import { doctorGuard } from './guards/doctor-guard';
 import { guestGuard } from './guards/guest-guard';
 import { patientGuard } from './guards/patient-guard';
-import { doctorGuard } from './guards/doctor-guard';
 
 export const routes: Routes = [
     { path: "", component: Home },

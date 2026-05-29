@@ -56,6 +56,11 @@
             <p class="mb-1 fw-bold text-dark fs-5">Patient Name: {{ val.patient.name || 'Unknown Patient' }}</p>
             <p class="mb-1 text-secondary small">Patient ID: {{ val.patient.patientId || 'N/A' }}</p>
             <p class="mb-1 text-muted small">📅 Date: {{ val.date }} | ⏰ Time: {{ val.time }}</p>
+            <p class="mb-1 small">Status: 
+              <span [class.text-danger]="$any(val).status === 'Cancelled' || $any(val).status === 'cancelled'" [class.text-success]="$any(val).status === 'Scheduled' || $any(val).status === 'scheduled'">
+                <strong>{{ val.status }}</strong>
+              </span>
+            </p>
 
             <button class="btn btn-sm btn-link text-decoration-none p-0 mt-2" (click)="toggleConsultation($any(val).appointmentId)">
               {{ selectedConsultation === $any(val).appointmentId ? '🔼 View Less' : '🔽 View More Details' }}
@@ -72,9 +77,10 @@
           
           <div class="d-flex align-items-center gap-2">
             <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-medium d-inline-flex align-items-center" 
+                    [disabled]="$any(val).status === 'Cancelled' || $any(val).status === 'cancelled'"
                     (click)="cancelAppointment($any(val).appointmentId)"
                     style="font-size: 0.85rem; height: 32px; letter-spacing: 0.02em;">
-              Cancel Appointment
+              {{ ($any(val).status === 'Cancelled' || $any(val).status === 'cancelled') ? 'Cancelled' : 'Cancel Appointment' }}
             </button>
           </div>
         </div>

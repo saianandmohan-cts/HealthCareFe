@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { Auth } from '../services/auth';
-import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { Auth } from '../services/auth';
 
 export const doctorGuard: CanActivateFn = (route, state) => {
   const authService = inject(Auth);

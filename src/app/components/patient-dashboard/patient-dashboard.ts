@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, effect, ChangeDetectorRef } from '@angular/core'; 
-import { RouterModule, ActivatedRoute } from '@angular/router';
-
-import { Auth } from '../../services/auth'; 
+import { ChangeDetectorRef, Component, OnInit, effect, inject } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Auth } from '../../services/auth';
 import { DoctorService } from '../../services/doctor.service';
-import { PastConsultations } from '../../services/past-consultations'; 
-
+import { PastConsultations } from '../../services/past-consultations';
 import { Patient } from '../../models/patient.model';
 import { PastConsultationList } from '../past-consultation-list/past-consultation-list/past-consultation-list';
 import { PatientAppointments } from '../patient-appointments/patient-appointments';
